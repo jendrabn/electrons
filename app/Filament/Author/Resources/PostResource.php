@@ -39,6 +39,7 @@ class PostResource extends Resource
                     ->label('Category')
                     ->required()
                     ->options(Category::all()->pluck('name', 'id'))
+                    ->searchable()
                     ->hintIcon('heroicon-o-information-circle', 'Select the category that matches the content topic')
                     ->columnSpanFull(),
 
@@ -54,6 +55,7 @@ class PostResource extends Resource
                     ->schema([
                         Forms\Components\FileUpload::make('image')
                             ->label('Image')
+                            ->required()
                             ->image()
                             ->directory('categories')
                             ->disk('public')
@@ -74,7 +76,7 @@ class PostResource extends Resource
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('image_caption')
-                            ->label('Image Caption')
+                            ->label('Caption')
                             ->hintIcon('heroicon-o-information-circle', 'Add an image caption to help readers understand the image.')
                             ->columnSpanFull()
                     ])
@@ -96,12 +98,16 @@ class PostResource extends Resource
 
                 Forms\Components\Select::make('tags')
                     ->label('Tags')
-                    // ->required()
+                    ->required()
                     ->multiple()
                     ->relationship('tags', 'name')
-                    // ->options(Tag::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
                     ->hintIcon('heroicon-o-information-circle', 'Add Tags (keywords) related to the content. Use the Recommendation button to get automatically recommended keyword Tags')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->validationAttribute('tags')
+                    ->dehydrated()
+                    ->live()
             ]);
     }
 
@@ -110,56 +116,75 @@ class PostResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\ImageColumn::make('image')
-                    ->toggleable(),
+                    ->label('Image'),
+
+                Tables\Columns\TextColumn::make('image_caption')
+                    ->label('Image Caption')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Title')
+                    ->lineClamp(2)
                     ->sortable()
-                    ->searchable()
-                    ->lineClamp(1)
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('Slug')
+                    ->lineClamp(2)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
-                    ->lineClamp(1)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('category.name')
+                    ->label('Category')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('tags.name')
-                    ->sortable()
-                    ->searchable()
+                    ->label('Tags')
                     ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('status')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn($state) => Status::tryFrom($state)?->getLabel() ?? ucfirst($state))
                     ->color(fn($state) => Status::tryFrom($state)?->GetColor() ?? 'secondary')
                     ->tooltip(fn(Post $record) => $record->status === Status::REJECTED->value ? 'Reason: ' . $record->rejected_reason : null)
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('min_read')
+                    ->label('Min Read')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('views_count')
-                    ->label('Views')
+                    ->label('Views Count')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d-m-Y H:i')
+                    ->label('Date & Time Created')
+                    ->dateTime('d M Y, H:i:s')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d-m-Y H:i')
+                    ->label('Date & Time Updated')
+                    ->dateTime('d M Y, H:i:s')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')

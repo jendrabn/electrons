@@ -71,13 +71,13 @@ class CategoryResource extends Resource
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date & Time Created')
-                    ->dateTime()
+                    ->dateTime('d M Y, H:i:s')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Date & Time Updated')
-                    ->dateTime()
+                    ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),

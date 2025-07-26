@@ -22,7 +22,6 @@ class AuditLogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    // protected static ?string $navigationGroup = 'System';
 
     protected static ?string $navigationLabel = 'Audit Logs';
 
@@ -33,9 +32,7 @@ class AuditLogResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                // Form tidak diperlukan karena read-only
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
@@ -81,7 +78,6 @@ class AuditLogResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('User')
                     ->default('System')
-                    ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('ip_address')

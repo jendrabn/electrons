@@ -18,6 +18,7 @@ class EditProfile extends BaseEditProfile
         return $form
             ->schema([
                 FileUpload::make('avatar')
+                    ->label('Avatar')
                     ->nullable()
                     ->image()
                     ->imageEditor()
@@ -27,8 +28,10 @@ class EditProfile extends BaseEditProfile
                     ->maxFiles(1)
                     ->directory('avatars')
                     ->alignCenter(),
-                $this->getNameFormComponent(),
+                $this->getNameFormComponent()
+                    ->label('Full Name'),
                 TextInput::make('username')
+                    ->label('Username')
                     ->nullable()
                     ->string()
                     ->minLength(5)
@@ -38,6 +41,7 @@ class EditProfile extends BaseEditProfile
                 $this->getEmailFormComponent()
                     ->label('Email'),
                 TextInput::make('phone')
+                    ->label('Phone')
                     ->nullable()
                     ->string()
                     ->tel()
@@ -45,6 +49,7 @@ class EditProfile extends BaseEditProfile
                     ->maxLength(15)
                     ->startsWith(['08', '+62', '62']),
                 Radio::make('sex')
+                    ->label('Gender')
                     ->nullable()
                     ->string()
                     ->options([
@@ -58,6 +63,7 @@ class EditProfile extends BaseEditProfile
                     ->date()
                     ->maxDate(now()),
                 Textarea::make('address')
+                    ->label('Address')
                     ->nullable()
                     ->string()
                     ->minLength(5)

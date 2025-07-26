@@ -18,6 +18,7 @@ use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Enums\Role;
+use Filament\Notifications\Notification;
 
 class PostResource extends Resource
 {
@@ -137,7 +138,7 @@ class PostResource extends Resource
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Author')
-                    ->words(2)
+                    ->words(2, '')
                     ->sortable()
                     ->searchable(),
 
@@ -177,13 +178,13 @@ class PostResource extends Resource
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date & Time Created')
-                    ->dateTime()
+                    ->dateTime('d M Y, H:i:s')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Date & Time Updated')
-                    ->dateTime()
+                    ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable()
@@ -226,6 +227,32 @@ class PostResource extends Resource
 
                             $record->update($data);
                         }),
+
+                    Tables\Actions\Action::make('View Data Changes')
+                        ->label('View Data Changes')
+                        ->icon('heroicon-o-eye')
+                        ->color('info')
+                        ->action(function (Post $record) {
+                            // Ambil audit log terakhir dari post ini
+                            $latestAudit = $record->audits()
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+
+                            if ($latestAudit) {
+                                // Redirect ke ViewAuditLog
+                                return redirect()
+                                    ->to(AuditLogResource::getUrl('view', ['record' => $latestAudit]))
+                                    ->with('success', 'Viewing latest audit log for this post.');
+                            } else {
+                                // Jika tidak ada audit log
+                                Notification::make()
+                                    ->title('No audit logs found')
+                                    ->body('This post has no audit logs yet.')
+                                    ->warning()
+                                    ->send();
+                            }
+                        })
+                        ->visible(fn(Post $record) => $record->audits()->exists()),
                 ])
 
             ])
@@ -250,6 +277,7 @@ class PostResource extends Resource
             'index' => Pages\ListPosts::route('/'),
             'create' => Pages\CreatePost::route('/create'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
+            'view' => Pages\ViewPost::route('/{record}'),
         ];
     }
 

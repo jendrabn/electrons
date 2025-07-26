@@ -137,12 +137,21 @@ class ViewAuditLog extends ViewRecord
                                 KeyValueEntry::make('old_values')
                                     ->label('Previous Values')
                                     ->visible(fn() => !empty($this->record->old_values))
-                                    ->columnSpanFull(fn() => empty($this->record->new_values)),
+                                    ->columnSpanFull(fn() => empty($this->record->new_values))
+                                    ->getStateUsing(function () {
+                                        return collect($this->record->old_values)
+                                            ->map(fn($value) => strip_tags($value))
+                                            ->toArray();
+                                    }),
 
                                 KeyValueEntry::make('new_values')
                                     ->label('New Values')
                                     ->visible(fn() => !empty($this->record->new_values))
-                                    ->columnSpanFull(fn() => empty($this->record->old_values)),
+                                    ->columnSpanFull(fn() => empty($this->record->old_values))->getStateUsing(function () {
+                                        return collect($this->record->old_values)
+                                            ->map(fn($value) => strip_tags($value))
+                                            ->toArray();
+                                    }),
                             ]),
                     ]),
 
@@ -153,25 +162,30 @@ class ViewAuditLog extends ViewRecord
                     ->schema([
                         TextEntry::make('changes_summary')
                             ->label('')
-                            ->formatStateUsing(function () {
-                                $changes = $this->record->getChanges();
+                            ->getStateUsing(function ($record) {
+                                $changes = $record->getChanges();
+
                                 if (empty($changes)) {
                                     return 'No specific field changes detected.';
                                 }
 
                                 $summary = [];
                                 foreach ($changes as $field => $change) {
-                                    $oldValue = $change['old'] ?? 'null';
-                                    $newValue = $change['new'] ?? 'null';
-                                    $summary[] = "**{$field}**: `{$oldValue}` → `{$newValue}`";
+                                    $oldValue = strip_tags($record->formatValue($change['old'] ?? ''));
+                                    $newValue = strip_tags($record->formatValue($change['new'] ?? ''));
+
+                                    $fieldName = ucwords(str_replace('_', ' ', $field));
+                                    $summary[] = "**{$fieldName}**\n";
+                                    $summary[] = "- Before: `{$oldValue}`";
+                                    $summary[] = "- After: `{$newValue}`";
+                                    $summary[] = ""; // Empty line for spacing
                                 }
 
-                                return implode("\n\n", $summary);
+                                return implode("\n", $summary);
                             })
                             ->prose()
                             ->markdown(),
                     ]),
-
                 Section::make('Technical Details')
                     ->description('Additional technical information')
                     ->icon('heroicon-o-cog-6-tooth')

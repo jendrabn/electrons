@@ -12,12 +12,15 @@ class CreatePost extends CreateRecord
 {
     protected static string $resource = PostResource::class;
 
+    protected static array $savedTags = [];
+
     protected function getFormActions(): array
     {
         return [
             Actions\Action::make('create')
                 ->label('Save')
                 ->color('primary')
+                ->icon('heroicon-s-check')
                 ->action(function () {
                     $this->form->fill([
                         ...$this->form->getState(),
@@ -27,6 +30,7 @@ class CreatePost extends CreateRecord
                 }),
             Actions\Action::make('createDraft')
                 ->label('Save as Draft')
+                // ->icon('heroicon-s-pen')
                 ->color('gray')
                 ->action(function () {
                     $this->form->fill([
@@ -46,11 +50,15 @@ class CreatePost extends CreateRecord
         $data['min_read'] = str_word_count($data['content']) / 200;
         $data['status'] = Status::PENDING->value;
 
+        self::$savedTags = $data['tags'] ?? [];
+
+        unset($data['tags']);
+
         return $data;
     }
 
     protected function afterSave(): void
     {
-        $this->record->tags()->sync($this->data['tags']);
+        $this->record->tags()->sync(self::$savedTags);
     }
 }

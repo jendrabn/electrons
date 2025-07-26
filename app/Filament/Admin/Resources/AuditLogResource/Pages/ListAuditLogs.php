@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\AuditLogResource\Pages;
 use App\Filament\Admin\Resources\AuditLogResource;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -24,8 +25,7 @@ class ListAuditLogs extends ListRecords
 
             Actions\Action::make('refresh')
                 ->label('Refresh')
-                ->icon('heroicon-o-arrow-path')
-                ->action(fn() => $this->redirect(request()->url())),
+                ->icon('heroicon-o-arrow-path'),
         ];
     }
 

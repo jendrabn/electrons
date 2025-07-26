@@ -97,4 +97,22 @@ class AuditLog extends Model
             'created_at' => $this->created_at,
         ];
     }
+
+
+    public function formatValue($value): string
+    {
+        if (is_null($value)) {
+            return 'null';
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        if (is_array($value) || is_object($value)) {
+            return json_encode($value, JSON_PRETTY_PRINT);
+        }
+
+        return (string) $value;
+    }
 }

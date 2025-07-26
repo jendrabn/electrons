@@ -30,6 +30,17 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                // FileUpload::make('avatar')
+                //     ->nullable()
+                //     ->image()
+                //     ->imageEditor()
+                //     ->avatar()
+                //     ->imageCropAspectRatio(1, 1)
+                //     ->maxSize(1024)
+                //     ->maxFiles(1)
+                //     ->directory('avatars')
+                //     ->columnSpanFull()
+                //     ->alignCenter(),
                 TextInput::make('name')
                     ->nullable()
                     ->string()
@@ -46,8 +57,7 @@ class UserResource extends Resource
                     ->required()
                     ->email()
                     ->unique(ignoreRecord: true)
-                    ->maxLength(255)
-                    ->columnSpanFull(),
+                    ->maxLength(255),
                 TextInput::make('phone')
                     ->nullable()
                     ->string()
@@ -67,15 +77,6 @@ class UserResource extends Resource
                     ->nullable()
                     ->date()
                     ->maxDate(now()),
-                FileUpload::make('avatar')
-                    ->nullable()
-                    ->image()
-                    ->imageEditor()
-                    ->avatar()
-                    ->imageCropAspectRatio(1, 1)
-                    ->maxSize(1024)
-                    ->maxFiles(1)
-                    ->directory('avatars'),
                 Textarea::make('address')
                     ->nullable()
                     ->string()
@@ -93,53 +94,70 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\ImageColumn::make('avatar')->circular()
-                    ->toggleable(),
+                    ->searchable(),
+
+                Tables\Columns\ImageColumn::make('avatar')
+                    ->label('Avatar')
+                    ->circular(),
+
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Full Name')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('username')
+                    ->label('Username')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('role')
+                    ->label('Role')
                     ->badge()
                     ->colors([
                         'primary' => Role::ADMIN->value,
                         'success' => Role::AUTHOR->value,
                     ])
                     ->getStateUsing(fn(User $record): string => $record->getRoleNames()->first())
-                    ->alignCenter()
-                    ->toggleable(),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('posts_count')
+                    ->label('Posts Count')
                     ->counts('posts')
-                    ->label('Posts')
-                    ->alignCenter()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('phone')
+                    ->label('Phone')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('sex')
+                    ->label('Gender')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('birth_date')
+                    ->label('Birth Date')
                     ->date()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('address')
+                    ->label('Address')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('is_suspended')
                     ->label('Status')
                     ->sortable()
@@ -149,23 +167,28 @@ class UserResource extends Resource
                         'danger' => '0',
                         'success' => '1',
                     ])
+                    ->getStateUsing(fn(User $record): string => $record->is_suspended ? 'Suspended' : 'Active')
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->label('Date & Time Verified')
+                    ->dateTime('d M Y, H:i:s')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Date & Time Created')
+                    ->dateTime('d M Y, H:i:s')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d M Y, H:i:s')
+                    ->label('Date & Time Updated')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Filters\SelectFilter::make('role')

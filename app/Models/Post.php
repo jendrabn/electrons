@@ -6,6 +6,7 @@ use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
@@ -13,6 +14,10 @@ class Post extends Model
     use HasFactory, Auditable;
 
     protected $guarded = [];
+
+    // protected $casts = [
+    //     'tags' => 'array',
+    // ];
 
     public function tags()
     {
@@ -34,5 +39,15 @@ class Post extends Model
     {
         return $query->where('status', 'published')
             ->orWhereNotNull('published_at');
+    }
+
+    public function audits()
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    public function sections(): BelongsToMany
+    {
+        return $this->belongsToMany(PostSection::class, 'post_section_post', 'post_id', 'post_section_id');
     }
 }
