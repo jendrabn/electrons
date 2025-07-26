@@ -13,7 +13,14 @@ class ListPostSections extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Add Post Section')
+                ->icon('heroicon-s-plus')
+                ->modal()
+                ->modalHeading('Add Post Section')
+                ->modalSubmitActionLabel('Save')
+                ->modalCancelActionLabel('Cancel')
+                ->mutateFormDataUsing((fn($data) => array_merge($data, ['slug' => str()->slug($data['name'])])))
         ];
     }
 }

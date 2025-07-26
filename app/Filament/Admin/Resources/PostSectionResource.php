@@ -25,19 +25,26 @@ class PostSectionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Section Name')
                     ->required()
                     ->unique(ignoreRecord: true)
-                    ->maxLength(255),
+                    ->maxLength(100)
+                    ->columnSpanFull(),
 
                 Forms\Components\Select::make('posts')
+                    ->label('Posts')
+                    ->required()
                     ->multiple()
                     ->relationship(
                         name: 'posts',
                         titleAttribute: 'title',
                         modifyQueryUsing: fn(Builder $query) => $query
-                            ->where('status', 'published')
+                            ->where('posts.status', 'published')
+                            ->leftJoin('categories', 'posts.category_id', '=', 'categories.id')
+                            ->leftJoin('users', 'posts.user_id', '=', 'users.id')
                             ->with(['category', 'user'])
-                            ->orderBy('created_at', 'desc')
+                            ->select('posts.*')
+                            ->orderBy('posts.created_at', 'desc')
                     )
                     ->getOptionLabelFromRecordUsing(function ($record) {
                         $category = $record->category?->name ?? 'No Category';
@@ -60,9 +67,10 @@ class PostSectionResource extends Resource
                         ");
                     })
                     ->allowHtml()
-                    ->searchable(['title', 'category.name', 'user.name'])
+                    ->searchable(['posts.title', 'categories.name', 'users.name'])
                     ->preload()
-                    ->placeholder('Pilih posts yang sudah published'),
+                    ->placeholder('Select posts to add to section')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -88,10 +96,9 @@ class PostSectionResource extends Resource
 
                 Tables\Columns\TextColumn::make('posts_count')
                     ->counts('posts')
-                    ->label('Posts')
+                    ->label('Posts Count')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('order')
                     ->label('Order')
@@ -114,17 +121,20 @@ class PostSectionResource extends Resource
             ->reorderRecordsTriggerAction(function (Tables\Actions\Action $action, bool $isReordering) {
                 return $action
                     ->button()
-                    ->label($isReordering ? 'Selesai Reorder' : 'Reorder');
+                    ->label($isReordering ? 'Finish Reorder' : 'Reorder');
             })
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->requiresConfirmation(),
                 ]),
             ]);
     }

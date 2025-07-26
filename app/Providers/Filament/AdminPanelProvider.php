@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->topNavigation()
             ->renderHook('panels::auth.login.form.after', fn() => view('filament.components.button-google'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
