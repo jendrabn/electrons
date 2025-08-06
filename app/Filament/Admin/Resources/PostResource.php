@@ -97,7 +97,6 @@ class PostResource extends Resource
 
                 Forms\Components\Select::make('tags')
                     ->label('Tags')
-                    ->required()
                     ->multiple()
                     ->relationship('tags')
                     ->options(Tag::all()->pluck('name', 'id'))

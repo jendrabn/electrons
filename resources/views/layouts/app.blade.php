@@ -1,26 +1,79 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!doctype html>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0"
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1"
           name="viewport">
-    <meta content="ie=edge"
-          http-equiv="X-UA-Compatible">
+    {!! SEO::generate() !!}
+
     <title>{{ config('app.name') }}</title>
+
+    <link href="{{ asset('favicon.ico') }}"
+          rel="icon"
+          type="image/x-icon">
+
+    <link href="https://fonts.googleapis.com"
+          rel="preconnect">
+    <link crossorigin
+          href="https://fonts.gstatic.com"
+          rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.7.9/glider.min.css"
+          rel="stylesheet">
 
     @vite('resources/scss/style.scss')
 </head>
 
 <body>
-    @yield('content')
+    <header class="sticky-top">
+        @include('partials.navbar')
+    </header>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
-            integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK"
-            crossorigin="anonymous"></script>
+    <main class="my-5">
+        @yield('content')
+    </main>
+
+    @include('partials.footer')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.7.9/glider.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown-toggle-custom');
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('show.bs.dropdown', function() {
+                    dropdown.querySelector('i').classList.remove('bi-chevron-down');
+                    dropdown.querySelector('i').classList.add('bi-chevron-up');
+                });
+                dropdown.addEventListener('hide.bs.dropdown', function() {
+                    dropdown.querySelector('i').classList.remove('bi-chevron-up');
+                    dropdown.querySelector('i').classList.add('bi-chevron-down');
+                });
+            });
+
+            new Glider(document.querySelector('.glider'), {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                draggable: true,
+                gaps: 10,
+                dots: '#dots',
+                arrows: {
+                    prev: '.glider-prev',
+                    next: '.glider-next'
+                },
+                responsive: [{
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 2.1,
+                        slidesToScroll: 2
+                    }
+                }, ]
+            });
+        });
+    </script>
+    @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>

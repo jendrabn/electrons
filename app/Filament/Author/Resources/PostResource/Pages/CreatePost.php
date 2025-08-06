@@ -47,7 +47,7 @@ class CreatePost extends CreateRecord
     {
         $data['user_id'] = Auth::id();
         $data['slug'] = str()->slug($data['title']);
-        $data['min_read'] = str_word_count($data['content']) / 200;
+        $data['min_read'] = str_word_count(strip_tags($data['content'])) / 200;
         $data['status'] = Status::PENDING->value;
 
         self::$savedTags = $data['tags'] ?? [];

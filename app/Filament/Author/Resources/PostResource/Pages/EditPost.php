@@ -25,7 +25,7 @@ class EditPost extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['slug'] = str()->slug($data['title']);
-        $data['min_read'] = str_word_count($data['content']) / 200;
+        $data['min_read'] = str_word_count(strip_tags($data['content'])) / 200;
         $data['status'] = Status::PENDING->value;
 
         self::$savedTags = $data['tags'] ?? [];

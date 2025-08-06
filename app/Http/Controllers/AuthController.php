@@ -10,11 +10,24 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
+
+    /**
+     * Redirect the user to the Google authentication page.
+     *
+     * @param Request $request
+     * @return void
+     */
     public function authWithGoogle(Request $request)
     {
         return Socialite::driver('google')->redirect();
     }
 
+    /**
+     * Handle the Google authentication callback.
+     *
+     * @param Request $request
+     * @return void
+     */
     public function authWithGoogleCallback(Request $request)
     {
         $user = Socialite::driver('google')->user();

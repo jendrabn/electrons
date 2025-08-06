@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('image');
-            $table->string('image_caption')->nullable();
-            $table->text('content');
+            $table->mediumText('image_caption')->nullable();
+            $table->longText('content');
             $table->integer('min_read')->default(0);
             $table->string('teaser')->nullable();
 
@@ -32,6 +32,8 @@ return new class extends Migration
 
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+
+            $table->fullText(['title', 'slug']);
 
             $table->timestamps();
         });

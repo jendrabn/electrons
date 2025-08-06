@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,6 +28,37 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Paginator::useBootstrapFive();
+
+        View::composer([
+            'layouts.app',
+            'home',
+            'about',
+            'contact',
+            'posts.*',
+        ], function ($view) {
+
+            $categories = Cache::remember('categories', 1800, function () {
+                return \App\Models\Category::withCount(['posts' => function ($query) {
+                    $query->published();
+                }])->get();
+            });
+
+            $tags = Cache::remember('tags', 1800, function () {
+                return \App\Models\Tag::withCount(['posts' => function ($query) {
+                    $query->published();
+                }])->having('posts_count', '>', 0)->get();
+            });
+
+            $recentPosts = Cache::remember('recentPosts', 1800, function () {
+                return \App\Models\Post::query()->recent()->get();
+            });
+
+            $popularPosts = Cache::remember('popularPosts', 1800, function () {
+                return \App\Models\Post::query()->popular()->get();
+            });
+
+            $view->with(compact('categories', 'tags', 'recentPosts', 'popularPosts'));
+        });
     }
 }
