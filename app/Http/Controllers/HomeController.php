@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\PostSection;
 use App\Services\SEO\HomeSEOService;
+use App\Services\SEOService;
 
 class HomeController extends Controller
 {
-    public function __construct(private HomeSEOService $homeSEOService) {}
+    public function __construct(private SEOService $seoService) {}
 
 
     /**
@@ -35,7 +36,7 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-        $this->homeSEOService->setHomepageSEO($newPosts, $sections);
+        $this->seoService->setHomeSEO($newPosts, $sections);
 
         return view('home', compact(
             'sections',

@@ -6,16 +6,14 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
-use App\Services\SEO\PostSEOService;
-use App\Services\SEO\SEOService;
-use Artesaos\SEOTools\Facades\OpenGraph;
-use Artesaos\SEOTools\Facades\SEOTools;
+use App\Services\SEOService;
+use Artesaos\SEOTools\Facades\JsonLd;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function __construct(private PostSEOService $seoService) {}
+    public function __construct(private SEOService $seoService) {}
 
     /**
      * Display a listing of the resource.
