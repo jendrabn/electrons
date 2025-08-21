@@ -23,3 +23,17 @@ Route::middleware(['auth'])->group(function () {
         return response()->download(storage_path('app/audit_logs_export.csv'));
     })->name('audit-logs.export');
 });
+
+
+// Route untuk sitemap (serve static file)
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+
+    if (!file_exists($path)) {
+        abort(404, 'Sitemap not found. Please generate sitemap first.');
+    }
+
+    return response()->file($path, [
+        'Content-Type' => 'application/xml'
+    ]);
+})->name('sitemap');
