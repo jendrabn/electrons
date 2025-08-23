@@ -43,7 +43,7 @@ class AuthorPanelProvider extends PanelProvider
             ->topNavigation()
             ->renderHook('panels::auth.login.form.after', fn() => view('filament.components.button-google'))
             ->colors([
-                'primary' => Color::Emerald,
+                'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Author/Resources'), for: 'App\\Filament\\Author\\Resources')
             ->discoverPages(in: app_path('Filament/Author/Pages'), for: 'App\\Filament\\Author\\Pages')
