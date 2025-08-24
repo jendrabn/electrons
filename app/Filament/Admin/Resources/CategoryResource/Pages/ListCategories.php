@@ -19,7 +19,12 @@ class ListCategories extends ListRecords
                 ->modal()
                 ->modalHeading('Add Category')
                 ->modalSubmitActionLabel('Save')
-                ->mutateFormDataUsing((fn($data) => array_merge($data, ['slug' => str()->slug($data['name'])]))),
+                ->modalCancelActionLabel('Cancel')
+                ->mutateFormDataUsing(function (array $data) {
+                    return array_merge($data, [
+                        'slug' => str($data['name'])->slug(),
+                    ]);
+                }),
         ];
     }
 }

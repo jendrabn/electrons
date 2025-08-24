@@ -54,7 +54,7 @@ class PostResource extends Resource
                     ->schema([Forms\Components\FileUpload::make('image')
                         ->label('Image')
                         ->image()
-                        ->directory('categories')
+                        ->directory('uploads')
                         ->disk('public')
                         ->visibility('public')
                         ->imageEditor()

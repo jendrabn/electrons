@@ -291,7 +291,7 @@ class SEOService
             : ($post->title . ' - ' . $this->siteName);
 
         $description = $this->buildDescription($post->seo_description ?? null, $post->teaser ?? null, $post->content ?? '');
-        $image       = $this->pickImage($post->image ?? null, $post->content ?? '') ?? $this->defaultImage;
+        $image       = $this->pickImage($post->image_url ?? null, $post->content ?? '') ?? $this->defaultImage;
         $thumb       = $image;
 
         $keywordsArr = method_exists($post, 'tags')
