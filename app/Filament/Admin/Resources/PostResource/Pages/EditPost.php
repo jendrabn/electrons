@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources\PostResource\Pages;
 
-use App\Enums\Status;
 use App\Filament\Admin\Resources\PostResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -14,8 +13,11 @@ class EditPost extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
-                ->requiresConfirmation(),
+            Actions\Action::make('backToList')
+                ->label('Back to List')
+                ->icon('heroicon-o-arrow-left')
+                ->color('gray')
+                ->url($this->getResource()::getUrl('index')),
         ];
     }
 
@@ -23,18 +25,19 @@ class EditPost extends EditRecord
     {
         return [
             $this->getSaveFormAction()
-                ->action(function () {
-                    if ($this->record->status === Status::REJECTED->value) {
-                        $this->form->fill([
-                            ...$this->form->getState(),
-                            'slug' => str()->slug($this->form->getState()['title']),
-                            'min_read' => str_word_count($this->form->getState()['content']) / 200,
-                            'status' => Status::PENDING->value
-                        ]);
-                    }
-                    $this->create();
-                }),
-            $this->getCancelFormAction(),
+                ->label('Save Changes')
+                ->icon('heroicon-s-check'),
+            $this->getCancelFormAction()
+                ->label('Cancel')
+                ->icon('heroicon-o-x-mark'),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['slug'] = str()->slug($data['title']);
+        $data['min_read'] = str_word_count($data['content']) / 200;
+
+        return $data;
     }
 }

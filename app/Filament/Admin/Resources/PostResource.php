@@ -30,16 +30,15 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-
                 Forms\Components\Placeholder::make('rejected_reason')
-                    ->label('Rejected Reason')
-                    ->content(fn($record) => $record->rejected_reason)
+                    ->label('Rejected Reason')->content(fn($record) => $record->rejected_reason)
                     ->visible(fn($record) => $record?->status === Status::REJECTED->value),
 
                 Forms\Components\Select::make('category_id')
                     ->label('Category')
                     ->required()
-                    ->options(Category::all()->pluck('name', 'id'))
+                    ->options(Category::all()
+                        ->pluck('name', 'id'))
                     ->hintIcon('heroicon-o-information-circle', 'Select the category that matches the content topic')
                     ->columnSpanFull(),
 
@@ -52,33 +51,25 @@ class PostResource extends Resource
                     ->columnSpanFull(),
 
                 Forms\Components\Fieldset::make('Image')
-                    ->schema([
-                        Forms\Components\FileUpload::make('image')
-                            ->label('Image')
-                            ->image()
-                            ->directory('categories')
-                            ->disk('public')
-                            ->visibility('public')
-                            ->imageEditor()
-                            ->imageEditorAspectRatios([
-                                '16:9',
-                                '4:3',
-                                '1:1',
-                            ])
-                            ->imageCropAspectRatio('16:9')
-                            ->imageResizeTargetWidth('1920')
-                            ->imageResizeTargetHeight('1080')
-                            ->maxSize(2048)
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->helperText('Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
-                            ->hintIcon('heroicon-o-information-circle', 'Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
-                            ->columnSpanFull(),
-
-                        Forms\Components\TextInput::make('image_caption')
-                            ->label('Image Caption')
-                            ->hintIcon('heroicon-o-information-circle', 'Add an image caption to help readers understand the image.')
-                            ->columnSpanFull()
-                    ])
+                    ->schema([Forms\Components\FileUpload::make('image')
+                        ->label('Image')
+                        ->image()
+                        ->directory('categories')
+                        ->disk('public')
+                        ->visibility('public')
+                        ->imageEditor()
+                        ->imageEditorAspectRatios(['16:9', '4:3', '1:1',])
+                        ->imageCropAspectRatio('16:9')
+                        ->imageResizeTargetWidth('1920')
+                        ->imageResizeTargetHeight('1080')
+                        ->maxSize(2048)
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->helperText('Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
+                        ->hintIcon('heroicon-o-information-circle', 'Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
+                        ->columnSpanFull(), Forms\Components\TextInput::make('image_caption')
+                        ->label('Image Caption')
+                        ->hintIcon('heroicon-o-information-circle', 'Add an image caption to help readers understand the image.')
+                        ->columnSpanFull()])
                     ->columnSpanFull(),
 
                 TiptapEditor::make('content')
@@ -97,9 +88,11 @@ class PostResource extends Resource
 
                 Forms\Components\Select::make('tags')
                     ->label('Tags')
+                    ->relationship(name: 'tags', titleAttribute: 'name', modifyQueryUsing: fn(Builder $query) => $query
+                        ->orderBy('name', 'asc'))
                     ->multiple()
-                    ->relationship('tags')
-                    ->options(Tag::all()->pluck('name', 'id'))
+                    ->preload()
+                    ->searchable()
                     ->hintIcon('heroicon-o-information-circle', 'Add Tags (keywords) related to the content. Use the Recommendation button to get automatically recommended keyword Tags')
                     ->columnSpanFull(),
             ]);
@@ -171,13 +164,14 @@ class PostResource extends Resource
 
                 Tables\Columns\TextColumn::make('views_count')
                     ->label('Views Count')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date & Time Created')
                     ->dateTime('d M Y, H:i:s')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
@@ -202,8 +196,8 @@ class PostResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\Action::make('Change Status')
-                        ->label('Change Status')
+                    Tables\Actions\Action::make('changeStatus')
+                        ->label('Change Status ')
                         ->icon('heroicon-o-cog')
                         ->form([
                             Forms\Components\Select::make('status')
@@ -232,18 +226,15 @@ class PostResource extends Resource
                         ->icon('heroicon-o-eye')
                         ->color('info')
                         ->action(function (Post $record) {
-                            // Ambil audit log terakhir dari post ini
                             $latestAudit = $record->audits()
                                 ->orderBy('created_at', 'desc')
                                 ->first();
 
                             if ($latestAudit) {
-                                // Redirect ke ViewAuditLog
                                 return redirect()
                                     ->to(AuditLogResource::getUrl('view', ['record' => $latestAudit]))
                                     ->with('success', 'Viewing latest audit log for this post.');
                             } else {
-                                // Jika tidak ada audit log
                                 Notification::make()
                                     ->title('No audit logs found')
                                     ->body('This post has no audit logs yet.')
@@ -283,5 +274,10 @@ class PostResource extends Resource
     public static function maxContentWidth(): string
     {
         return 'full';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', Status::PENDING->value)->count();
     }
 }

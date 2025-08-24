@@ -17,6 +17,7 @@ class ListPosts extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label('Add Post')
+                ->icon('heroicon-o-plus'),
         ];
     }
 
