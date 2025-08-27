@@ -2,9 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/contact', fn() => view('contact'))->name('contact');
+Route::get('/about', fn() => view('about'))->name('about');
+Route::get('/posts', [App\Http\Controllers\PostController::class, 'index'])->name('posts.index');
+Route::get('/{post:slug}', [App\Http\Controllers\PostController::class, 'show'])->name('posts.show');
+Route::get('/posts/category/{category:slug}', [App\Http\Controllers\PostController::class, 'category'])->name('posts.category');
+Route::get('/posts/tag/{tag:slug}', [App\Http\Controllers\PostController::class, 'tag'])->name('posts.tag');
+Route::get('/posts/author/{user:id}', [App\Http\Controllers\PostController::class, 'author'])->name('posts.author');
 
 
 // Socialite

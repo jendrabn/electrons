@@ -58,7 +58,7 @@ class Post extends Model
     #[Scope]
     public function popular($query): void
     {
-        $query->publised()
+        $query->published()
             ->where('created_at', '>', now()->subWeek())
             ->orderBy('views_count', 'desc')
             ->limit(5);
@@ -67,7 +67,7 @@ class Post extends Model
     #[Scope]
     public function recent($query): void
     {
-        $query->publised()
+        $query->published()
             ->orderBy('id', 'desc')
             ->limit(5);
     }

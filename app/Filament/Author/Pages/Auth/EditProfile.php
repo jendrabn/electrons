@@ -29,7 +29,7 @@ class EditProfile extends BaseEditProfile
                 ->directory('avatars')
                 ->alignCenter(),
             $this->getNameFormComponent()
-                ->label('Full Name'),
+                ->label('Name'),
             TextInput::make('username')
                 ->label('Username')
                 ->nullable()
