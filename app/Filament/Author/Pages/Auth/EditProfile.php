@@ -21,12 +21,13 @@ class EditProfile extends BaseEditProfile
                 ->label('Avatar')
                 ->nullable()
                 ->image()
-                ->imageEditor()
                 ->avatar()
                 ->imageCropAspectRatio(1, 1)
                 ->maxSize(1024)
                 ->maxFiles(1)
-                ->directory('avatars')
+                ->directory('uploads/avatars')
+                ->disk('public')
+                ->visibility('public')
                 ->alignCenter(),
             $this->getNameFormComponent()
                 ->label('Name'),

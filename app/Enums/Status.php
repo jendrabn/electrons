@@ -31,7 +31,7 @@ enum Status: string implements HasLabel, HasColor
             self::PENDING => 'warning',
             self::PUBLISHED => 'success',
             self::REJECTED => 'danger',
-            self::ARCHIVED => 'secondary',
+            self::ARCHIVED => 'gray',
         };
     }
 }

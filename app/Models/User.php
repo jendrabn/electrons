@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -35,6 +36,8 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
         'remember_token',
     ];
 
+    protected $appends = ['avatar_url'];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -53,10 +56,25 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
         return $this->hasMany(Post::class);
     }
 
+    public function avatarUrl(): Attribute
+    {
+        $url = '';
+
+        if ($this->avatar == null) {
+            $url = 'https://ui-avatars.com/api/?name=' . Str::substr($this->name, 0, 1) . '&color=FFFFFF&background=oklch(0.141%200.005%20285.823)';
+        } else if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            $url = $this->avatar;
+        } else {
+            $url = asset('storage/' . $this->avatar);
+        }
+
+        return Attribute::make(
+            get: fn() => $url,
+        );
+    }
+
     public function getFilamentAvatarUrl(): ?string
     {
-        return Storage::disk('public')->exists($this->avatar)
-            ? asset('storage/' . $this->avatar)
-            : 'https://ui-avatars.com/api/?name=' . Str::substr($this->name, 0, 1) . '&color=FFFFFF&background=oklch(0.141%200.005%20285.823)';
+        return $this->avatar_url;
     }
 }

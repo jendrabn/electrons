@@ -23,10 +23,6 @@ class ViewPost extends ViewRecord
                 ->icon('heroicon-o-arrow-left')
                 ->color('gray')
                 ->url($this->getResource()::getUrl('index')),
-            EditAction::make()
-                ->icon('heroicon-o-pencil-square'),
-            DeleteAction::make()
-                ->icon('heroicon-o-trash'),
             Action::make('changeStatus')
                 ->label('Change Status')
                 ->icon('heroicon-o-cog')
@@ -63,7 +59,7 @@ class ViewPost extends ViewRecord
                 ->label('View on Site')
                 ->icon('heroicon-o-arrow-top-right-on-square')
                 ->color('success')
-                // ->url(fn() => route('posts.show', $this->record->slug))
+                ->url(fn() => route('posts.show', $this->record->slug))
                 ->openUrlInNewTab()
                 ->visible(fn() => $this->record->status === Status::PUBLISHED->value),
         ];
