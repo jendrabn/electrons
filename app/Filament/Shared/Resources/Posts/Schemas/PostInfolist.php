@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Schemas;
+namespace App\Filament\Shared\Resources\Posts\Schemas;
 
 use App\Enums\Status;
 use Filament\Infolists\Components\ImageEntry;

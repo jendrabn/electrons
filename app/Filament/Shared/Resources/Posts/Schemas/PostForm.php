@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Schemas;
+namespace App\Filament\Shared\Resources\Posts\Schemas;
 
 use App\Enums\Status;
 use App\Models\Category;
@@ -8,6 +8,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Schema;
 use Malzariey\FilamentLexicalEditor\LexicalEditor;
@@ -18,7 +19,7 @@ class PostForm
     {
         return $schema
             ->components([
-                Placeholder::make('rejected_reason')
+                TextEntry::make('rejected_reason')
                     ->label('Rejected Reason')->content(fn($record) => $record->rejected_reason)
                     ->visible(fn($record) => $record?->status === Status::REJECTED->value),
                 Select::make('category_id')
@@ -31,6 +32,8 @@ class PostForm
                 TextInput::make('title')
                     ->label('Title')
                     ->required()
+                    ->unique(ignoreRecord: true)
+                    ->string()
                     ->minLength(3)
                     ->maxLength(100)
                     ->hintIcon('heroicon-o-information-circle', 'Provide a clear title that represents the content topic (recommended not more than eight words)')

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('min_read')->default(0);
             $table->string('teaser')->nullable();
 
-            $table->enum('status', ['draft', 'pending', 'published', 'rejected', 'archived'])->default('draft');
+            $table->enum('status', ['draft', 'pending', 'published', 'rejected', 'archived'])->default('pending');
             $table->text('rejected_reason')->nullable();
 
             $table->text('edit_reason')->nullable();

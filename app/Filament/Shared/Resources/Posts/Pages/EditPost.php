@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Pages;
+namespace App\Filament\Shared\Resources\Posts\Pages;
 
 use App\Filament\Admin\Resources\Posts\PostResource;
 use Filament\Resources\Pages\EditRecord;

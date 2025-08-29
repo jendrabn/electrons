@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Pages;
+namespace App\Filament\Shared\Resources\Posts\Pages;
 
 use App\Enums\Status;
 use App\Filament\Admin\Resources\Posts\PostResource;
@@ -53,7 +53,8 @@ class ViewPost extends ViewRecord
                         'rejected_reason',
                         'published_at'
                     ]);
-                }),
+                })
+                ->visible(fn() => auth()->user()->isAdmin()),
 
             Action::make('viewOnSite')
                 ->label('View on Site')

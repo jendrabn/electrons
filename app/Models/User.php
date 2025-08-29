@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\Role;
 use App\Traits\Auditable;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
@@ -76,5 +77,15 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar_url;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->getRoleNames()->first() === Role::ADMIN->value;
+    }
+
+    public function isAuthor(): bool
+    {
+        return $this->getRoleNames()->first() === Role::AUTHOR->value;
     }
 }

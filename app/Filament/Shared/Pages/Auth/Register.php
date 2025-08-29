@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Author\Pages\Auth;
+namespace App\Filament\Shared\Pages\Auth;
 
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Schemas\Schema;

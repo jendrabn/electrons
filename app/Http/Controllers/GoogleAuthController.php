@@ -38,7 +38,7 @@ class GoogleAuthController extends Controller
         if ($user->getRoleNames()->first() === 'admin') {
             return redirect()->to(Dashboard::getUrl(panel: 'admin'));
         } else if ($user->getRoleNames()->first() === 'author') {
-            return redirect()->route(Dashboard::getUrl(panel: 'author'));
+            return redirect()->to(Dashboard::getUrl(panel: 'author'));
         } else {
             abort(404);
         }

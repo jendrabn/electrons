@@ -92,8 +92,24 @@
                                  </a>
                              </li>
                              <li>
-                                 <a class="dropdown-item"
-                                    href="{{ auth()->user()->hasRole('admin') ? route('filament.admin.auth.logout') : route('filament.author.auth.logout') }}">Logout</a>
+                                 @php
+                                     $logoutUrl = '';
+
+                                     if (auth()->user()->isAdmin()) {
+                                         $logoutUrl = route('filament.admin.auth.logout');
+                                     } elseif (auth()->user()->isAuthor()) {
+                                         $logoutUrl = route('filament.author.auth.logout');
+                                     }
+                                 @endphp
+
+                                 <form action="{{ $logoutUrl }}"
+                                       method="POST">
+                                     @csrf
+                                     <button class="dropdown-item"
+                                             type="submit">
+                                         Logout
+                                     </button>
+                                 </form>
                              </li>
                          </ul>
                      </li>

@@ -2,8 +2,12 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Author\Pages\Auth\EditProfile;
-use App\Filament\Author\Pages\Auth\Login;
+use App\Filament\Shared\Pages\Auth\EditProfile;
+use App\Filament\Shared\Pages\Auth\Login;
+use App\Filament\Shared\Pages\Auth\Register;
+use App\Filament\Shared\Pages\Auth\ResetPassword;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -12,6 +16,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\FontFamily;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -30,7 +35,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
+            ->registration(Register::class)
             ->profile(EditProfile::class, false)
+            ->passwordReset(ResetPassword::class)
+            ->emailVerification(isRequired: env('FILAMENT_EMAIL_VERIFICATION', false))
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -59,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureUserIsAdmin::class,
             ]);
     }
 }

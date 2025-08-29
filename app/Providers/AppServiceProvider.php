@@ -12,6 +12,11 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    public $singletons = [
+        \Filament\Auth\Http\Responses\LoginResponse::class => \App\Http\Responses\LoginResponse::class,
+    ];
+
     /**
      * Register any application services.
      */

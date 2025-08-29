@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Author\Pages\Auth;
+namespace App\Filament\Shared\Pages\Auth;
 
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Forms\Components\DatePicker;
@@ -8,8 +8,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Pages\Page;
-use Filament\Schemas\Components\Form;
 use Filament\Schemas\Schema;
 
 class EditProfile extends BaseEditProfile

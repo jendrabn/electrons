@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Tables;
+namespace App\Filament\Shared\Resources\Posts\Tables;
 
 use App\Enums\Status;
 use App\Filament\Admin\Resources\AuditLogs\AuditLogResource;
@@ -56,7 +56,8 @@ class PostsTable
                     ->label('Author')
                     ->words(2, '')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->visible(fn() => auth()->user()->isAdmin()),
 
                 TextColumn::make('category.name')
                     ->label('Category')
@@ -142,7 +143,8 @@ class PostsTable
                             }
 
                             $record->update($data);
-                        }),
+                        })
+                        ->visible(fn() => auth()->user()->isAdmin()),
 
                     Action::make('View Data Changes')
                         ->label('View Data Changes')
@@ -165,7 +167,7 @@ class PostsTable
                                     ->send();
                             }
                         })
-                        ->visible(fn(Post $record) => $record->audits()->exists()),
+                        ->visible(fn(Post $record) => $record->audits()->exists() && auth()->user()->isAdmin()),
                 ])
             ])
             ->toolbarActions([

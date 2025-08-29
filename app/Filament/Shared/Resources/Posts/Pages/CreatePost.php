@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Pages;
+namespace App\Filament\Shared\Resources\Posts\Pages;
 
 use App\Enums\Status;
 use App\Filament\Admin\Resources\Posts\PostResource;
@@ -16,7 +16,9 @@ class CreatePost extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            $this->getCreateFormAction()
+            Action::make('create')
+                ->label('Create')
+                ->color('primary')
                 ->action(function () {
                     $this->additionalData = [
                         'status' => Status::PENDING->value,
@@ -24,7 +26,9 @@ class CreatePost extends CreateRecord
 
                     $this->create();
                 }),
-            $this->getCreateAnotherFormAction()
+            Action::make('createAnother')
+                ->label('Create & create another')
+                ->color('gray')
                 ->action(function () {
                     $this->additionalData = [
                         'status' => Status::PENDING->value,
@@ -52,7 +56,8 @@ class CreatePost extends CreateRecord
                     ];
 
                     $this->create();
-                }),
+                })
+                ->visible(fn() => auth()->user()->isAdmin()),
             $this->getCancelFormAction(),
         ];
     }

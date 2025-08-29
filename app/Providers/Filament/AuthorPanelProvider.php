@@ -2,10 +2,11 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Author\Pages\Auth\EditProfile;
-use App\Filament\Author\Pages\Auth\Login;
-use App\Filament\Author\Pages\Auth\Register;
-use App\Filament\Author\Pages\Auth\ResetPassword;
+use App\Filament\Shared\Pages\Auth\EditProfile;
+use App\Filament\Shared\Pages\Auth\Login;
+use App\Filament\Shared\Pages\Auth\Register;
+use App\Filament\Shared\Pages\Auth\ResetPassword;
+use App\Http\Middleware\EnsureUserIsAuthor;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,15 +32,15 @@ class AuthorPanelProvider extends PanelProvider
             ->id('author')
             ->path('author')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->topNavigation()
             ->resourceCreatePageRedirect('index')
             ->login(Login::class)
             ->registration(Register::class)
-            ->passwordReset(ResetPassword::class)
-            ->emailVerification()
             ->profile(EditProfile::class, false)
+            ->passwordReset(ResetPassword::class)
+            ->emailVerification(isRequired: env('FILAMENT_EMAIL_VERIFICATION', false))
             ->renderHook('panels::auth.login.form.after', fn() => view('filament.components.button-google'))
             ->discoverResources(in: app_path('Filament/Author/Resources'), for: 'App\Filament\Author\Resources')
             ->discoverPages(in: app_path('Filament/Author/Pages'), for: 'App\Filament\Author\Pages')
@@ -63,6 +64,7 @@ class AuthorPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureUserIsAuthor::class,
             ]);
     }
 }
