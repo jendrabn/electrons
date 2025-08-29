@@ -15,6 +15,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -123,15 +124,18 @@ class PostsTable
                     Action::make('ChangeStatus')
                         ->label('Change Status ')
                         ->icon('heroicon-o-cog')
-                        ->form([
+                        ->schema([
                             Select::make('status')
                                 ->label('Status')
                                 ->required()
                                 ->options(Status::class)
+                                ->enum(Status::class)
                                 ->live(),
                             Textarea::make('rejected_reason')
                                 ->label('Rejection Reason')
-                                ->visible(fn($get) => $get('status') === Status::REJECTED->value)
+                                ->visible(fn(Get $get) => $get('status') === Status::REJECTED)
+                                ->dehydrated(fn(Get $get) => $get('status') === Status::REJECTED)
+                                ->required(fn(Get $get) => $get('status') === Status::REJECTED)
                         ])
                         ->action(function (Post $record, array $data) {
                             if ($data['status'] !== Status::REJECTED->value) {
