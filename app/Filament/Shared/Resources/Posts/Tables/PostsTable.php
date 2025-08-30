@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -138,16 +139,19 @@ class PostsTable
                                 ->required(fn(Get $get) => $get('status') === Status::REJECTED)
                         ])
                         ->action(function (Post $record, array $data) {
-                            if ($data['status'] !== Status::REJECTED->value) {
+                            $data['status'] = $data['status']->value;
+
+                            if ($data['status'] !== Status::REJECTED) {
                                 $data['rejected_reason'] = null;
                             }
 
-                            if ($data['status'] === Status::PUBLISHED->value) {
+                            if ($data['status'] === Status::PUBLISHED) {
                                 $data['published_at'] = now();
                             }
 
                             $record->update($data);
                         })
+                        ->successNotificationTitle('Status changed successfully')
                         ->visible(fn() => auth()->user()->isAdmin()),
 
                     Action::make('View Data Changes')

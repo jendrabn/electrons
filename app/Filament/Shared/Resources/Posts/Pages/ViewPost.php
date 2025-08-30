@@ -5,15 +5,15 @@ namespace App\Filament\Shared\Resources\Posts\Pages;
 use App\Enums\Status;
 use App\Filament\Admin\Resources\Posts\PostResource;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Utilities\Get;
 
 class ViewPost extends ViewRecord
 {
     protected static string $resource = PostResource::class;
-
 
     protected function getHeaderActions(): array
     {
@@ -27,17 +27,22 @@ class ViewPost extends ViewRecord
                 ->label('Change Status')
                 ->icon('heroicon-o-cog')
                 ->color('info')
-                ->form([
-                    \Filament\Forms\Components\Select::make('status')
+                ->schema([
+                    Select::make('status')
                         ->label('Status')
                         ->required()
                         ->options(Status::class)
+                        ->enum(Status::class)
                         ->live(),
-                    \Filament\Forms\Components\Textarea::make('rejected_reason')
+                    Textarea::make('rejected_reason')
                         ->label('Rejection Reason')
-                        ->visible(fn($get) => $get('status') === Status::REJECTED->value)
+                        ->visible(fn(Get $get) => $get('status') === Status::REJECTED)
+                        ->dehydrated(fn(Get $get) => $get('status') === Status::REJECTED)
+                        ->required(fn(Get $get) => $get('status') === Status::REJECTED)
                 ])
                 ->action(function (array $data) {
+                    $data['status'] = $data['status']->value;
+
                     if ($data['status'] !== Status::REJECTED->value) {
                         $data['rejected_reason'] = null;
                     }
@@ -54,6 +59,7 @@ class ViewPost extends ViewRecord
                         'published_at'
                     ]);
                 })
+                ->successNotificationTitle('Status changed successfully')
                 ->visible(fn() => auth()->user()->isAdmin()),
 
             Action::make('viewOnSite')

@@ -11,6 +11,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Enums\TextSize;
 use Malzariey\FilamentLexicalEditor\LexicalEditor;
 
 class PostForm
@@ -20,14 +23,19 @@ class PostForm
         return $schema
             ->components([
                 TextEntry::make('rejected_reason')
-                    ->label('Rejected Reason')->content(fn($record) => $record->rejected_reason)
-                    ->visible(fn($record) => $record?->status === Status::REJECTED->value),
+                    ->label('Rejected Reason')
+                    ->state(fn($record) => $record->rejected_reason ?? '-')
+                    ->visible(fn($record) => $record?->status === Status::REJECTED->value)
+                    ->color('danger')
+                    ->inlineLabel()
+                    ->columnSpanFull(),
                 Select::make('category_id')
                     ->label('Category')
                     ->required()
                     ->options(Category::all()
                         ->pluck('name', 'id'))
                     ->hintIcon('heroicon-o-information-circle', 'Select the category that matches the content topic')
+                    ->inlineLabel()
                     ->columnSpanFull(),
                 TextInput::make('title')
                     ->label('Title')
@@ -37,27 +45,29 @@ class PostForm
                     ->minLength(3)
                     ->maxLength(100)
                     ->hintIcon('heroicon-o-information-circle', 'Provide a clear title that represents the content topic (recommended not more than eight words)')
+                    ->inlineLabel()
                     ->columnSpanFull(),
-                Fieldset::make('Image')
-                    ->schema([FileUpload::make('image')
-                        ->label('Image')
-                        ->image()
-                        ->directory('uploads')
-                        ->disk('public')
-                        ->visibility('public')
-                        ->imageEditor()
-                        ->imageEditorAspectRatios(['16:9', '4:3', '1:1',])
-                        ->imageCropAspectRatio('16:9')
-                        ->imageResizeTargetWidth('1920')
-                        ->imageResizeTargetHeight('1080')
-                        ->maxSize(2048)
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                        ->helperText('Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
-                        ->hintIcon('heroicon-o-information-circle', 'Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
-                        ->columnSpanFull(), TextInput::make('image_caption')
-                        ->label('Image Caption')
-                        ->hintIcon('heroicon-o-information-circle', 'Add an image caption to help readers understand the image.')
-                        ->columnSpanFull()])
+                FileUpload::make('image')
+                    ->label('Image')
+                    ->image()
+                    ->directory('uploads')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->imageEditorAspectRatios(['16:9', '4:3', '1:1',])
+                    ->imageCropAspectRatio('16:9')
+                    ->imageResizeTargetWidth('1920')
+                    ->imageResizeTargetHeight('1080')
+                    ->maxSize(2048)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->helperText('Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
+                    ->hintIcon('heroicon-o-information-circle', 'Upload images in JPEG, PNG, or WebP format. Maximum 2MB.')
+                    ->inlineLabel()
+                    ->columnSpanFull(),
+                TextInput::make('image_caption')
+                    ->label('Image Caption')
+                    ->hintIcon('heroicon-o-information-circle', 'Add an image caption to help readers understand the image.')
+                    ->inlineLabel()
                     ->columnSpanFull(),
                 LexicalEditor::make('content')
                     ->label('Content')
@@ -70,6 +80,7 @@ class PostForm
                     ->minLength(3)
                     ->maxLength(150)
                     ->hintIcon('heroicon-o-information-circle', 'Provide a summary or essence of the content topic to help readers find it easily in search engines.')
+                    ->inlineLabel()
                     ->columnSpanFull(),
                 Select::make('tags')
                     ->label('Tags')
@@ -79,6 +90,7 @@ class PostForm
                     ->preload()
                     ->searchable()
                     ->hintIcon('heroicon-o-information-circle', 'Add Tags (keywords) related to the content. Use the Recommendation button to get automatically recommended keyword Tags')
+                    ->inlineLabel()
                     ->columnSpanFull(),
             ]);
     }
