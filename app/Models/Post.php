@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
@@ -75,7 +76,12 @@ class Post extends Model
     public function excerpt(): Attribute
     {
         return Attribute::make(
-            get: fn() => Str::limit(strip_tags($this->content), 100, '...'),
+            get: fn() => Str::limit(strip_tags($this->content), 150, '...'),
         );
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 }

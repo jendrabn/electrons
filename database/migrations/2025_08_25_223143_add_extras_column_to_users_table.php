@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('suspend_reason')->nullable();
             $table->timestamp('suspended_at')->nullable();
             $table->timestamp('unsuspended_at')->nullable();
+
+            $table->mediumText('bio')->nullable();
         });
     }
 
