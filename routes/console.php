@@ -9,8 +9,8 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('sitemap:generate')
-    ->dailyAt('02:00')
+Schedule::command('sitemap:generate --gzip')
+    ->everySixHours()
     ->onFailure(function () {
         Log::error('Sitemap generation gagal pada ' . now()->toDateTimeString());
     })
