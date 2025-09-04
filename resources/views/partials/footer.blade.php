@@ -1,10 +1,10 @@
 <footer class="bg-primary text-white py-3">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex flex-column flex-column-reverse flex-lg-row justify-content-lg-between align-items-center">
             <p class="opacity-75 small mb-0">
                 © 2025 All Rights Reserved <span class="fw-bold">{{ config('app.name') }}</span>
             </p>
-            <div class="d-flex just gap-3">
+            <div class="d-flex gap-3 mb-3 mb-lg-0">
                 <a class="text-white fs-5 social-icon"
                    href="#"
                    title="Instagram"><i class="bi bi-instagram"></i></a>

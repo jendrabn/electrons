@@ -26,7 +26,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Route untuk sitemap (serve static file)
-Route::get('/sitemap.xml', function () {
+Route::get('/sitemaps/sitemap.xml', function () {
     $path = public_path('sitemap.xml');
 
     if (!file_exists($path)) {

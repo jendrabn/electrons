@@ -76,7 +76,7 @@ class Post extends Model
     public function excerpt(): Attribute
     {
         return Attribute::make(
-            get: fn() => Str::limit(strip_tags($this->content), 150, '...'),
+            get: fn() => Str::limit(strip_tags($this->content), 130, '...'),
         );
     }
 

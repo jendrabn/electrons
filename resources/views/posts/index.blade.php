@@ -20,14 +20,15 @@
                     </p>
                 @endif
 
-                <div>
+                <div class="row gx-0 gy-2 gy-lg-4">
                     @foreach ($posts as $post)
-                        <div class="mb-3">
+                        <div class="col-12">
                             <x-post-item :post="$post"
                                          type="horizontal" />
                         </div>
                     @endforeach
                 </div>
+
                 <div class="mt-4">
                     {{ $posts->links() }}
                 </div>

@@ -55,7 +55,14 @@ $primary-dark: $gray-800 !default; // Slightly lighter for dark backgrounds
 $surface-dark: $gray-800 !default; // Dark surface color
 $on-surface: $gray-100 !default; // Light text on dark surface
 
-// create gray-100 gray-200 gray-300 gray-400 gray-500 gray-600 gray-700 gray-800 gray-900 using css loop bootstrap
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+$font-family-base: "Poppins", sans-serif;
+
+// Bootstrap
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+// Generate class bg-{color}, text-{color}, border-{color}
 @for $i from 100 through 900 {
     $color: gray-#{$i};
     .bg-#{$color} {
@@ -69,12 +76,40 @@ $on-surface: $gray-100 !default; // Light text on dark surface
     }
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+// generate class fs-{breakpoint}-{n}
+@each $bp, $value in $grid-breakpoints {
+    @media (min-width: #{$value}) {
+        @each $i, $size in $font-sizes {
+            .fs-#{$bp}-#{$i} {
+                font-size: $size !important;
+            }
+        }
+    }
+}
 
-$font-family-base: "Poppins", sans-serif;
+// generate class line-clamp-{n}
+@for $i from 1 through 5 {
+    .line-clamp-#{$i} {
+        display: -webkit-box;
+        -webkit-line-clamp: #{$i};
+        line-clamp: #{$i};
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
 
-// Bootstrap
-@import "../../node_modules/bootstrap/scss/bootstrap";
+.text-shadow {
+    text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.text-shadow-sm {
+    text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.text-shadow-lg {
+    text-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+}
 
 @import "../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 

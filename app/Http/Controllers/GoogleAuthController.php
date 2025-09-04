@@ -22,6 +22,7 @@ class GoogleAuthController extends Controller
             'email' => $user->email
         ], [
             'name' => $user->getName(),
+            'username' => str()->random(8),
             'email' => $user->getEmail(),
             'password' => bcrypt(str()->random(8)),
             'google_id' => $user->getId(),

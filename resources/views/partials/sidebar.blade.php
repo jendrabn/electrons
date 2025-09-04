@@ -51,10 +51,7 @@
                 <h5 class="mb-3 fw-bold">Tag</h5>
                 <div class="d-flex flex-wrap gap-2">
                     @foreach ($tags as $tag)
-                        <a class="badge bg-secondary text-decoration-none fw-normal rounded-0"
-                           href="{{ route('posts.tag', $tag->slug) }}">
-                            {{ $tag->name }}
-                        </a>
+                        <x-badge-tag :tag="$tag" />
                     @endforeach
                 </div>
             </div>

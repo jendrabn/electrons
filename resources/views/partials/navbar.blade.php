@@ -1,19 +1,20 @@
- <nav class="navbar navbar-expand-lg bg-light navbar-light">
+ <nav class="navbar navbar-expand-lg bg-light navbar-light sticky-top">
      <div class="container">
          <a class="navbar-brand"
             href="{{ route('home') }}">
              <img alt="Logo"
-                  src="{{ asset('images/logo.png') }}"
-                  style="max-width: 200px;">
+                  src="{{ asset('images/logo.png') }}">
          </a>
          <button aria-controls="navbarSupportedContent"
                  aria-expanded="false"
                  aria-label="Toggle navigation"
-                 class="navbar-toggler"
+                 class="navbar-toggler border-0"
                  data-bs-target="#navbarSupportedContent"
                  data-bs-toggle="collapse"
                  type="button">
-             <span class="navbar-toggler-icon"></span>
+             <img alt="Toggle icon"
+                  src="{{ asset('images/navbar-toggler-icon.svg') }}">
+
          </button>
          <div class="collapse navbar-collapse"
               id="navbarSupportedContent">
@@ -24,23 +25,23 @@
                         href="{{ route('home') }}">Home</a>
                  </li>
                  <li class="nav-item">
-                     <a class="nav-link {{ request()->is('about') ? 'active' : '' }}"
-                        href="{{ route('about') }}">Tentang</a>
-                 </li>
-                 <li class="nav-item">
                      <a class="nav-link {{ request()->is('posts') ? 'active' : '' }}"
                         href="{{ route('posts.index') }}">Blog</a>
                  </li>
-
-                 <li class="nav-item dropdown">
+                 <li class="nav-item">
+                     <a class="nav-link"
+                        href="#">Forum</a>
+                 </li>
+                 <li class="nav-item dropdown-center">
                      <a aria-expanded="false"
-                        class="nav-link dropdown-toggle"
+                        class="nav-link dropdown-toggle-custom"
                         data-bs-toggle="dropdown"
                         href="#"
                         role="button">
-                         Kategori
+                         Kategori <i class="bi bi-chevron-down"
+                            style="font-size: 14px;"></i>
                      </a>
-                     <ul class="dropdown-menu">
+                     <ul class="dropdown-menu border-primary">
                          @foreach ($categories as $category)
                              <li>
                                  <a class="dropdown-item"
@@ -50,24 +51,20 @@
                          @endforeach
                      </ul>
                  </li>
-                 <li class="nav-item">
-                     <a class="nav-link {{ request()->is('contact') ? 'active' : '' }}"
-                        href="{{ route('contact') }}">Kontak</a>
-                 </li>
              </ul>
 
              <form action="{{ route('posts.index') }}"
-                   class="d-flex w-50 mx-5 search-form"
+                   class="d-flex mb-3 mb-lg-0 search-form"
                    method="GET"
                    role="search">
                  <div class="input-group">
                      <input aria-label="Search"
                             class="form-control"
                             name="search"
-                            placeholder="Cari..."
+                            placeholder="Apa yang kamu cari?"
                             type="search"
                             value="{{ request('search') }}">
-                     <button class="btn btn-default"
+                     <button class="btn btn-default bg-white border border-start-0"
                              type="submit">
                          <i class="bi bi-search"></i>
                      </button>
@@ -75,20 +72,48 @@
              </form>
 
              <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
                  @if (auth()->check())
                      <li class="nav-item dropdown">
-                         <a aria-expanded="false"
-                            class="nav-link dropdown-toggle"
-                            data-bs-toggle="dropdown"
-                            href="#"
-                            role="button">
-                             {{ auth()->user()->name }}
-                         </a>
-                         <ul class="dropdown-menu">
+                         <button aria-expanded="false"
+                                 class="nav-link dropdown-toggle-custom"
+                                 data-bs-toggle="dropdown">
+                             <div class="avatar">
+                                 <img alt="{{ auth()->user()->name }}"
+                                      class="rounded-circle"
+                                      src="{{ auth()->user()->avatar_url }}"
+                                      style="width: 35px; height: 35px;" />
+
+                                 <span class="ms-2">{{ str()->words(auth()->user()->name, 2, '') }}</span>
+                             </div>
+                         </button>
+                         <ul class="dropdown-menu border-primary">
                              <li>
                                  <a class="dropdown-item"
                                     href="{{ auth()->user()->hasRole('admin') ? route('filament.admin.pages.dashboard') : route('filament.author.pages.dashboard') }}">
-                                     Dashboard
+                                     <i class="bi bi-grid me-2"></i> Dashboard
+                                 </a>
+                             </li>
+                             <li>
+                                 @php
+                                     $createPostUrl = '';
+
+                                     if (auth()->user()->isAdmin()) {
+                                         $createPostUrl = App\Filament\Shared\Resources\Posts\PostResource::getUrl(
+                                             'create',
+                                             panel: 'admin',
+                                         );
+                                     } elseif (auth()->user()->isAuthor()) {
+                                         $createPostUrl = App\Filament\Shared\Resources\Posts\PostResource::getUrl(
+                                             'create',
+                                             panel: 'author',
+                                         );
+                                     }
+                                 @endphp
+
+                                 <a class="dropdown-item"
+                                    href="{{ $createPostUrl }}">
+                                     <i class="bi bi-pencil me-2"></i> Buat Tulisan
                                  </a>
                              </li>
                              <li>
@@ -107,7 +132,7 @@
                                      @csrf
                                      <button class="dropdown-item"
                                              type="submit">
-                                         Logout
+                                         <i class="bi bi-box-arrow-right me-2"></i> Logout
                                      </button>
                                  </form>
                              </li>
@@ -123,4 +148,5 @@
              </ul>
          </div>
      </div>
+
  </nav>

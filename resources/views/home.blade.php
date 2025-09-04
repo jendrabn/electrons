@@ -7,7 +7,7 @@
         <div class="glider-contain">
             <div class="glider">
                 @foreach ($newPosts as $post)
-                    <x-post-item :post="$post" />
+                    <x-glider-item :post="$post" />
                 @endforeach
             </div>
 
@@ -41,10 +41,11 @@
                     <a class="fw-semibold text-decoration-none text-primary fs-6"
                        href="{{ route('posts.tag', $section->slug) }}">Lihat Semua</a>
                 </div>
-                <div class="row g-3">
+                <div class="row gx-0 gy-2 gx-lg-4 gy-lg-0">
                     @foreach ($section->posts as $post)
                         <div class="col-md-4">
-                            <x-post-item :post="$post" />
+                            <x-post-item :post="$post"
+                                         type="vertical" />
                         </div>
                     @endforeach
                 </div>
