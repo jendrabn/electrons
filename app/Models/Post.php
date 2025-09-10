@@ -23,6 +23,8 @@ class Post extends Model
 
     protected $appends = ['image_url'];
 
+
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

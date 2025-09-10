@@ -10,7 +10,14 @@
                            src="{{ $post->image_url }}" />
                   </picture>
 
-                  <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
+                  <div class="position-absolute top-0 start-0 w-100 h-100"
+                       style="background: linear-gradient(
+                                            to bottom,
+                                            rgba(0,0,0,0) 0%,
+                                            rgba(0,0,0,.35) 45%,
+                                            rgba(0,0,0,.50) 100%
+                                            ); pointer-events:none;">
+                  </div>
 
                   <div class="position-absolute top-0 start-0 w-100 h-100 p-3 d-flex flex-column justify-content-end">
                       <span class="badge bg-warning rounded-0 align-self-start fw-normal mb-2">
@@ -29,9 +36,7 @@
                               {{ str()->words($post->user->name, 2, '') }}
                           </a>
                           <span class="mx-1">•</span>
-                          {{ $post->created_at->format('d M Y') }}
-                          <span class="mx-1">•</span>
-                          {{ $post->min_read }} min read
+                          {{ $post->created_at->diffForHumans() }}
                       </p>
                   </div>
               </figure>

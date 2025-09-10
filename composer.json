@@ -13,10 +13,12 @@
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
         "malzariey/filament-lexical-editor": "^2.0",
+        "mckenziearts/laravel-notify": "^2.7",
         "spatie/laravel-permission": "^6.21",
         "spatie/laravel-sitemap": "^7.3"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.16",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",

@@ -64,5 +64,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with(compact('categories', 'tags', 'recentPosts', 'popularPosts'));
         });
+
+        Carbon::setLocale(config('app.locale'));
     }
 }
