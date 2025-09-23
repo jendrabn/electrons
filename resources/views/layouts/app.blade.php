@@ -26,6 +26,8 @@
           rel="stylesheet">
 
     @vite('resources/scss/style.scss')
+    @yield('styles')
+    @stack('styles')
 </head>
 
 <body>

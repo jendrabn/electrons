@@ -30,7 +30,7 @@
                  </li>
                  <li class="nav-item">
                      <a class="nav-link"
-                        href="#">Forum</a>
+                        href="{{ route('comunity.index') }}">Komunitas</a>
                  </li>
                  <li class="nav-item dropdown-center">
                      <a aria-expanded="false"
@@ -117,17 +117,7 @@
                                  </a>
                              </li>
                              <li>
-                                 @php
-                                     $logoutUrl = '';
-
-                                     if (auth()->user()->isAdmin()) {
-                                         $logoutUrl = route('filament.admin.auth.logout');
-                                     } elseif (auth()->user()->isAuthor()) {
-                                         $logoutUrl = route('filament.author.auth.logout');
-                                     }
-                                 @endphp
-
-                                 <form action="{{ $logoutUrl }}"
+                                 <form action="{{ route('auth.logout') }}"
                                        method="POST">
                                      @csrf
                                      <button class="dropdown-item"
@@ -141,8 +131,7 @@
                  @else
                      <li class="nav-item">
                          <a class="btn btn-outline-primary rounded-2"
-                            href="{{ route('filament.author.auth.login') }}"
-                            target="_blank">Masuk/Daftar</a>
+                            href="{{ route('auth.show.login') }}">Masuk/Daftar</a>
                      </li>
                  @endif
              </ul>

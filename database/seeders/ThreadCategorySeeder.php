@@ -1,0 +1,120 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\ThreadCategory;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class ThreadCategorySeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $categories = [
+            ['name' => 'Hosting', 'slug' => 'hosting'],
+            ['name' => 'Game', 'slug' => 'game'],
+            ['name' => 'API', 'slug' => 'api'],
+            ['name' => 'Node.js', 'slug' => 'nodejs'],
+            ['name' => 'Design', 'slug' => 'design'],
+            ['name' => 'PHP', 'slug' => 'php'],
+            ['name' => 'Tool', 'slug' => 'tool'],
+            ['name' => 'CSS', 'slug' => 'css'],
+            ['name' => 'HTML', 'slug' => 'html'],
+            ['name' => 'Mobile', 'slug' => 'mobile'],
+            ['name' => 'CodeIgniter', 'slug' => 'codeigniter'],
+            ['name' => 'Angular', 'slug' => 'angular'],
+            ['name' => 'Database', 'slug' => 'database'],
+            ['name' => 'Bebas', 'slug' => 'bebas'],
+            ['name' => 'JavaScript', 'slug' => 'javascript'],
+            ['name' => 'Java', 'slug' => 'java'],
+            ['name' => 'Ruby', 'slug' => 'ruby'],
+            ['name' => 'Laravel', 'slug' => 'laravel'],
+            ['name' => 'WordPress', 'slug' => 'wordpress'],
+            ['name' => 'Android', 'slug' => 'android'],
+            ['name' => 'jQuery', 'slug' => 'jquery'],
+            ['name' => 'AJAX', 'slug' => 'ajax'],
+            ['name' => 'Python', 'slug' => 'python'],
+            ['name' => 'SEO', 'slug' => 'seo'],
+            ['name' => 'ReactJS', 'slug' => 'reactjs'],
+            ['name' => 'Objective-C', 'slug' => 'objective-c'],
+            ['name' => 'C++', 'slug' => 'c-plus-plus'],
+            ['name' => 'C', 'slug' => 'c'],
+            ['name' => 'Swift', 'slug' => 'swift'],
+            ['name' => 'Website', 'slug' => 'website'],
+            ['name' => 'Tips dan Trik', 'slug' => 'tips-dan-trik'],
+            ['name' => 'Vue', 'slug' => 'vue'],
+            ['name' => 'iOS', 'slug' => 'ios'],
+            ['name' => 'Slim', 'slug' => 'slim'],
+            ['name' => 'Sharing', 'slug' => 'sharing'],
+            ['name' => 'React Native', 'slug' => 'react-native'],
+            ['name' => 'Linux', 'slug' => 'linux'],
+            ['name' => 'Progressive Web App', 'slug' => 'progressive-web-app'],
+            ['name' => 'Firebase', 'slug' => 'firebase'],
+            ['name' => 'Redux', 'slug' => 'redux'],
+            ['name' => 'Flask', 'slug' => 'flask'],
+            ['name' => 'MySQL', 'slug' => 'mysql'],
+            ['name' => 'Responsive', 'slug' => 'responsive'],
+            ['name' => 'Nuxt.js', 'slug' => 'nuxtjs'],
+            ['name' => 'MongoDB', 'slug' => 'mongodb'],
+            ['name' => 'Django', 'slug' => 'django'],
+            ['name' => 'Vuex', 'slug' => 'vuex'],
+            ['name' => 'Testing', 'slug' => 'testing'],
+            ['name' => 'UX', 'slug' => 'ux'],
+            ['name' => 'Flutter', 'slug' => 'flutter'],
+            ['name' => 'Go', 'slug' => 'go'],
+            ['name' => 'Kotlin', 'slug' => 'kotlin'],
+            ['name' => 'GraphQL', 'slug' => 'graphql'],
+            ['name' => 'NativeScript', 'slug' => 'nativescript'],
+            ['name' => 'Data Science', 'slug' => 'data-science'],
+            ['name' => 'Next.js', 'slug' => 'nextjs'],
+            ['name' => 'SQLite', 'slug' => 'sqlite'],
+            ['name' => 'Menulis', 'slug' => 'menulis'],
+            ['name' => 'Soft Skill', 'slug' => 'softskill'],
+            ['name' => 'Dokumentasi', 'slug' => 'dokumentasi'],
+            ['name' => 'Machine Learning', 'slug' => 'machine-learning'],
+            ['name' => 'Belajar', 'slug' => 'belajar'],
+            ['name' => 'Text Editor', 'slug' => 'text-editor'],
+            ['name' => 'AWS', 'slug' => 'aws'],
+            ['name' => 'Matematika', 'slug' => 'matematika'],
+            ['name' => 'Static Site', 'slug' => 'static-site'],
+            ['name' => 'Mac', 'slug' => 'mac'],
+            ['name' => 'Server', 'slug' => 'server'],
+            ['name' => 'Hugo', 'slug' => 'hugo'],
+            ['name' => 'Snippet', 'slug' => 'snippet'],
+            ['name' => 'Alpine.js', 'slug' => 'alpinejs'],
+            ['name' => 'Windows', 'slug' => 'windows'],
+            ['name' => 'Algoritma', 'slug' => 'algoritma'],
+            ['name' => 'Lumen', 'slug' => 'lumen'],
+            ['name' => 'Inspirasi', 'slug' => 'inspirasi'],
+            ['name' => 'Keragaman', 'slug' => 'keragaman'],
+            ['name' => 'Produktivitas', 'slug' => 'produktivitas'],
+            ['name' => 'Startup', 'slug' => 'startup'],
+            ['name' => 'Karir', 'slug' => 'karir'],
+            ['name' => 'Komunitas', 'slug' => 'komunitas'],
+            ['name' => 'Sekolah Koding', 'slug' => 'sekolahkoding'],
+            ['name' => 'Wawancara', 'slug' => 'wawancara'],
+            ['name' => 'Git', 'slug' => 'git'],
+            ['name' => 'Artificial Intelligence', 'slug' => 'artificial-intelligence'],
+            ['name' => 'Motivasi', 'slug' => 'motivasi'],
+            ['name' => 'Tailwind CSS', 'slug' => 'tailwindcss'],
+            ['name' => 'Laravel Livewire', 'slug' => 'laravel-livewire'],
+            ['name' => 'Security', 'slug' => 'security'],
+            ['name' => 'Serverless', 'slug' => 'serverless'],
+            ['name' => 'Struktur Data', 'slug' => 'struktur-data'],
+            ['name' => 'Dart', 'slug' => 'dart'],
+            ['name' => 'Open Source', 'slug' => 'opensource'],
+            ['name' => 'TypeScript', 'slug' => 'typescript'],
+            ['name' => 'Analisis', 'slug' => 'analisis'],
+            ['name' => 'Karya', 'slug' => 'karya'],
+            ['name' => 'Inertia.js', 'slug' => 'inertiajs'],
+            ['name' => 'Rust', 'slug' => 'rust'],
+        ];
+
+        foreach ($categories as $category) {
+            ThreadCategory::create($category);
+        }
+    }
+}

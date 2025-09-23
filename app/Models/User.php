@@ -88,4 +88,14 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
     {
         return $this->getRoleNames()->first() === Role::AUTHOR->value;
     }
+
+    public function threads(): HasMany
+    {
+        return $this->hasMany(Thread::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
