@@ -1,6 +1,5 @@
 <?php
 
-use Filament\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,20 +36,44 @@ Route::post('/filament/author/logout', function (Request $request) {
     return redirect()->route('auth.show.login');
 })->middleware('auth')->name('filament.author.auth.logout');
 
+Route::get('/users/{user}', function () {
+    return 'user profile page';
+})->name('users.show');
+
 
 // Community (threads) routes
 Route::prefix('comunity')->name('comunity.')->group(function () {
-    // public listing and show
+    // Public listing
     Route::get('/', [App\Http\Controllers\ThreadController::class, 'index'])->name('index');
-    Route::get('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'show'])->name('show');
 
-    // Protected actions (create/store/edit/update) require authenticated user
-    Route::middleware([Authenticate::class])->group(function () {
+    // Protected actions (create/store/edit/update) — register BEFORE the wildcard show
+    // so static paths like '/create' are not captured by '/{thread:slug}'.
+    Route::middleware(['auth'])->group(function () {
         Route::get('/create', [App\Http\Controllers\ThreadController::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\ThreadController::class, 'store'])->name('store');
         Route::get('/{thread:slug}/edit', [App\Http\Controllers\ThreadController::class, 'edit'])->name('edit');
         Route::put('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'update'])->name('update');
+        Route::delete('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'destroy'])->name('destroy');
+        // Thread comments
+        Route::post('/{thread:slug}/comments', [App\Http\Controllers\ThreadCommentController::class, 'store'])->name('comments.store');
+        Route::get('/{thread:slug}/comments/{comment}/edit', [App\Http\Controllers\ThreadCommentController::class, 'edit'])->name('comments.edit');
+        Route::put('/{thread:slug}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'update'])->name('comments.update');
+        Route::delete('/{thread:slug}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'destroy'])->name('comments.destroy');
+        Route::post('/{thread:slug}/comments/{comment}/like', [App\Http\Controllers\ThreadCommentController::class, 'like'])->name('comments.like');
+        // Thread like (toggle)
+        Route::post('/{thread:slug}/like', [App\Http\Controllers\ThreadController::class, 'like'])->name('like');
+        // Thread bookmark toggle (owner can bookmark/unbookmark via ThreadController)
+        Route::post('/{thread:slug}/bookmark', [App\Http\Controllers\ThreadController::class, 'toggleBookmark'])->name('bookmark');
+        Route::post('/{thread:slug}/comments/{comment}/mark-best', [App\Http\Controllers\ThreadCommentController::class, 'markBest'])->name('comments.markBest');
+        // Toggle thread answered state (only for thread owner)
+        Route::post('/{thread:slug}/toggle-done', [App\Http\Controllers\ThreadController::class, 'toggleDone'])->name('toggleDone');
     });
+
+    // Suggest endpoint for search autocomplete
+    Route::get('/suggest', [App\Http\Controllers\ThreadController::class, 'suggest'])->name('suggest');
+
+    // Public show (wildcard) — keep this last so it doesn't match earlier static routes
+    Route::get('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'show'])->name('show');
 });
 
 // Thread image uploads (publicly addressable route used by the editor)
@@ -70,7 +93,7 @@ Route::get('/posts/author/{user:id}', [App\Http\Controllers\PostController::clas
 // Comments listing (AJAX) and authenticated actions
 Route::get('/comments/{post}', [App\Http\Controllers\PostCommentController::class, 'list'])->name('comments.list');
 
-Route::middleware([Authenticate::class])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::post('/comments', [App\Http\Controllers\PostCommentController::class, 'store'])->name('comments.store');
     Route::put('/comments/{comment}', [App\Http\Controllers\PostCommentController::class, 'update'])->name('comments.update');
     Route::post('/comments/{comment}/reply', [App\Http\Controllers\PostCommentController::class, 'reply'])->name('comments.reply');

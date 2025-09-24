@@ -26,7 +26,7 @@
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"
-                                       for="title">Judul Thread</label>
+                                       for="title">Judul</label>
                                 <input class="form-control @error('title') is-invalid @enderror"
                                        id="title"
                                        maxlength="120"
@@ -58,7 +58,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"
-                                       for="body">Isi Thread</label>
+                                       for="body">Pertanyaan</label>
                                 <div id="quill-editor"
                                      style="height: 220px;"></div>
                                 <input id="body"
@@ -69,8 +69,10 @@
                                 @enderror
                             </div>
                             <div class="d-flex justify-content-end gap-2">
-                                <a class="btn btn-outline-secondary"
-                                   href="{{ route('comunity.index') }}">Batal</a>
+                                <a class="btn btn-default"
+                                   href="{{ route('comunity.index') }}">
+                                    <i class="bi bi-x-circle"></i> Batal
+                                </a>
                                 <button class="btn btn-primary"
                                         type="submit">
                                     <i class="bi bi-send"></i> Posting

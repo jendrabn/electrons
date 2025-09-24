@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Artesaos\SEOTools\Facades\SEOTools;
@@ -58,7 +59,8 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return $this->redirectByRole();
+        // If the user was attempting to visit a protected page, return them there.
+        return redirect()->intended($this->defaultRedirectUrl());
     }
 
     public function login(Request $request): RedirectResponse
@@ -75,7 +77,9 @@ class AuthController extends Controller
 
         if (Auth::attempt([$field => $login, 'password' => $password], $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return $this->redirectByRole();
+
+            // Redirect to intended URL (the page user attempted to access) or default by role
+            return redirect()->intended($this->defaultRedirectUrl());
         }
 
         return back()->withErrors(['login' => 'Credentials not match'])->withInput();
@@ -192,6 +196,26 @@ class AuthController extends Controller
 
         Auth::login($user, true);
 
-        return $this->redirectByRole();
+        // Respect the intended URL if present (user was redirected to login)
+        return redirect()->intended($this->defaultRedirectUrl());
+    }
+
+    /**
+     * Return the default redirect URL after authentication based on user role.
+     */
+    protected function defaultRedirectUrl(): string
+    {
+        $user = Auth::user();
+
+        if ($user && method_exists($user, 'isAdmin') && $user->isAdmin()) {
+            return route('filament.admin.pages.dashboard');
+        }
+
+        // default: author dashboard (or fallback to home if Filament route missing)
+        if (Route::has('filament.author.pages.dashboard')) {
+            return route('filament.author.pages.dashboard');
+        }
+
+        return route('home');
     }
 }

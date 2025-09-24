@@ -22,35 +22,26 @@ class ThreadRequest extends FormRequest
      */
     public function rules(): array
     {
-        switch ($this->method()) {
-            case 'POST':
-                return [
-                    'title' => ['required', 'string', 'max:200'],
-                    'slug' => ['required', 'string', 'max:255', 'unique:threads,slug'],
-                    'body' => ['required', 'string'],
-                    'category_ids' => ['required', 'array'],
-                    'category_ids.*' => ['required', 'numeric', 'exists:categories,id'],
-                ];
-                break;
-
-            case 'PUT':
-                return [
-                    'title' => ['required', 'string', 'max:200'],
-                    'slug' => ['required', 'string', 'max:255', 'unique:threads,slug,' . $this->thread->id],
-                    'body' => ['required', 'string'],
-                    'category_ids' => ['required', 'array'],
-                    'category_ids.*' => ['required', 'numeric', 'exists:categories,id'],
-                ];
-                break;
-
-            default:
-                break;
+        if ($this->routeIs('comunity.store')) {
+            return [
+                'title' => ['required', 'string', 'max:200'],
+                'user_id' => ['required', 'exists:users,id'],
+                'slug' => ['required', 'string', 'max:255', 'unique:threads,slug'],
+                'body' => ['required', 'string'],
+                'category_ids' => ['required', 'array'],
+                'category_ids.*' => ['required', 'numeric', 'exists:categories,id'],
+            ];
+        } else if ($this->routeIs('comunity.update')) {
+            return [
+                'title' => ['required', 'string', 'max:200'],
+                'slug' => ['required', 'string', 'max:255', 'unique:threads,slug,' . $this->thread->id],
+                'body' => ['required', 'string'],
+                'category_ids' => ['required', 'array'],
+                'category_ids.*' => ['required', 'numeric', 'exists:categories,id'],
+            ];
+        } else {
+            return [];
         }
-
-
-        return [
-            //
-        ];
     }
 
 
@@ -59,20 +50,16 @@ class ThreadRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'slug' => $this->uniqueSlug($this->title),
-        ]);
-    }
+        $data = [];
 
-    /**
-     * Handle a passed validation attempt.
-     */
-    protected function passedValidation(): void
-    {
-        if ($this->method() === 'POST') {
-            $this->merge([
-                'user_id' => auth()->user()->id,
-            ]);
+        $data['slug'] = $this->uniqueSlug($this->title);
+
+        if ($this->routeIs('comunity.store')) {
+            $data['user_id'] = auth()->id();
+        }
+
+        if (!empty($data)) {
+            $this->merge($data);
         }
     }
 

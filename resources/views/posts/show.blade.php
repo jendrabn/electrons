@@ -361,15 +361,15 @@
                             <span class="fw-semibold me-2">${comment.user.name}</span>
                             <span class="text-muted small">${comment.created_at_human}</span>
                             ${userId === comment.user_id ? `
-                                <div class="ms-auto d-flex gap-2">
-                                    <button class="btn btn-link btn-sm p-0 text-decoration-none edit-btn" data-id="${comment.id}" type="button">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn" data-id="${comment.id}" type="button">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            ` : ''}
+                                    <div class="ms-auto d-flex gap-2">
+                                        <button class="btn btn-link btn-sm p-0 text-decoration-none edit-btn" data-id="${comment.id}" type="button">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn" data-id="${comment.id}" type="button">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
 
                         </div>
                         <div class="mb-2">${comment.body}</div>
@@ -382,10 +382,10 @@
                                 <span class="like-count">${comment.likes_count}</span>
                             </button>
                             ${comment.replies.length > 0 ? `
-                                <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#repliesCollapse${comment.id}">
-                                    <i class="bi bi-chat-left-text"></i> Lihat ${comment.replies.length} Balasan
-                                </button>
-                            ` : ''}
+                                    <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#repliesCollapse${comment.id}">
+                                        <i class="bi bi-chat-left-text"></i> Lihat ${comment.replies.length} Balasan
+                                    </button>
+                                ` : ''}
                         </div>
                         <form class="reply-form mt-3 d-none" data-id="${comment.id}">
                             <textarea class="form-control mb-2" name="body" rows="2" placeholder="Tulis balasan..." required></textarea>
@@ -393,14 +393,14 @@
                         </form>
                         <div class="collapse mt-2" id="repliesCollapse${comment.id}">
                             ${comment.replies.map(reply => `
-                                <div class="comment reply mt-3 ms-4" data-id="${reply.id}">
-                                    <div class="d-flex align-items-start">
-                                        <img alt="${reply.user.name}" class="rounded-circle me-2" src="${reply.user.avatar_url}" style="width:32px;height:32px;object-fit:cover;">
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <span class="fw-semibold me-2">${reply.user.name}</span>
-                                                <span class="text-muted small">${reply.created_at_human}</span>
-                                                ${userId === reply.user_id ? `
+                                    <div class="comment reply mt-3 ms-4" data-id="${reply.id}">
+                                        <div class="d-flex align-items-start">
+                                            <img alt="${reply.user.name}" class="rounded-circle me-2" src="${reply.user.avatar_url}" style="width:32px;height:32px;object-fit:cover;">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <span class="fw-semibold me-2">${reply.user.name}</span>
+                                                    <span class="text-muted small">${reply.created_at_human}</span>
+                                                    ${userId === reply.user_id ? `
                                             <div class="ms-auto d-flex gap-2">
                                                 <button class="btn btn-link btn-sm p-0 text-decoration-none edit-btn" data-id="${reply.id}" type="button">
                                                     <i class="bi bi-pencil"></i>
@@ -410,18 +410,18 @@
                                                 </button>
                                             </div>
                                         ` : ''}
-                                            </div>
-                                            <div class="mb-2">${reply.body}</div>
-                                            <div class="d-flex align-items-center gap-3">
-                                                <button class="btn btn-link btn-sm p-0 text-decoration-none like-btn" data-id="${reply.id}" type="button">
-                                                    <i class="bi ${reply.liked ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up'}"></i>
-                                                    <span class="like-count">${reply.likes_count}</span>
-                                                </button>
+                                                </div>
+                                                <div class="mb-2">${reply.body}</div>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <button class="btn btn-link btn-sm p-0 text-decoration-none like-btn" data-id="${reply.id}" type="button">
+                                                        <i class="bi ${reply.liked ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up'}"></i>
+                                                        <span class="like-count">${reply.likes_count}</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            `).join('')}
+                                `).join('')}
                         </div>
                     </div>
                 </div>

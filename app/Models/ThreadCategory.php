@@ -15,6 +15,6 @@ class ThreadCategory extends Model
 
     public function threads(): BelongsToMany
     {
-        return $this->belongsToMany(Thread::class);
+        return $this->belongsToMany(Thread::class, 'thread_category');
     }
 }

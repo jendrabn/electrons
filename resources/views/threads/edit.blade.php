@@ -6,7 +6,7 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white">
-                        <h4 class="mb-0 fw-bold">Buat Thread Baru</h4>
+                        <h4 class="mb-0 fw-bold">Edit Thread</h4>
                     </div>
                     <div class="card-body">
                         {{-- RULE MEMBUAT THREAD --}}
@@ -20,13 +20,14 @@
                                 <li>Gunakan bahasa yang sopan dan mudah dipahami.</li>
                             </ul>
                         </div>
-                        <form action="{{ route('comunity.store') }}"
+                        <form action="{{ route('comunity.update', $thread->slug) }}"
                               id="threadForm"
                               method="POST">
                             @csrf
+                            @method('PUT')
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"
-                                       for="title">Judul Thread</label>
+                                       for="title">Judul</label>
                                 <input class="form-control @error('title') is-invalid @enderror"
                                        id="title"
                                        maxlength="120"
@@ -34,7 +35,7 @@
                                        placeholder="Judul thread..."
                                        required
                                        type="text"
-                                       value="{{ old('title') }}">
+                                       value="{{ old('title', $thread->title) }}">
                                 @error('title')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -47,8 +48,12 @@
                                         multiple
                                         name="category_ids[]"
                                         required>
+                                    @php
+                                        $selected = old('category_ids', $thread->categories->pluck('id')->toArray());
+                                    @endphp
                                     @foreach ($categories as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
+                                        <option @if (in_array($id, $selected)) selected @endif
+                                                value="{{ $id }}">{{ $name }}</option>
                                     @endforeach
                                 </select>
                                 <small class="text-muted">Pilih satu atau lebih kategori</small>
@@ -58,7 +63,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"
-                                       for="body">Isi Thread</label>
+                                       for="body">Pertanyaan</label>
                                 <div id="quill-editor"
                                      style="height: 220px;"></div>
                                 <input id="body"
@@ -69,11 +74,13 @@
                                 @enderror
                             </div>
                             <div class="d-flex justify-content-end gap-2">
-                                <a class="btn btn-outline-secondary"
-                                   href="{{ route('comunity.index') }}">Batal</a>
+                                <a class="btn btn-light"
+                                   href="{{ route('comunity.show', $thread->slug) }}">
+                                    <i class="bi bi-x-circle"></i> Batal
+                                </a>
                                 <button class="btn btn-primary"
                                         type="submit">
-                                    <i class="bi bi-send"></i> Posting
+                                    <i class="bi bi-save"></i> Simpan Perubahan
                                 </button>
                             </div>
                         </form>
@@ -118,7 +125,14 @@
                 }
             });
 
-            // Submit form: ambil isi Quill ke input hidden
+            // Populate editor with existing thread body (use JSON encoding to avoid HTML-escaping issues)
+            const initialBody = {!! json_encode(old('body', $thread->body ?? '')) !!};
+            if (initialBody) {
+                quill.clipboard.dangerouslyPasteHTML(initialBody);
+            }
+
+            // Ensure hidden input contains editor HTML on load and before submit
+            document.getElementById('body').value = quill.root.innerHTML;
             document.getElementById('threadForm').addEventListener('submit', function(e) {
                 document.getElementById('body').value = quill.root.innerHTML;
             });

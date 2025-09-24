@@ -25,6 +25,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.7.9/glider.min.css"
           rel="stylesheet">
 
+    <meta content="{{ csrf_token() }}"
+          name="csrf-token">
+
     @vite('resources/scss/style.scss')
     @yield('styles')
     @stack('styles')
