@@ -590,6 +590,7 @@
             modal.show();
         });
 
+
         document.getElementById('threadDeleteConfirmBtn')?.addEventListener('click', function(e) {
             const modalEl = document.getElementById('threadDeleteModal');
             const url = modalEl.dataset.url;
@@ -819,172 +820,176 @@
 
         // Toggle thread 'is_done' via AJAX
         document.getElementById('threadToggleDoneBtn')?.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const btn = e.currentTarget;
-                    const url = btn.dataset.url;
+
+            e.preventDefault();
+            const btn = e.currentTarget;
+            const url = btn.dataset.url;
+            if (!url) return;
+
+            btn.disabled = true;
+
+            fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(r => r.json()).then(data => {
+                if (data && data.success) {
+                    const isDone = !!data.is_done;
+                    btn.textContent = isDone ? 'Buka Kembali' : 'Tandai Sudah Terjawab';
+
+                    // hide or show the create form / alert
+                    const form = document.getElementById('comment-form');
+                    if (form) form.style.display = isDone ? 'none' : '';
+
+                    // optionally insert/remove the alert that indicates answered
+                    let alertEl = document.querySelector('.thread-answered-alert');
+                    if (repliesContainer) {
+                        // if replies container is collapsed and hidden, show it
+                        const inst = bootstrap.Collapse.getOrCreateInstance(
+                            repliesContainer);
+                        inst.show();
+                        // append the new reply HTML
+                        const wrapper = document.createElement('div');
+                        wrapper.innerHTML = data.html;
+                        repliesContainer.appendChild(wrapper.firstElementChild);
+                    } else {
+                        // create the container and toggle button if missing (idempotent)
+                        const parent = document.querySelector('#comment-' + parentId +
+                            ' .d-flex.align-items-center.gap-3');
+                        // only create toggle button if one doesn't already exist
+                        const existingToggle = document.querySelector('[data-bs-target="#repliesCollapse' +
+                            parentId + '"]');
+                        if (parent && !existingToggle) {
+                            const btn = document.createElement('button');
+                            btn.className = 'btn btn-link btn-sm p-0 text-decoration-none';
+                            btn.type = 'button';
+                            btn.setAttribute('data-bs-target', '#repliesCollapse' + parentId);
+                            btn.setAttribute('data-bs-toggle', 'collapse');
+                            btn.setAttribute('aria-expanded', 'false');
+                            btn.setAttribute('aria-controls', 'repliesCollapse' + parentId);
+                            btn.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat 1 Balasan';
+                            parent.appendChild(btn);
+                        }
+
+                        // create the collapse container if it doesn't exist
+                        let repliesDiv = document.getElementById('repliesCollapse' + parentId);
+                        if (!repliesDiv) {
+                            const replyCollapseEl = document.getElementById('replyCollapse' + parentId);
+                            repliesDiv = document.createElement('div');
+                            repliesDiv.className = 'collapse mt-2';
+                            repliesDiv.id = 'repliesCollapse' + parentId;
+                            // append the new reply HTML into the replies container
+                            const wrapper = document.createElement('div');
+                            wrapper.innerHTML = data.html;
+                            if (wrapper.firstElementChild) repliesDiv.appendChild(wrapper
+                                .firstElementChild);
+
+                            if (replyCollapseEl && replyCollapseEl.parentNode) {
+                                replyCollapseEl.parentNode.insertBefore(repliesDiv, replyCollapseEl
+                                    .nextSibling);
+                            } else {
+                                const commentEl = document.getElementById('comment-' + parentId);
+                                if (commentEl) commentEl.appendChild(repliesDiv);
+                            }
+
+                            // show the newly created replies container
+                            const inst2 = bootstrap.Collapse.getOrCreateInstance(repliesDiv);
+                            inst2.show();
+                        }
+                    }
+
+                    // update the 'Lihat X Balasan' button text if count provided
+                    if (typeof data.count !== 'undefined' && data.parent_id) {
+                        const toggleBtns = document.querySelectorAll('[data-bs-target="#repliesCollapse' +
+                            data.parent_id + '"]');
+                        toggleBtns.forEach(function(toggle) {
+                            toggle.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat ' + data
+                                .count + ' Balasan';
+                        });
+                    }
+                    const url = likeBtn.getAttribute('data-url');
+                    const id = likeBtn.getAttribute('data-id');
                     if (!url) return;
 
-                    btn.disabled = true;
                     fetch(url, {
-                            method: 'POST',
-                            credentials: 'same-origin',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute(
                                     'content'),
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    }).then(response => response.json()).then(data => {
+                        if (data.success) {
+                            const icon = likeBtn.querySelector('i.bi');
+                            const count = likeBtn.querySelector('.thread-like-count');
+                            if (data.liked) {
+                                icon.classList.remove('bi-hand-thumbs-up');
+                                icon.classList.add('bi-hand-thumbs-up-fill', 'text-primary');
+                            } else {
+                                icon.classList.remove('bi-hand-thumbs-up-fill', 'text-primary');
+                                icon.classList.add('bi-hand-thumbs-up');
                             }
-                        }).then(r => r.json()).then(data => {
-                                if (data && data.success) {
-                                    const isDone = !!data.is_done;
-                                    btn.textContent = isDone ? 'Buka Kembali' : 'Tandai Sudah Terjawab';
+                            if (count) count.textContent = data.count;
+                        }
+                    }).catch(err => {
+                        console.error('Thread like failed', err);
+                        showToast('danger', 'Gagal meng-update like thread');
+                    });
+                };
+            });
+        });
 
-                                    // hide or show the create form / alert
-                                    const form = document.getElementById('comment-form');
-                                    if (form) form.style.display = isDone ? 'none' : '';
+        // AJAX bookmark handler for thread bookmark button
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.thread-bookmark-btn');
+            if (!btn) return;
+            e.preventDefault();
 
-                                    // optionally insert/remove the alert that indicates answered
-                                    let alertEl = document.querySelector('.thread-answered-alert');
-                                    if (repliesContainer) {
-                                        // if replies container is collapsed and hidden, show it
-                                        const inst = bootstrap.Collapse.getOrCreateInstance(
-                                            repliesContainer);
-                                        inst.show();
-                                        // append the new reply HTML
-                                        const wrapper = document.createElement('div');
-                                        wrapper.innerHTML = data.html;
-                                        repliesContainer.appendChild(wrapper.firstElementChild);
-                                    } else {
-                                        // create the container and toggle button if missing (idempotent)
-                                        const parent = document.querySelector('#comment-' + parentId +
-                                            ' .d-flex.align-items-center.gap-3');
-                                        // only create toggle button if one doesn't already exist
-                                        const existingToggle = document.querySelector('[data-bs-target="#repliesCollapse' +
-                                            parentId + '"]');
-                                        if (parent && !existingToggle) {
-                                            const btn = document.createElement('button');
-                                            btn.className = 'btn btn-link btn-sm p-0 text-decoration-none';
-                                            btn.type = 'button';
-                                            btn.setAttribute('data-bs-target', '#repliesCollapse' + parentId);
-                                            btn.setAttribute('data-bs-toggle', 'collapse');
-                                            btn.setAttribute('aria-expanded', 'false');
-                                            btn.setAttribute('aria-controls', 'repliesCollapse' + parentId);
-                                            btn.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat 1 Balasan';
-                                            parent.appendChild(btn);
-                                        }
+            const url = btn.getAttribute('data-url');
+            if (!url) return;
 
-                                        // create the collapse container if it doesn't exist
-                                        let repliesDiv = document.getElementById('repliesCollapse' + parentId);
-                                        if (!repliesDiv) {
-                                            const replyCollapseEl = document.getElementById('replyCollapse' + parentId);
-                                            repliesDiv = document.createElement('div');
-                                            repliesDiv.className = 'collapse mt-2';
-                                            repliesDiv.id = 'repliesCollapse' + parentId;
-                                            // append the new reply HTML into the replies container
-                                            const wrapper = document.createElement('div');
-                                            wrapper.innerHTML = data.html;
-                                            if (wrapper.firstElementChild) repliesDiv.appendChild(wrapper
-                                                .firstElementChild);
-
-                                            if (replyCollapseEl && replyCollapseEl.parentNode) {
-                                                replyCollapseEl.parentNode.insertBefore(repliesDiv, replyCollapseEl
-                                                    .nextSibling);
-                                            } else {
-                                                const commentEl = document.getElementById('comment-' + parentId);
-                                                if (commentEl) commentEl.appendChild(repliesDiv);
-                                            }
-
-                                            // show the newly created replies container
-                                            const inst2 = bootstrap.Collapse.getOrCreateInstance(repliesDiv);
-                                            inst2.show();
-                                        }
-                                    }
-
-                                    // update the 'Lihat X Balasan' button text if count provided
-                                    if (typeof data.count !== 'undefined' && data.parent_id) {
-                                        const toggleBtns = document.querySelectorAll('[data-bs-target="#repliesCollapse' +
-                                            data.parent_id + '"]');
-                                        toggleBtns.forEach(function(toggle) {
-                                            toggle.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat ' + data
-                                                .count + ' Balasan';
-                                        });
-                                    }
-                                    const url = likeBtn.getAttribute('data-url');
-                                    const id = likeBtn.getAttribute('data-id');
-                                    if (!url) return;
-
-                                    fetch(url, {
-                                        method: 'POST',
-                                        credentials: 'same-origin',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                                .getAttribute(
-                                                    'content'),
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Accept': 'application/json'
-                                        },
-                                        body: JSON.stringify({})
-                                    }).then(response => response.json()).then(data => {
-                                        if (data.success) {
-                                            const icon = likeBtn.querySelector('i.bi');
-                                            const count = likeBtn.querySelector('.thread-like-count');
-                                            if (data.liked) {
-                                                icon.classList.remove('bi-hand-thumbs-up');
-                                                icon.classList.add('bi-hand-thumbs-up-fill', 'text-primary');
-                                            } else {
-                                                icon.classList.remove('bi-hand-thumbs-up-fill', 'text-primary');
-                                                icon.classList.add('bi-hand-thumbs-up');
-                                            }
-                                            if (count) count.textContent = data.count;
-                                        }
-                                    }).catch(err => {
-                                        console.error('Thread like failed', err);
-                                        showToast('danger', 'Gagal meng-update like thread');
-                                    });
-                                });
-
-                            // AJAX bookmark handler for thread bookmark button
-                            document.addEventListener('click', function(e) {
-                                const btn = e.target.closest('.thread-bookmark-btn');
-                                if (!btn) return;
-                                e.preventDefault();
-
-                                const url = btn.getAttribute('data-url');
-                                if (!url) return;
-
-                                fetch(url, {
-                                    method: 'POST',
-                                    credentials: 'same-origin',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                            .getAttribute(
-                                                'content'),
-                                        'X-Requested-With': 'XMLHttpRequest',
-                                        'Accept': 'application/json'
-                                    },
-                                    body: JSON.stringify({})
-                                }).then(r => r.json()).then(data => {
-                                    if (data && data.success) {
-                                        const icon = btn.querySelector('i.bi');
-                                        if (data.bookmarked) {
-                                            icon.classList.remove('bi-bookmark');
-                                            icon.classList.add('bi-bookmark-fill', 'text-primary');
-                                        } else {
-                                            icon.classList.remove('bi-bookmark-fill', 'text-primary');
-                                            icon.classList.add('bi-bookmark');
-                                        }
-                                        showToast('success', data.bookmarked ? 'Thread disimpan.' :
-                                            'Bookmark dihapus.');
-                                    } else if (data && data.message) {
-                                        showToast('danger', data.message);
-                                    }
-                                }).catch(err => {
-                                    console.error('Bookmark request failed', err);
-                                    showToast('danger', 'Gagal menyimpan bookmark');
-                                });
-                            });
+            fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                        .getAttribute(
+                            'content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({})
+            }).then(r => r.json()).then(data => {
+                if (data && data.success) {
+                    const icon = btn.querySelector('i.bi');
+                    if (data.bookmarked) {
+                        icon.classList.remove('bi-bookmark');
+                        icon.classList.add('bi-bookmark-fill', 'text-primary');
+                    } else {
+                        icon.classList.remove('bi-bookmark-fill', 'text-primary');
+                        icon.classList.add('bi-bookmark');
+                    }
+                    showToast('success', data.bookmarked ? 'Thread disimpan.' :
+                        'Bookmark dihapus.');
+                } else if (data && data.message) {
+                    showToast('danger', data.message);
+                }
+            }).catch(err => {
+                console.error('Bookmark request failed', err);
+                showToast('danger', 'Gagal menyimpan bookmark');
+            });
+        });
     </script>
 
     <script>
