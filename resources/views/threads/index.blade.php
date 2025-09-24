@@ -22,7 +22,7 @@
                                              width="32">
                                         <div>
                                             <div class="fw-medium">{{ $user->name }}</div>
-                                            <small class="text-muted">{{ '@' . $user->username }}</small>
+                                            <small class="text-info">{{ '@' . $user->username }}</small>
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +135,7 @@
                                 <div class="flex-grow-1">
                                     <h5 class="card-title mb-1">
                                         <a class="text-decoration-none"
-                                           href="{{ route('comunity.show', $thread->slug) }}">
+                                           href="{{ route('comunity.show', $thread->id) }}">
                                             {{ $thread->title }}
                                         </a>
                                         @if (!empty($thread->is_done))
@@ -148,8 +148,8 @@
 
                                     {{-- User Info & Time --}}
                                     <div class="d-flex gap-2 align-items-center mb-2">
-                                        <span class="fw-medium">{{ $thread->user->name }}</span>
-                                        <small class="text-muted">{{ '@' . $thread->user->username }}</small>
+                                        <a class="text-primary fw-medium text-decoration-none"
+                                           href="{{ route('users.show', $thread->user->id) }}">{{ '@' . $thread->user->username }}</a>
                                         <small class="text-muted">•</small>
                                         <small class="text-muted">
                                             {{ $thread->updated_at->diffForHumans() }}

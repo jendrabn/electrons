@@ -1,15 +1,14 @@
-<form action="{{ route('comunity.comments.update', [$comment->thread->id, $comment->id]) }}"
-      id="comment-edit-form"
+<form action="{{ route('comunity.comments.replies.update', [$comment->thread->id, $comment->id, $reply->id]) }}"
+      id="reply-edit-form"
       method="POST">
     @csrf
     @method('PUT')
 
     <div class="mb-3">
         <textarea class="form-control"
-                  id="edit-body-{{ $comment->id }}"
                   name="body"
                   required
-                  rows="6">{{ old('body', $comment->body) }}</textarea>
+                  rows="4">{{ old('body', $reply->body) }}</textarea>
     </div>
 
     <div class="d-flex justify-content-end gap-2">

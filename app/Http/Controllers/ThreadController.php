@@ -126,7 +126,7 @@ class ThreadController extends Controller
 
         $thread->categories()->attach($data['category_ids'] ?? []);
 
-        return redirect()->route('comunity.show', $thread->slug);
+        return redirect()->route('comunity.show', $thread->id)->with('status', 'Thread berhasil dibuat.');
     }
 
     public function show(Thread $thread)
@@ -148,8 +148,8 @@ class ThreadController extends Controller
         $description = Str::limit(strip_tags($thread->body), 160);
         SEOTools::setTitle($title);
         SEOTools::setDescription($description ?: config('app.name'));
-        SEOTools::setCanonical(route('comunity.show', $thread->slug));
-        SEOTools::opengraph()->setUrl(route('comunity.show', $thread->slug));
+        SEOTools::setCanonical(route('comunity.show', $thread->id));
+        SEOTools::opengraph()->setUrl(route('comunity.show', $thread->id));
         SEOTools::opengraph()->addProperty('type', 'article');
         SEOTools::opengraph()->setTitle($title);
         SEOTools::opengraph()->setDescription($description);
@@ -172,8 +172,8 @@ class ThreadController extends Controller
         $title = 'Edit: ' . $thread->title . ' - ' . config('app.name');
         SEOTools::setTitle($title);
         SEOTools::setDescription('Edit thread Anda — pastikan judul dan konten jelas agar komunitas dapat membantu.');
-        SEOTools::setCanonical(route('comunity.edit', $thread->slug));
-        SEOTools::opengraph()->setUrl(route('comunity.edit', $thread->slug));
+        SEOTools::setCanonical(route('comunity.edit', $thread->id));
+        SEOTools::opengraph()->setUrl(route('comunity.edit', $thread->id));
 
         return view('threads.edit', compact('thread', 'categories'));
     }
@@ -188,7 +188,7 @@ class ThreadController extends Controller
 
         $thread->categories()->sync($data['category_ids'] ?? []);
 
-        return redirect()->route('comunity.show', $thread->slug);
+        return redirect()->route('comunity.show', $thread->id)->with('status', 'Thread berhasil diperbarui.');
     }
 
     public function destroy(Thread $thread)
@@ -197,7 +197,7 @@ class ThreadController extends Controller
 
         $thread->delete();
 
-        return redirect()->route('comunity.index');
+        return redirect()->route('comunity.index')->with('status', 'Thread dihapus.');
     }
 
     public function uploadImage(Request $request, Thread $thread)
@@ -274,7 +274,7 @@ class ThreadController extends Controller
             ]);
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('status', $bookmarked ? 'Thread ditandai sebagai favorit.' : 'Thread dihapus dari favorit.');
     }
 
     /**
@@ -315,7 +315,7 @@ class ThreadController extends Controller
             ]);
         }
 
-        return back();
+        return back()->with('status', $liked ? 'Thread disukai.' : 'Thread tidak disukai.');
     }
 
     /**
@@ -354,7 +354,7 @@ class ThreadController extends Controller
             ->get();
 
         $suggestions = $results->map(function ($t) {
-            return ['id' => $t->id, 'title' => $t->title, 'url' => route('comunity.show', $t->slug)];
+            return ['id' => $t->id, 'title' => $t->title, 'url' => route('comunity.show', $t->id)];
         })->values();
 
         return response()->json(['suggestions' => $suggestions]);

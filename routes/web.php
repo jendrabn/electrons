@@ -16,6 +16,53 @@ use Illuminate\Support\Facades\Auth;
 // Home
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+
+// Community (threads) routes
+Route::prefix('comunity')->name('comunity.')->group(function () {
+    // Public listing
+    Route::get('/', [App\Http\Controllers\ThreadController::class, 'index'])->name('index');
+
+    // Protected actions (create/store/edit/update) — register BEFORE the wildcard show
+    // so static paths like '/create' are not captured by the wildcard show route.
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/create', [App\Http\Controllers\ThreadController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\ThreadController::class, 'store'])->name('store');
+        Route::get('/{thread}/edit', [App\Http\Controllers\ThreadController::class, 'edit'])->name('edit');
+        Route::put('/{thread}', [App\Http\Controllers\ThreadController::class, 'update'])->name('update');
+        Route::delete('/{thread}', [App\Http\Controllers\ThreadController::class, 'destroy'])->name('destroy');
+        // Thread comments (use slug for thread parameter so URLs using slugs match the edit/show patterns)
+        Route::post('/{thread}/comments', [App\Http\Controllers\ThreadCommentController::class, 'store'])->name('comments.store');
+        Route::get('/{thread}/comments/{comment}/edit', [App\Http\Controllers\ThreadCommentController::class, 'edit'])->name('comments.edit');
+        Route::put('/{thread}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'update'])->name('comments.update');
+        Route::delete('/{thread}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'destroy'])->name('comments.destroy');
+        Route::post('/{thread}/comments/{comment}/like', [App\Http\Controllers\ThreadCommentController::class, 'like'])->name('comments.like');
+
+        // Replies: actions on replies (separate controller) - parent comment id present in URL
+        // Use the thread slug parameter so edit URLs generated with slugs will match.
+        Route::post('/{thread}/comments/{comment}/replies', [App\Http\Controllers\ThreadReplyController::class, 'store'])->name('comments.replies.store');
+        Route::get('/{thread}/comments/{comment}/replies/{reply}/edit', [App\Http\Controllers\ThreadReplyController::class, 'edit'])->name('comments.replies.edit');
+        Route::put('/{thread}/comments/{comment}/replies/{reply}', [App\Http\Controllers\ThreadReplyController::class, 'update'])->name('comments.replies.update');
+        Route::delete('/{thread}/comments/{comment}/replies/{reply}', [App\Http\Controllers\ThreadReplyController::class, 'destroy'])->name('comments.replies.destroy');
+        Route::post('/{thread}/comments/{comment}/replies/{reply}/like', [App\Http\Controllers\ThreadReplyController::class, 'like'])->name('comments.replies.like');
+        // Thread like (toggle)
+        Route::post('/{thread}/like', [App\Http\Controllers\ThreadController::class, 'like'])->name('like');
+        // Thread bookmark toggle (owner can bookmark/unbookmark via ThreadController)
+        Route::post('/{thread}/bookmark', [App\Http\Controllers\ThreadController::class, 'toggleBookmark'])->name('bookmark');
+        Route::post('/{thread}/comments/{comment}/mark-best', [App\Http\Controllers\ThreadCommentController::class, 'markBest'])->name('comments.markBest');
+        // Toggle thread answered state (only for thread owner)
+        Route::post('/{thread}/toggle-done', [App\Http\Controllers\ThreadController::class, 'toggleDone'])->name('toggleDone');
+    });
+
+    // Suggest endpoint for search autocomplete
+    Route::get('/suggest', [App\Http\Controllers\ThreadController::class, 'suggest'])->name('suggest');
+
+    // Public show (wildcard) — keep this last so it doesn't match earlier static routes
+    Route::get('/{thread}', [App\Http\Controllers\ThreadController::class, 'show'])->name('show');
+});
+
+
+
+
 // Provide a named 'login' route for compatibility with packages (Filament, etc.)
 Route::get('/login', function () {
     return redirect()->route('auth.show.login');
@@ -41,40 +88,6 @@ Route::get('/users/{user}', function () {
 })->name('users.show');
 
 
-// Community (threads) routes
-Route::prefix('comunity')->name('comunity.')->group(function () {
-    // Public listing
-    Route::get('/', [App\Http\Controllers\ThreadController::class, 'index'])->name('index');
-
-    // Protected actions (create/store/edit/update) — register BEFORE the wildcard show
-    // so static paths like '/create' are not captured by '/{thread:slug}'.
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/create', [App\Http\Controllers\ThreadController::class, 'create'])->name('create');
-        Route::post('/', [App\Http\Controllers\ThreadController::class, 'store'])->name('store');
-        Route::get('/{thread:slug}/edit', [App\Http\Controllers\ThreadController::class, 'edit'])->name('edit');
-        Route::put('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'update'])->name('update');
-        Route::delete('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'destroy'])->name('destroy');
-        // Thread comments
-        Route::post('/{thread:slug}/comments', [App\Http\Controllers\ThreadCommentController::class, 'store'])->name('comments.store');
-        Route::get('/{thread:slug}/comments/{comment}/edit', [App\Http\Controllers\ThreadCommentController::class, 'edit'])->name('comments.edit');
-        Route::put('/{thread:slug}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'update'])->name('comments.update');
-        Route::delete('/{thread:slug}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'destroy'])->name('comments.destroy');
-        Route::post('/{thread:slug}/comments/{comment}/like', [App\Http\Controllers\ThreadCommentController::class, 'like'])->name('comments.like');
-        // Thread like (toggle)
-        Route::post('/{thread:slug}/like', [App\Http\Controllers\ThreadController::class, 'like'])->name('like');
-        // Thread bookmark toggle (owner can bookmark/unbookmark via ThreadController)
-        Route::post('/{thread:slug}/bookmark', [App\Http\Controllers\ThreadController::class, 'toggleBookmark'])->name('bookmark');
-        Route::post('/{thread:slug}/comments/{comment}/mark-best', [App\Http\Controllers\ThreadCommentController::class, 'markBest'])->name('comments.markBest');
-        // Toggle thread answered state (only for thread owner)
-        Route::post('/{thread:slug}/toggle-done', [App\Http\Controllers\ThreadController::class, 'toggleDone'])->name('toggleDone');
-    });
-
-    // Suggest endpoint for search autocomplete
-    Route::get('/suggest', [App\Http\Controllers\ThreadController::class, 'suggest'])->name('suggest');
-
-    // Public show (wildcard) — keep this last so it doesn't match earlier static routes
-    Route::get('/{thread:slug}', [App\Http\Controllers\ThreadController::class, 'show'])->name('show');
-});
 
 // Thread image uploads (publicly addressable route used by the editor)
 Route::post('/threads/uploads', [App\Http\Controllers\ThreadController::class, 'uploadImage'])->name('threads.upload-image');

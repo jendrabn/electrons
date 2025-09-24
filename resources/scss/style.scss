@@ -201,6 +201,11 @@ $font-family-base: "Poppins", sans-serif;
     background: linear-gradient(to right, #78716c, #44403c);
 }
 
+.text-mention {
+    color: #3ea6ff;
+    font-weight: 500;
+}
+
 @import "../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 
 @import "./custom";

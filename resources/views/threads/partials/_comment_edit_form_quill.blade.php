@@ -5,11 +5,13 @@
     @method('PUT')
 
     <div class="mb-3">
-        <textarea class="form-control"
-                  id="edit-body-{{ $comment->id }}"
-                  name="body"
-                  required
-                  rows="6">{{ old('body', $comment->body) }}</textarea>
+        <div class="edit-quill"
+             id="edit-quill-editor-{{ $comment->id }}"
+             style="height:200px;">{!! $comment->body !!}</div>
+        <input id="edit-body-{{ $comment->id }}"
+               name="body"
+               type="hidden"
+               value="{{ old('body', $comment->body) }}">
     </div>
 
     <div class="d-flex justify-content-end gap-2">

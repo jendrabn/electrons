@@ -24,12 +24,12 @@ class ThreadCommentRequest extends FormRequest
     public function rules(): array
     {
         // store: community comments.store
-        if ($this->routeIs('comunity.comments.store')) {
+        if ($this->method() === 'POST') {
             return [
                 'body' => ['required', 'string'],
                 'parent_id' => ['nullable', 'exists:thread_comments,id'],
             ];
-        } else if ($this->routeIs('comunity.comments.update')) {
+        } else if ($this->method() === 'PUT') {
             return [
                 'body' => ['required', 'string'],
             ];
