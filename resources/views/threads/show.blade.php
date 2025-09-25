@@ -129,23 +129,58 @@
           rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
     <script>
-        const quill = new Quill('#quill-editor', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{
-                        header: [2, 3, false]
-                    }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    ['blockquote', 'code-block'],
-                    [{
-                        list: 'ordered'
-                    }, {
-                        list: 'bullet'
-                    }],
-                    ['link'],
-                    ['clean']
-                ]
+        // Initialize Quill for the main comment composer and bind form submit
+        document.addEventListener('DOMContentLoaded', function() {
+            const quillEl = document.getElementById('quill-editor');
+            const commentForm = document.getElementById('comment-form');
+            const commentBodyInput = document.getElementById('comment-body');
+
+            if (quillEl && typeof Quill !== 'undefined') {
+                try {
+                    // expose global `quill` so other scripts (reply fallback) can focus it
+                    window.quill = new Quill('#quill-editor', {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{
+                                    'list': 'ordered'
+                                }, {
+                                    'list': 'bullet'
+                                }],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
+                    });
+                } catch (err) {
+                    console.error('Quill init failed (main composer)', err);
+                }
+            }
+
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    // if Quill is present, copy its HTML into the hidden input
+                    if (window.quill) {
+                        const html = window.quill.root.innerHTML || '';
+                        const text = window.quill.getText ? window.quill.getText().trim() : html.replace(
+                            /<[^>]*>/g, '').trim();
+                        if (!text) {
+                            e.preventDefault();
+                            showToast('danger', 'Komentar tidak boleh kosong');
+                            return;
+                        }
+                        if (commentBodyInput) commentBodyInput.value = html;
+                    } else {
+                        // fallback: ensure hidden input has some value
+                        const val = commentBodyInput ? commentBodyInput.value : '';
+                        if (!val || !val.trim()) {
+                            e.preventDefault();
+                            showToast('danger', 'Komentar tidak boleh kosong');
+                            return;
+                        }
+                    }
+                });
             }
         });
     </script>
@@ -159,7 +194,23 @@
 
             const id = editBtn.getAttribute('data-id');
             const threadId = '{{ $thread->id }}';
-            const btnUrl = editBtn.getAttribute('data-url');
+
+            // prefer data-url from the actual clicked element or its ancestors
+            function findDataUrl(el) {
+                let cur = el;
+                while (cur && cur !== document.documentElement) {
+                    try {
+                        const u = cur.getAttribute && cur.getAttribute('data-url');
+                        if (u) return u;
+                    } catch (err) {
+                        // ignore
+                    }
+                    cur = cur.parentElement;
+                }
+                return null;
+            }
+
+            const btnUrl = findDataUrl(e.target) || editBtn.getAttribute('data-url');
             const url = btnUrl ? btnUrl : `/comunity/${threadId}/comments/${id}/edit`;
 
             (async function() {
@@ -471,6 +522,134 @@
                     setTimeout(() => {
                         btn.disabled = false;
                     }, 1000);
+                });
+            });
+        })();
+    </script>
+    <script>
+        // Inline reply flow: open reply collapse, prefill @username, and submit via AJAX
+        (function() {
+            // clicking reply button opens collapse and prefills textarea with @username
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.reply-btn');
+                if (!btn) return;
+                e.preventDefault();
+
+                const target = btn.getAttribute('data-bs-target') || btn.getAttribute('data-target');
+                const parentId = btn.getAttribute('data-id');
+                const username = btn.getAttribute('data-username');
+
+                if (target) {
+                    const collapseEl = document.querySelector(target);
+                    if (collapseEl) {
+                        const onShown = function() {
+                            collapseEl.removeEventListener('shown.bs.collapse', onShown);
+                            const ta = collapseEl.querySelector('textarea[name="body"]');
+                            if (ta) {
+                                if (username && (!ta.value || ta.value.trim() === '' || ta.value.trim() ===
+                                        ('@' + username))) {
+                                    ta.value = '@' + username + ' ';
+                                }
+                                ta.focus();
+                                ta.selectionStart = ta.selectionEnd = ta.value.length;
+                            }
+                        };
+                        collapseEl.addEventListener('shown.bs.collapse', onShown);
+                        const inst = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                        inst.show();
+                        return;
+                    }
+                }
+
+                // fallback: focus main quill composer
+                const quillEl = document.getElementById('quill-editor');
+                if (quillEl && typeof quill !== 'undefined') {
+                    quillEl.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    try {
+                        quill.focus();
+                    } catch (e) {
+                        /* ignore */
+                    }
+                }
+            });
+
+            // submit inline reply forms via AJAX
+            document.addEventListener('submit', function(e) {
+                const form = e.target.closest('.reply-form');
+                if (!form) return;
+                e.preventDefault();
+
+                const action = form.getAttribute('action');
+                const fd = new FormData(form);
+                const body = fd.get('body');
+                if (!body || !body.toString().trim()) {
+                    showToast('danger', 'Balasan tidak boleh kosong');
+                    return;
+                }
+
+                fetch(action, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: fd
+                }).then(r => r.json()).then(data => {
+                    if (data && data.success) {
+                        const parentId = data.parent_id || fd.get('parent_id');
+                        const repliesContainer = document.getElementById('repliesCollapse' + parentId);
+                        if (repliesContainer) {
+                            const inst = bootstrap.Collapse.getOrCreateInstance(repliesContainer);
+                            inst.show();
+                            if (data.html) {
+                                const wrapper = document.createElement('div');
+                                wrapper.innerHTML = data.html;
+                                repliesContainer.appendChild(wrapper.firstElementChild);
+                            }
+                        } else {
+                            // create toggle button if missing
+                            const parent = document.querySelector('#comment-' + parentId +
+                                ' .d-flex.align-items-center.gap-3');
+                            if (parent) {
+                                const btn = document.createElement('button');
+                                btn.className = 'btn btn-link btn-sm p-0 text-decoration-none';
+                                btn.setAttribute('data-bs-target', '#repliesCollapse' + parentId);
+                                btn.setAttribute('data-bs-toggle', 'collapse');
+                                btn.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat 1 Balasan';
+                                parent.appendChild(btn);
+                            }
+                        }
+
+                        // update toggle button text with count if provided
+                        const toggleBtn = document.querySelector('[data-bs-target="#repliesCollapse' +
+                            parentId + '"]');
+                        if (toggleBtn) toggleBtn.innerHTML =
+                            '<i class="bi bi-chat-left-text"></i> Lihat ' + (typeof data.count !==
+                                'undefined' ? data.count : '') + ' Balasan';
+
+                        // clear textarea and hide collapse
+                        const ta = form.querySelector('textarea[name="body"]');
+                        if (ta) ta.value = '';
+                        const collapseEl = form.closest('.collapse');
+                        if (collapseEl) {
+                            const inst2 = bootstrap.Collapse.getInstance(collapseEl);
+                            if (inst2) inst2.hide();
+                        }
+
+                        showToast('success', data.message || 'Balasan dikirim.');
+                    } else if (data && data.errors) {
+                        const messages = Object.values(data.errors).flat().join('\n');
+                        showToast('danger', messages || 'Gagal mengirim balasan');
+                    } else {
+                        showToast('danger', (data && data.message) ? data.message :
+                            'Gagal mengirim balasan');
+                    }
+                }).catch(err => {
+                    console.error('Reply submit failed', err);
+                    showToast('danger', 'Gagal mengirim balasan');
                 });
             });
         })();
