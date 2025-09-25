@@ -1,6 +1,6 @@
 <div class="comment reply mt-3 ms-4"
      data-id="{{ $reply->id }}"
-     id="comment-{{ $reply->id }}">
+     id="reply-{{ $reply->id }}">
     <div class="d-flex align-items-start">
         <img alt="{{ $reply->user->name }}"
              class="rounded-circle me-2"
@@ -35,7 +35,7 @@
                     @endif
 
                     <button aria-label="Suka komentar"
-                            class="btn btn-link btn-sm p-0 text-decoration-none like-btn comment-like-btn"
+                            class="btn btn-link btn-sm p-0 text-decoration-none like-btn reply-like-btn"
                             data-id="{{ $reply->id }}"
                             data-url="{{ route('comunity.comments.replies.like', [$reply->thread->id, $reply->parent_id, $reply->id]) }}"
                             title="Suka"
@@ -47,14 +47,14 @@
 
                     @if (auth()->check() && auth()->id() === $reply->user_id)
                         <button aria-label="Edit komentar"
-                                class="btn btn-link btn-sm p-0 text-decoration-none edit-btn comment-edit"
+                                class="btn btn-link btn-sm p-0 text-decoration-none edit-btn reply-edit"
                                 data-id="{{ $reply->id }}"
                                 title="Edit komentar"
                                 type="button">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button aria-label="Hapus komentar"
-                                class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn comment-delete"
+                                class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn reply-delete"
                                 data-id="{{ $reply->id }}"
                                 data-url="{{ route('comunity.comments.replies.destroy', [$reply->thread->id, $reply->parent_id, $reply->id]) }}"
                                 title="Hapus komentar"
@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            <div class="mb-2 comment-body">{!! linkify_mentions($reply->body) !!}</div>
+            <div class="mb-2 reply-body">{!! linkify_mentions($reply->body) !!}</div>
 
             <div class="collapse mt-2"
                  id="replyCollapse{{ $reply->id }}">

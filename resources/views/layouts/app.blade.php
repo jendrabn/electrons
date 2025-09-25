@@ -60,8 +60,9 @@
                 }
 
                 const wrapper = document.createElement('div');
-                wrapper.className = 'toast align-items-center text-white text-bg-' + (type === 'success' ? 'success' : (
-                    type === 'info' ? 'info' : 'danger')) + ' border-0';
+                wrapper.className = 'toast mb-2 align-items-center text-white text-bg-' + (type === 'success' ? 'success' :
+                    (
+                        type === 'info' ? 'info' : 'danger')) + ' border-0';
                 wrapper.role = 'alert';
                 wrapper.setAttribute('aria-live', 'assertive');
                 wrapper.setAttribute('aria-atomic', 'true');
@@ -86,6 +87,23 @@
                 alert(message);
             }
         }
+
+        // Show validation errors (if any) as Bootstrap toasts
+        @if ($errors->any())
+            (function() {
+                const messages = {!! json_encode($errors->all()) !!};
+                messages.forEach(msg => showToast('danger', msg));
+            })();
+        @endif
+
+        // Show session status / error as toasts as well (global)
+        @if (session('status'))
+            showToast('success', @json(session('status')));
+        @endif
+
+        @if (session('error'))
+            showToast('danger', @json(session('error')));
+        @endif
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdowns = document.querySelectorAll('.dropdown-toggle-custom');
@@ -122,23 +140,6 @@
                     }
                 }, ]
             });
-
-            // Show validation errors (if any) as Bootstrap toasts
-            @if ($errors->any())
-                (function() {
-                    const messages = {!! json_encode($errors->all()) !!};
-                    messages.forEach(msg => showToast('danger', msg));
-                })();
-            @endif
-
-            // Show session status / error as toasts as well (global)
-            @if (session('status'))
-                showToast('success', @json(session('status')));
-            @endif
-
-            @if (session('error'))
-                showToast('danger', @json(session('error')));
-            @endif
         });
     </script>
     @yield('scripts')
