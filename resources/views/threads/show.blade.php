@@ -215,4 +215,146 @@
             }
         })();
     </script>
+    <script>
+        // AJAX handler for comment like buttons
+        document.addEventListener('click', function(e) {
+            // handle both comment-like-btn and reply-like-btn
+            const likeBtn = e.target.closest('.comment-like-btn, .reply-like-btn');
+            if (!likeBtn) return;
+            e.preventDefault();
+
+            const url = likeBtn.getAttribute('data-url');
+            if (!url) return;
+
+            fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                        'content') || '',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            }).then(r => r.json()).then(data => {
+                if (data && data.success) {
+                    const icon = likeBtn.querySelector('i.bi');
+                    const countEl = likeBtn.querySelector('.like-count');
+                    if (data.liked) {
+                        if (icon) {
+                            icon.classList.remove('bi-hand-thumbs-up');
+                            icon.classList.add('bi-hand-thumbs-up-fill', 'text-primary');
+                        }
+                    } else {
+                        if (icon) {
+                            icon.classList.remove('bi-hand-thumbs-up-fill', 'text-primary');
+                            icon.classList.add('bi-hand-thumbs-up');
+                        }
+                    }
+                    if (countEl && typeof data.count !== 'undefined') countEl.textContent = data.count;
+                } else if (data && data.message) {
+                    showToast('danger', data.message);
+                }
+            }).catch(err => {
+                console.error('Comment like failed', err);
+                showToast('danger', 'Gagal meng-update like');
+            });
+        });
+    </script>
+    <script>
+        // Delete comment flow: open modal and send AJAX delete on confirm
+        (function() {
+            // when a delete button is clicked, show the modal and set confirm data
+            document.addEventListener('click', function(e) {
+                // handle both comment and reply delete buttons
+                const del = e.target.closest('.comment-delete, .reply-delete');
+                if (!del) return;
+                e.preventDefault();
+
+                const id = del.dataset.id;
+                const url = del.dataset.url;
+
+                const modalEl = document.getElementById('commentDeleteModal');
+                if (!modalEl) {
+                    if (!confirm('Yakin ingin menghapus komentar ini?')) return;
+                    // fallback to AJAX delete directly
+                    doCommentDelete(url, id);
+                    return;
+                }
+
+                const modalBody = modalEl.querySelector('.modal-body');
+                const confirmBtn = modalEl.querySelector('#commentDeleteConfirmBtn');
+                if (modalBody) modalBody.textContent = 'Yakin ingin menghapus komentar ini?';
+                if (confirmBtn) {
+                    confirmBtn.dataset.url = url || '';
+                    confirmBtn.dataset.id = id || '';
+                }
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            });
+
+            // actual AJAX delete function
+            async function doCommentDelete(url, id) {
+                if (!url) return;
+                try {
+                    const res = await fetch(url, {
+                        method: 'DELETE',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                                'content') || '',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+                    if (data && data.success) {
+                        // remove the comment node
+                        const node = document.getElementById('comment-' + (data.id || id));
+                        if (node) node.remove();
+
+                        // if server returned updated reply count for parent, update UI
+                        if (data.parent_id && typeof data.count !== 'undefined') {
+                            const toggleBtn = document.querySelector('[data-bs-target="#repliesCollapse' + data
+                                .parent_id + '"]');
+                            if (toggleBtn) toggleBtn.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat ' +
+                                data.count + ' Balasan';
+                        }
+
+                        // hide modal if present and show toast
+                        const modalEl = document.getElementById('commentDeleteModal');
+                        if (modalEl) {
+                            try {
+                                const inst = bootstrap.Modal.getInstance(modalEl);
+                                if (inst) inst.hide();
+                            } catch (e) {
+                                /* ignore */
+                            }
+                        }
+                        showToast('success', data.message || 'Komentar dihapus.');
+                    } else {
+                        showToast('danger', (data && data.message) ? data.message : 'Gagal menghapus komentar');
+                    }
+                } catch (err) {
+                    console.error('Delete comment failed', err);
+                    showToast('danger', 'Gagal menghapus komentar');
+                }
+            }
+
+            // confirm button click -> perform AJAX delete
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('#commentDeleteConfirmBtn');
+                if (!btn) return;
+                e.preventDefault();
+                const url = btn.dataset.url;
+                const id = btn.dataset.id;
+                // disable briefly to prevent double click
+                btn.disabled = true;
+                doCommentDelete(url, id).finally(() => {
+                    setTimeout(() => {
+                        btn.disabled = false;
+                    }, 1000);
+                });
+            });
+        })();
+    </script>
 @endsection
