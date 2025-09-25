@@ -15,7 +15,7 @@
                         type="button"></button>
             </div>
             <div class="modal-body">
-                Yakin ingin menghapus thread ini? Semua komentar juga akan dihapus.
+                Yakin ingin menghapus thread ini? Semua jawaban dan komentar juga akan dihapus.
             </div>
             <div class="modal-footer border-top-0">
                 <button class="btn btn-link text-decoration-none text-primary"
@@ -39,7 +39,7 @@
         <div class="modal-content">
             <div class="modal-header border-bottom-0">
                 <h5 class="modal-title"
-                    id="commentEditModalLabel">Edit Komentar</h5>
+                    id="commentEditModalLabel">Edit Jawaban</h5>
                 <button aria-label="Close"
                         class="btn-close"
                         data-bs-dismiss="modal"
@@ -57,13 +57,13 @@
 <div aria-hidden="true"
      aria-labelledby="replyEditModalLabel"
      class="modal fade"
-     id="commentEditModal"
+     id="replyEditModal"
      tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom-0">
                 <h5 class="modal-title"
-                    id="replyEditModalLabel">Edit Reply</h5>
+                    id="replyEditModalLabel">Edit Balasan</h5>
                 <button aria-label="Close"
                         class="btn-close"
                         data-bs-dismiss="modal"

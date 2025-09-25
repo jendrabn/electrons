@@ -24,8 +24,23 @@
                 </div>
 
                 @php $threadDone = isset($thread) ? (bool) $thread->is_done : false; @endphp
-                @if (auth()->check() && auth()->id() === $comment->user_id && !$threadDone)
-                    <div class="ms-3 d-flex gap-2">
+                <div class="ms-3 d-flex gap-2">
+
+                    {{-- Jawaban Terbaik: only visible to the thread owner --}}
+                    @if (auth()->check() && isset($thread) && auth()->id() === $thread->user_id)
+                        <form action="{{ route('comunity.comments.markBest', [$comment->thread->id, $comment->id]) }}"
+                              class="m-0 p-0"
+                              method="POST">
+                            @csrf
+                            <button aria-label="Jawaban Terbaik"
+                                    class="btn btn-link btn-sm p-0 text-decoration-none text-success"
+                                    title="Tandai sebagai jawaban terbaik"
+                                    type="submit">
+                                <i class="bi bi-award"></i>
+                            </button>
+                        </form>
+                    @endif
+                    @if (auth()->check() && auth()->id() === $comment->user_id && !$threadDone)
                         <button aria-label="Edit komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none edit-btn comment-edit"
                                 data-id="{{ $comment->id }}"
@@ -42,8 +57,8 @@
                                 type="button">
                             <i class="bi bi-trash"></i>
                         </button>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
 
             {{-- linkify_mentions is provided globally via app/helpers.php --}}

@@ -84,7 +84,7 @@
                 {{-- Komentar --}}
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0 fw-bold">{{ $thread->comments->count() }} Komentar</h5>
+                        <h5 class="mb-0 fw-bold">{{ $thread->comments->count() }} Jawaban</h5>
                     </div>
                     <div class="card-body">
                         @auth
@@ -100,7 +100,9 @@
                                            type="hidden">
                                     <div class="mt-2 text-end">
                                         <button class="btn btn-primary"
-                                                type="submit">Kirim Komentar</button>
+                                                type="submit">
+                                            <i class="bi bi-send"></i> Kirim
+                                        </button>
                                     </div>
                                 </form>
                             @else
@@ -208,11 +210,16 @@
                     });
                     const data = await res.json();
 
-                    const modalBody = document.getElementById('commentEditModalBody');
+                    // decide which modal to use based on button class
+                    const isReply = editBtn.classList.contains('reply-edit');
+                    const bodyId = isReply ? 'replyEditModalBody' : 'commentEditModalBody';
+                    const modalId = isReply ? 'replyEditModal' : 'commentEditModal';
+
+                    const modalBody = document.getElementById(bodyId);
                     if (!modalBody) return;
                     modalBody.innerHTML = data.html || '';
 
-                    const modalEl = document.getElementById('commentEditModal');
+                    const modalEl = document.getElementById(modalId);
                     const modal = new bootstrap.Modal(modalEl);
                     modal.show();
 
