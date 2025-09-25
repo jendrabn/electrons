@@ -117,12 +117,7 @@ class ThreadCommentController extends Controller
 
         // return only the HTML form for modal
         if ($request->wantsJson() || $request->ajax()) {
-            // Use Quill editor for top-level comments, textarea for replies (defensive)
-            if (empty($comment->parent_id)) {
-                $html = view('threads.partials._comment_edit_form_quill', compact('comment'))->render();
-            } else {
-                $html = view('threads.partials._comment_edit_form', compact('comment'))->render();
-            }
+            $html = view('threads.partials._comment_edit_form', compact('comment'))->render();
             return response()->json(['html' => $html]);
         }
 

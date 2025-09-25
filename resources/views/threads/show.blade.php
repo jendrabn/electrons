@@ -150,6 +150,124 @@
         });
     </script>
     <script>
+        // AJAX edit flow for comments and replies (open edit form in modal and submit via AJAX)
+        document.addEventListener('click', function(e) {
+            // handle both comment-edit and reply-edit buttons
+            const editBtn = e.target.closest('.comment-edit, .reply-edit');
+            if (!editBtn) return;
+            e.preventDefault();
+
+            const id = editBtn.getAttribute('data-id');
+            const threadId = '{{ $thread->id }}';
+            const btnUrl = editBtn.getAttribute('data-url');
+            const url = btnUrl ? btnUrl : `/comunity/${threadId}/comments/${id}/edit`;
+
+            (async function() {
+                try {
+                    const res = await fetch(url, {
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+
+                    const modalBody = document.getElementById('commentEditModalBody');
+                    if (!modalBody) return;
+                    modalBody.innerHTML = data.html || '';
+
+                    const modalEl = document.getElementById('commentEditModal');
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+
+                    // find the form inside returned HTML and wire AJAX submit
+                    const form = modalBody.querySelector('form');
+                    if (!form) return;
+
+                    // initialize Quill for edit if present
+                    const quillContainer = form.querySelector('[id^="edit-quill-editor-"]');
+                    let localQuill = null;
+                    if (quillContainer) {
+                        try {
+                            localQuill = new Quill('#' + quillContainer.id, {
+                                theme: 'snow'
+                            });
+                        } catch (err) {
+                            console.error('Quill init failed (edit)', err);
+                        }
+                    }
+
+                    const submitHandler = async function(ev) {
+                        ev.preventDefault();
+
+                        if (localQuill) {
+                            const hidden = form.querySelector('input[name="body"]');
+                            if (hidden) hidden.value = localQuill.root.innerHTML.trim();
+                        }
+
+                        const bodyField = form.querySelector('textarea[name="body"]') || form
+                            .querySelector('input[name="body"]');
+                        if (!bodyField || !bodyField.value.trim()) {
+                            showToast('danger', 'Komentar tidak boleh kosong');
+                            return;
+                        }
+
+                        const action = form.getAttribute('action');
+                        const fd = new FormData(form);
+                        try {
+                            const r = await fetch(action, {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                },
+                                body: fd
+                            });
+                            const resp = await r.json();
+                            if (resp && resp.success) {
+                                if (resp.html) {
+                                    const wrapper = document.createElement('div');
+                                    wrapper.innerHTML = resp.html;
+                                    const newNode = wrapper.firstElementChild;
+                                    const oldNode = document.getElementById('comment-' + resp.id);
+                                    if (oldNode && newNode) oldNode.replaceWith(newNode);
+                                } else if (resp.body) {
+                                    const node = document.querySelector('#comment-' + resp.id +
+                                        ' .comment-body');
+                                    if (node) node.innerHTML = resp.body;
+                                }
+                                // hide modal
+                                try {
+                                    const inst = bootstrap.Modal.getInstance(modalEl);
+                                    if (inst) inst.hide();
+                                } catch (e) {
+                                    /* ignore */
+                                }
+                                showToast('success', resp.message || 'Komentar disimpan.');
+                            } else if (resp.errors) {
+                                const messages = Object.values(resp.errors).flat().join('\n');
+                                showToast('danger', messages || 'Terjadi kesalahan');
+                            } else if (resp && resp.message) {
+                                showToast('danger', resp.message);
+                            }
+                        } catch (ex) {
+                            console.error('Edit submit failed', ex);
+                            showToast('danger', 'Gagal menyimpan perubahan');
+                        }
+                    };
+
+                    form.removeEventListener('submit', submitHandler);
+                    form.addEventListener('submit', submitHandler);
+                } catch (err) {
+                    console.error('Failed to load edit form', err);
+                    showToast('danger', 'Gagal memuat form edit');
+                }
+            })();
+        });
+    </script>
+    <script>
         (function() {
             function submitPlainPost(url, method = 'POST') {
                 if (!url) return;

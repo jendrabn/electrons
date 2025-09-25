@@ -29,6 +29,7 @@
                         <button aria-label="Edit komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none edit-btn comment-edit"
                                 data-id="{{ $comment->id }}"
+                                data-url="{{ route('comunity.comments.edit', [$comment->thread->id, $comment->id]) }}"
                                 title="Edit komentar"
                                 type="button">
                             <i class="bi bi-pencil"></i>
