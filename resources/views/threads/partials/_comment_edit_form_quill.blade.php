@@ -1,14 +1,17 @@
 <form action="{{ route('comunity.comments.update', [$comment->thread->id, $comment->id]) }}"
-      id="reply-edit-form"
+      id="comment-edit-form"
       method="POST">
     @csrf
     @method('PUT')
 
     <div class="mb-3">
-        <textarea class="form-control"
-                  name="body"
-                  required
-                  rows="4">{{ old('body', $comment->body) }}</textarea>
+        <div class="edit-quill"
+             id="edit-quill-editor-{{ $comment->id }}"
+             style="height:200px;">{!! $comment->body !!}</div>
+        <input id="edit-body-{{ $comment->id }}"
+               name="body"
+               type="hidden"
+               value="{{ old('body', $comment->body) }}">
     </div>
 
     <div class="d-flex justify-content-end gap-2">

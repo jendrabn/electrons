@@ -37,7 +37,7 @@
                     <button aria-label="Suka komentar"
                             class="btn btn-link btn-sm p-0 text-decoration-none like-btn reply-like-btn"
                             data-id="{{ $reply->id }}"
-                            data-url="{{ route('comunity.comments.replies.like', [$reply->thread->id, $reply->parent_id, $reply->id]) }}"
+                            data-url="{{ route('comunity.comments.like', [$reply->thread->id, $reply->id]) }}"
                             title="Suka"
                             type="button">
                         <i
@@ -56,7 +56,7 @@
                         <button aria-label="Hapus komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn reply-delete"
                                 data-id="{{ $reply->id }}"
-                                data-url="{{ route('comunity.comments.replies.destroy', [$reply->thread->id, $reply->parent_id, $reply->id]) }}"
+                                data-url="{{ route('comunity.comments.destroy', [$reply->thread->id, $reply->id]) }}"
                                 title="Hapus komentar"
                                 type="button">
                             <i class="bi bi-trash"></i>
@@ -70,7 +70,7 @@
             <div class="collapse mt-2"
                  id="replyCollapse{{ $reply->id }}">
                 @auth
-                    <form action="{{ route('comunity.comments.replies.store', [$reply->thread->id, $reply->parent_id]) }}"
+                    <form action="{{ route('comunity.comments.store', [$reply->thread->id, $reply->parent_id]) }}"
                           class="reply-form"
                           method="POST">
                         @csrf

@@ -34,7 +34,7 @@
                      <button aria-label="Suka komentar"
                              class="btn btn-link btn-sm p-0 text-decoration-none like-btn reply-like-btn"
                              data-id="{{ $reply->id }}"
-                             data-url="{{ route('comunity.comments.replies.like', [$reply->thread->id, $comment->id, $reply->id]) }}"
+                             data-url="{{ route('comunity.comments.like', [$reply->thread->id, $reply->id]) }}"
                              title="Suka"
                              type="button">
                          <i
@@ -46,7 +46,7 @@
                          <button aria-label="Edit komentar"
                                  class="btn btn-link btn-sm p-0 text-decoration-none edit-btn reply-edit"
                                  data-id="{{ $reply->id }}"
-                                 data-url="{{ route('comunity.comments.replies.edit', [$reply->thread->id, $comment->id, $reply->id]) }}"
+                                 data-url="{{ route('comunity.comments.edit', [$reply->thread->id, $reply->id]) }}"
                                  title="Edit komentar"
                                  type="button">
                              <i class="bi bi-pencil"></i>
@@ -54,7 +54,7 @@
                          <button aria-label="Hapus komentar"
                                  class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn reply-delete"
                                  data-id="{{ $reply->id }}"
-                                 data-url="{{ route('comunity.comments.replies.destroy', [$reply->thread->id, $comment->id, $reply->id]) }}"
+                                 data-url="{{ route('comunity.comments.destroy', [$reply->thread->id, $reply->id]) }}"
                                  title="Hapus komentar"
                                  type="button">
                              <i class="bi bi-trash"></i>
@@ -69,7 +69,7 @@
              <div class="collapse mt-2"
                   id="replyCollapse{{ $reply->id }}">
                  @auth
-                     <form action="{{ route('comunity.comments.replies.store', [$reply->thread->id, $comment->id]) }}"
+                     <form action="{{ route('comunity.comments.store', [$reply->thread->id, $comment->id]) }}"
                            class="reply-form"
                            method="POST">
                          @csrf

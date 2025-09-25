@@ -30,6 +30,7 @@ Route::prefix('comunity')->name('comunity.')->group(function () {
         Route::get('/{thread}/edit', [App\Http\Controllers\ThreadController::class, 'edit'])->name('edit');
         Route::put('/{thread}', [App\Http\Controllers\ThreadController::class, 'update'])->name('update');
         Route::delete('/{thread}', [App\Http\Controllers\ThreadController::class, 'destroy'])->name('destroy');
+
         // Thread comments (use slug for thread parameter so URLs using slugs match the edit/show patterns)
         Route::post('/{thread}/comments', [App\Http\Controllers\ThreadCommentController::class, 'store'])->name('comments.store');
         Route::get('/{thread}/comments/{comment}/edit', [App\Http\Controllers\ThreadCommentController::class, 'edit'])->name('comments.edit');
@@ -37,13 +38,6 @@ Route::prefix('comunity')->name('comunity.')->group(function () {
         Route::delete('/{thread}/comments/{comment}', [App\Http\Controllers\ThreadCommentController::class, 'destroy'])->name('comments.destroy');
         Route::post('/{thread}/comments/{comment}/like', [App\Http\Controllers\ThreadCommentController::class, 'like'])->name('comments.like');
 
-        // Replies: actions on replies (separate controller) - parent comment id present in URL
-        // Use the thread slug parameter so edit URLs generated with slugs will match.
-        Route::post('/{thread}/comments/{comment}/replies', [App\Http\Controllers\ThreadReplyController::class, 'store'])->name('comments.replies.store');
-        Route::get('/{thread}/comments/{comment}/replies/{reply}/edit', [App\Http\Controllers\ThreadReplyController::class, 'edit'])->name('comments.replies.edit');
-        Route::put('/{thread}/comments/{comment}/replies/{reply}', [App\Http\Controllers\ThreadReplyController::class, 'update'])->name('comments.replies.update');
-        Route::delete('/{thread}/comments/{comment}/replies/{reply}', [App\Http\Controllers\ThreadReplyController::class, 'destroy'])->name('comments.replies.destroy');
-        Route::post('/{thread}/comments/{comment}/replies/{reply}/like', [App\Http\Controllers\ThreadReplyController::class, 'like'])->name('comments.replies.like');
         // Thread like (toggle)
         Route::post('/{thread}/like', [App\Http\Controllers\ThreadController::class, 'like'])->name('like');
         // Thread bookmark toggle (owner can bookmark/unbookmark via ThreadController)

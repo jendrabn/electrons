@@ -97,7 +97,7 @@
             <div class="collapse mt-3"
                  id="replyCollapse{{ $comment->id }}">
                 @auth
-                    <form action="{{ route('comunity.comments.replies.store', [$comment->thread->id, $comment->id]) }}"
+                    <form action="{{ route('comunity.comments.store', [$comment->thread->id, $comment->id]) }}"
                           class="reply-form"
                           method="POST">
                         @csrf

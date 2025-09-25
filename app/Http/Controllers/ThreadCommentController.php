@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class ThreadCommentController extends Controller
 {
-    public function store(ThreadCommentRequest $request, Thread $thread)
+    public function store(ThreadCommentRequest $request, Thread $thread, ?ThreadComment $comment)
     {
         $this->authorize('create', ThreadComment::class);
 
@@ -37,15 +37,6 @@ class ThreadCommentController extends Controller
         RateLimiter::hit($key, 30);
 
         $body = $data['body'];
-
-        // if body becomes empty after trimming, return error
-        if (trim(strip_tags(str_replace('&nbsp;', '', $body))) === '') {
-            $message = 'Komentar tidak boleh kosong.';
-            if ($request->wantsJson() || $request->ajax()) {
-                return response()->json(['success' => false, 'message' => $message], 422);
-            }
-            return redirect()->route('comunity.show', $thread->id)->with('error', $message);
-        }
 
         // Ensure parent_id always points to the top-level comment for this thread.
         $parentId = null;
@@ -117,8 +108,16 @@ class ThreadCommentController extends Controller
 
         // return only the HTML form for modal
         if ($request->wantsJson() || $request->ajax()) {
-            $html = view('threads.partials._comment_edit_form', compact('comment'))->render();
-            return response()->json(['html' => $html]);
+
+            if ($comment->parent_id) {
+                // it's a reply, load the reply edit form
+                $html = view('threads.partials._reply_edit_form', compact('comment'))->render();
+                return response()->json(['html' => $html]);
+            } else {
+                // it's a top-level comment, load the comment edit form
+                $html = view('threads.partials._comment_edit_form', compact('comment'))->render();
+                return response()->json(['html' => $html]);
+            }
         }
 
         return view('threads.edit', compact('thread', 'comment'));

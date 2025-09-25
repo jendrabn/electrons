@@ -194,23 +194,7 @@
 
             const id = editBtn.getAttribute('data-id');
             const threadId = '{{ $thread->id }}';
-
-            // prefer data-url from the actual clicked element or its ancestors
-            function findDataUrl(el) {
-                let cur = el;
-                while (cur && cur !== document.documentElement) {
-                    try {
-                        const u = cur.getAttribute && cur.getAttribute('data-url');
-                        if (u) return u;
-                    } catch (err) {
-                        // ignore
-                    }
-                    cur = cur.parentElement;
-                }
-                return null;
-            }
-
-            const btnUrl = findDataUrl(e.target) || editBtn.getAttribute('data-url');
+            const btnUrl = editBtn.getAttribute('data-url');
             const url = btnUrl ? btnUrl : `/comunity/${threadId}/comments/${id}/edit`;
 
             (async function() {
