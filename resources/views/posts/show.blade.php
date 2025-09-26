@@ -76,6 +76,8 @@
                             <div>
                                 <button aria-label="Share"
                                         class="btn btn-light btn-sm shadow-sm rounded-circle btn-share"
+                                        data-bs-target="#shareModal"
+                                        data-bs-toggle="modal"
                                         type="button">
                                     <i class="bi bi-share-fill fs-6"></i>
                                 </button>
@@ -118,6 +120,8 @@
                         <li class="ms-auto">
                             <button aria-label="Share"
                                     class="btn btn-light btn-sm shadow-sm rounded-circle btn-share"
+                                    data-bs-target="#shareModal"
+                                    data-bs-toggle="modal"
                                     type="button">
                                 <i class="bi bi-share-fill fs-6"></i>
                             </button>
@@ -156,17 +160,6 @@
                         @endforeach
                     </div>
                     {{-- End Tags --}}
-
-                    {{-- Social Media Share --}}
-                    <div class="social-media-share">
-                        <x-social-media-share :post="$post"
-                                              gap="2"
-                                              justify="start"
-                                              shape="square"
-                                              showLabel="0"
-                                              size="40" />
-                    </div>
-                    {{-- End Social Media Share --}}
 
                     {{-- Comments --}}
                     <div class="comments mt-5">
@@ -659,5 +652,21 @@
                 }
             });
         })();
+    </script>
+
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('#shareCopyLinkBtn');
+            if (!btn) return;
+
+            const url = window.location.href;
+            navigator.clipboard?.writeText(url).then(function() {
+                // optional: show a toast if application provides showToast
+                if (typeof showToast === 'function') showToast('success', 'Link disalin ke clipboard');
+            }).catch(function(err) {
+                console.error('copy failed', err);
+                if (typeof showToast === 'function') showToast('danger', 'Gagal menyalin link');
+            });
+        });
     </script>
 @endsection
