@@ -56,6 +56,29 @@
 
             {{-- Konten Utama --}}
             <div class="col-lg-9">
+                <div class="mb-4 thread-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="thread-hero-icon d-flex align-items-center justify-content-center">
+                            <!-- chat bubble SVG -->
+                            <svg aria-hidden="true"
+                                 fill="none"
+                                 height="22"
+                                 viewBox="0 0 24 24"
+                                 width="22"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                                      fill="white"
+                                      opacity=".95" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-1 thread-hero-title">Diskusi Komunitas</h2>
+                            <p class="text-muted mb-0 thread-hero-sub">Temukan jawaban, bagikan pengetahuan, dan terlibat
+                                dalam diskusi dengan anggota komunitas lainnya.</p>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Search Bar --}}
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-body">
@@ -191,6 +214,49 @@
 
         .card:hover {
             transform: translateY(-2px);
+        }
+
+        /* Modern hero-style thread header */
+        .thread-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.02));
+            border: 1px solid rgba(99, 102, 241, 0.06);
+        }
+
+        .thread-hero-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+            color: white;
+        }
+
+        .thread-hero-title {
+            font-size: 1.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #111827, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .thread-hero-sub {
+            color: #6b7280;
+            margin-top: 0.125rem
+        }
+
+        .btn-primary.btn-lg {
+            padding: 0.6rem 1rem;
+        }
+
+        @media (min-width: 992px) {
+            .thread-hero-title {
+                font-size: 1.8rem
+            }
         }
     </style>
 @endsection
