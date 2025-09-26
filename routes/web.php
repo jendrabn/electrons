@@ -68,14 +68,14 @@ Route::post('/filament/admin/logout', function (Request $request) {
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect()->route('auth.show.login');
-})->middleware('auth')->name('filament.admin.auth.logout');
+})->middleware('auth')->name('compat.filament.admin.logout');
 
 Route::post('/filament/author/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect()->route('auth.show.login');
-})->middleware('auth')->name('filament.author.auth.logout');
+})->middleware('auth')->name('compat.filament.author.logout');
 
 Route::get('/users/{user}', function () {
     return 'user profile page';
@@ -117,7 +117,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
         Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('show.login');
         Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('show.register');
         Route::get('/forgot', [App\Http\Controllers\AuthController::class, 'showForgot'])->name('forgot');
-        Route::get('/reset/{token}', [App\Http\Controllers\AuthController::class, 'showReset'])->name('reset');
+        Route::get('/reset/{token}', [App\Http\Controllers\AuthController::class, 'showReset'])->name('reset.form');
 
         // Form submissions
         Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
