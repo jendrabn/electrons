@@ -1,2 +1,19 @@
+
+# robots.txt for Electrons
+# Allow search engines to crawl the site and point them to the sitemap.
+# If you run a staging or local instance you may want to serve a different
+# robots.txt that blocks indexing (for example, by returning "Disallow: /").
+
 User-agent: *
-Disallow:
+Allow: /
+
+# Block admin / tooling paths that should not be indexed by search engines
+Disallow: /filament/
+Disallow: /admin/
+Disallow: /console/
+Disallow: /vendor/
+
+# Point crawlers to the generated sitemap. This uses a relative path so it
+# works regardless of the APP_URL. If you prefer an absolute URL, replace
+# with the full URL to your sitemap (for example: https://example.com/sitemaps/sitemap.xml).
+Sitemap: /sitemaps/sitemap.xml

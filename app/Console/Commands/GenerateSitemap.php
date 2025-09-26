@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\Thread;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\URL as FacadesUrl;
@@ -43,6 +44,7 @@ class GenerateSitemap extends Command
         $indexPath      = $outDir . '/sitemap.xml';
         $homePath       = $outDir . '/sitemap-home.xml';
         $postsPath      = $outDir . '/sitemap-posts.xml';
+        $threadsPath    = $outDir . '/sitemap-threads.xml';
         $categoriesPath = $outDir . '/sitemap-categories.xml';
         $tagsPath       = $outDir . '/sitemap-tags.xml';
         $authorsPath    = $outDir . '/sitemap-authors.xml';
@@ -50,6 +52,7 @@ class GenerateSitemap extends Command
 
         $this->generateHomeSitemap($homePath);
         $this->generatePostsSitemap($postsPath, $chunk);
+        $this->generateThreadsSitemap($threadsPath, $chunk);
         $this->generateCategoriesSitemap($categoriesPath);
         $this->generateTagsSitemap($tagsPath);
         $this->generateAuthorsSitemap($authorsPath);
@@ -62,6 +65,7 @@ class GenerateSitemap extends Command
         $index = SitemapIndex::create()
             ->add($baseUrl . $publicPrefix . '/sitemap-home.xml')
             ->add($baseUrl . $publicPrefix . '/sitemap-posts.xml')
+            ->add($baseUrl . $publicPrefix . '/sitemap-threads.xml')
             ->add($baseUrl . $publicPrefix . '/sitemap-categories.xml')
             ->add($baseUrl . $publicPrefix . '/sitemap-tags.xml')
             ->add($baseUrl . $publicPrefix . '/sitemap-authors.xml')
@@ -69,8 +73,16 @@ class GenerateSitemap extends Command
 
         $index->writeToFile($indexPath);
 
+        // Backwards compatibility: copy index to public root as sitemap.xml
+        try {
+            @copy($indexPath, public_path('sitemap.xml'));
+        } catch (\Throwable $e) {
+            // Failing to copy is non-fatal; just warn the user
+            $this->warn('Gagal menyalin sitemap index ke public/sitemap.xml: ' . $e->getMessage());
+        }
+
         if ($withGz) {
-            foreach ([$homePath, $postsPath, $categoriesPath, $tagsPath, $authorsPath, $staticPath, $indexPath] as $p) {
+            foreach ([$homePath, $postsPath, $threadsPath, $categoriesPath, $tagsPath, $authorsPath, $staticPath, $indexPath] as $p) {
                 $this->gzipCopy($p);
             }
         }
@@ -114,6 +126,13 @@ class GenerateSitemap extends Command
                 ->setPriority(0.9)
         );
 
+        // Community / threads listing
+        $sm->add(
+            Url::create(FacadesUrl::route('comunity.index', [], true))
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+                ->setPriority(0.8)
+        );
+
         $sm->writeToFile($path);
     }
 
@@ -136,6 +155,31 @@ class GenerateSitemap extends Command
                             ->setLastModificationDate($lastmod instanceof \DateTimeInterface ? $lastmod : Carbon::parse($lastmod))
                             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                             ->setPriority(0.8)
+                    );
+                }
+            });
+
+        $sm->writeToFile($path);
+    }
+
+    private function generateThreadsSitemap(string $path, int $chunk): void
+    {
+        $sm = Sitemap::create();
+
+        Thread::query()
+            ->select(['id', 'slug', 'updated_at'])
+            ->where('is_hidden', false)
+            ->orderBy('id')
+            ->chunkById($chunk, function ($threads) use ($sm) {
+                foreach ($threads as $thread) {
+                    $url = FacadesUrl::route('comunity.show', $thread, true);
+                    $lastmod = $thread->updated_at ?? now();
+
+                    $sm->add(
+                        Url::create($url)
+                            ->setLastModificationDate($lastmod instanceof \DateTimeInterface ? $lastmod : Carbon::parse($lastmod))
+                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                            ->setPriority(0.6)
                     );
                 }
             });

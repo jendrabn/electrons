@@ -141,8 +141,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('audit-logs.export');
 });
 
-Route::get('/sitemaps/sitemap.xml', function () {
-    $path = public_path('sitemap.xml');
+$serveSitemap = function () {
+    $path = public_path('sitemaps/sitemap.xml');
 
     if (!file_exists($path)) {
         abort(404, 'Sitemap not found. Please generate sitemap first.');
@@ -151,4 +151,10 @@ Route::get('/sitemaps/sitemap.xml', function () {
     return response()->file($path, [
         'Content-Type' => 'application/xml'
     ]);
-})->name('sitemap');
+};
+
+// Primary sitemap URL (index inside /sitemaps)
+Route::get('/sitemaps/sitemap.xml', $serveSitemap)->name('sitemap');
+
+// Backwards-compatible top-level path used by some crawlers/hosts
+Route::get('/sitemap.xml', $serveSitemap);
