@@ -17,7 +17,7 @@ class ThreadController extends Controller
 {
     public function index(Request $request)
     {
-        $topContributors = User::withCount('comments')->orderBy('comments_count', 'desc')->take(5)->get();
+        $topContributors = User::withCount('threadComments')->orderBy('thread_comments_count', 'desc')->take(5)->get();
 
         // include counts for comments and likes so the view can show totals
         $threadsQuery = Thread::with(['user', 'categories'])

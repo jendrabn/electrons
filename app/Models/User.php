@@ -57,6 +57,11 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
         return $this->hasMany(Post::class);
     }
 
+    public function postComments(): HasMany
+    {
+        return $this->hasMany(PostComment::class);
+    }
+
     public function avatarUrl(): Attribute
     {
         $url = '';
@@ -94,8 +99,8 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
         return $this->hasMany(Thread::class);
     }
 
-    public function comments(): HasMany
+    public function threadComments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(ThreadComment::class);
     }
 }

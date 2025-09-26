@@ -237,7 +237,19 @@
                     if (quillContainer) {
                         try {
                             localQuill = new Quill('#' + quillContainer.id, {
-                                theme: 'snow'
+                                theme: 'snow',
+                                modules: {
+                                    toolbar: [
+                                        ['bold', 'italic', 'underline', 'strike'],
+                                        [{
+                                            'list': 'ordered'
+                                        }, {
+                                            'list': 'bullet'
+                                        }],
+                                        ['link'],
+                                        ['clean']
+                                    ]
+                                }
                             });
                         } catch (err) {
                             console.error('Quill init failed (edit)', err);

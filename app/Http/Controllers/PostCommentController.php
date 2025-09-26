@@ -6,7 +6,6 @@ use App\Http\Requests\PostCommentRequest;
 use App\Models\PostComment;
 use App\Models\Post;
 use App\Models\Like;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Auth;
@@ -57,15 +56,21 @@ class PostCommentController extends Controller
             'user_id' => Auth::id(),
             'body' => $body,
             'parent_id' => $parentId,
-            // 'is_hidden' => false,
         ]);
-
 
         // If AJAX request, render the reply partial HTML and return it with updated reply count
         if ($request->wantsJson() || $request->ajax()) {
             $html = view('posts.partials._reply', ['reply' => $comment, 'post' => $post])->render();
             $count = PostComment::where('post_id', $post->id)->where('parent_id', $parentId)->count();
-            return response()->json(['success' => true, 'message' => 'Komentar ditambahkan.', 'id' => $comment->id, 'parent_id' => $parentId, 'html' => $html, 'count' => $count]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Komentar ditambahkan.',
+                'id' => $comment->id,
+                'parent_id' => $parentId,
+                'html' => $html,
+                'count' => $count
+            ]);
         }
 
         return redirect()->route('posts.show', $post)->with('status', 'Komentar ditambahkan.');
@@ -78,13 +83,6 @@ class PostCommentController extends Controller
         $data = $request->validated();
 
         $body = $data['body'];
-
-        if (trim(strip_tags(str_replace('&nbsp;', '', $body))) === '') {
-            if ($request->wantsJson() || $request->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Komentar tidak boleh kosong.'], 422);
-            }
-            return redirect()->route('posts.show', $post)->with('error', 'Komentar tidak boleh kosong.');
-        }
 
         $comment->update(['body' => $body]);
 
@@ -109,10 +107,12 @@ class PostCommentController extends Controller
             if ($comment->parent_id) {
                 // it's a reply, load the reply edit form
                 $html = view('posts.partials._reply_edit_form', compact('comment', 'post'))->render();
+
                 return response()->json(['html' => $html]);
             } else {
                 // it's a top-level comment, load the comment edit form
                 $html = view('posts.partials._comment_edit_form', compact('comment', 'post'))->render();
+
                 return response()->json(['html' => $html]);
             }
         }
