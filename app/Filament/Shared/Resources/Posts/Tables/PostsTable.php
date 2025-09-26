@@ -33,7 +33,7 @@ class PostsTable
                     ->sortable()
                     ->searchable(),
 
-                ImageColumn::make('image')
+                ImageColumn::make('image_url')
                     ->label('Image'),
 
                 TextColumn::make('image_caption')

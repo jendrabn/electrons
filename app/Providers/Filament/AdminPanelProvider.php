@@ -34,10 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            // ->login(Login::class)
-            // ->registration(Register::class)
-            // ->profile(EditProfile::class, false)
-            // ->passwordReset(ResetPassword::class)
+            ->profile(EditProfile::class, false)
             ->emailVerification(isRequired: env('FILAMENT_EMAIL_VERIFICATION', false))
             ->colors([
                 'primary' => Color::Blue,

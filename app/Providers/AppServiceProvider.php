@@ -42,25 +42,49 @@ class AppServiceProvider extends ServiceProvider
             'posts.*',
         ], function ($view) {
 
-            $categories = Cache::remember('categories', 1800, function () {
-                return Category::withCount(['posts' => function ($query) {
+            $ttl = now()->addMinutes(30);
+
+            // Categories
+            $categories = Cache::get('categories');
+            if (is_null($categories)) {
+                $categories = Category::withCount(['posts' => function ($query) {
                     $query->published();
                 }])->get();
-            });
 
-            $tags = Cache::remember('tags', 1800, function () {
-                return Tag::withCount(['posts' => function ($query) {
+                if ($categories->isNotEmpty()) {
+                    Cache::put('categories', $categories, $ttl);
+                }
+            }
+
+            // Tags
+            $tags = Cache::get('tags');
+            if (is_null($tags)) {
+                $tags = Tag::withCount(['posts' => function ($query) {
                     $query->published();
                 }])->having('posts_count', '>', 0)->get();
-            });
 
-            $recentPosts = Cache::remember('recentPosts', 1800, function () {
-                return Post::query()->recent()->get();
-            });
+                if ($tags->isNotEmpty()) {
+                    Cache::put('tags', $tags, $ttl);
+                }
+            }
 
-            $popularPosts = Cache::remember('popularPosts', 1800, function () {
-                return Post::query()->popular()->get();
-            });
+            // Recent Posts
+            $recentPosts = Cache::get('recentPosts');
+            if (is_null($recentPosts)) {
+                $recentPosts = Post::query()->recent()->get();
+                if ($recentPosts->isNotEmpty()) {
+                    Cache::put('recentPosts', $recentPosts, $ttl);
+                }
+            }
+
+            // Popular Posts
+            $popularPosts = Cache::get('popularPosts');
+            if (is_null($popularPosts)) {
+                $popularPosts = Post::query()->popular()->get();
+                if ($popularPosts->isNotEmpty()) {
+                    Cache::put('popularPosts', $popularPosts, $ttl);
+                }
+            }
 
             $view->with(compact('categories', 'tags', 'recentPosts', 'popularPosts'));
         });
