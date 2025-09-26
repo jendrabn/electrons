@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ThreadRequest;
 use App\Models\Thread;
-use App\Models\ThreadCategory;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\ThreadBookmark;
@@ -20,28 +20,26 @@ class ThreadController extends Controller
         $topContributors = User::withCount('threadComments')->orderBy('thread_comments_count', 'desc')->take(5)->get();
 
         // include counts for comments and likes so the view can show totals
-        $threadsQuery = Thread::with(['user', 'categories'])
+        $threadsQuery = Thread::with(['user', 'tags'])
             ->withCount(['comments', 'likes']);
 
         $filter = $request->query('filter');
-        $categoryFilter = $request->query('category');
-        $currentCategory = null;
+        $tagFilter = $request->query('tag');
+        $currentTag = null;
 
         // apply filters
         // category filter (accept slug or id)
-        if (!empty($categoryFilter)) {
-            $threadsQuery->whereHas('categories', function ($q) use ($categoryFilter) {
-                // qualify columns to avoid ambiguous `id` when joins include pivot table
-                // prefer slug lookup; if numeric, allow id lookup
-                if (is_numeric($categoryFilter)) {
-                    $q->where('thread_categories.id', $categoryFilter);
+        if (!empty($tagFilter)) {
+            $threadsQuery->whereHas('tags', function ($q) use ($tagFilter) {
+                if (is_numeric($tagFilter)) {
+                    $q->where('tags.id', $tagFilter);
                 } else {
-                    $q->where('thread_categories.slug', $categoryFilter);
+                    $q->where('tags.slug', $tagFilter);
                 }
             });
-            // resolve current category for UI title
-            $currentCategory = \App\Models\ThreadCategory::where('slug', $categoryFilter)
-                ->orWhere('id', $categoryFilter)
+            // resolve current tag for UI title
+            $currentTag = Tag::where('slug', $tagFilter)
+                ->orWhere('id', $tagFilter)
                 ->first();
         }
         if ($filter === 'mine' && Auth::check()) {
@@ -76,7 +74,7 @@ class ThreadController extends Controller
             $threadsQuery->where(function ($q) use ($likePrefix, $likeContains) {
                 $q->where('title', 'like', $likePrefix)
                     ->orWhere('title', 'like', $likeContains)
-                    ->orWhereHas('categories', function ($c) use ($likeContains) {
+                    ->orWhereHas('tags', function ($c) use ($likeContains) {
                         $c->where('name', 'like', $likeContains)
                             ->orWhere('slug', 'like', $likeContains);
                     });
@@ -87,12 +85,12 @@ class ThreadController extends Controller
             $threadsQuery->latest();
         }
 
-        $threads = $threadsQuery->with(['user', 'categories'])
+        $threads = $threadsQuery->with(['user', 'tags'])
             ->withCount(['comments', 'likes'])
             ->paginate(10)
             ->withQueryString();
 
-        $categories = ThreadCategory::all();
+        $tags = Tag::all();
 
         // SEO
         SEOTools::setTitle('Komunitas - ' . config('app.name'));
@@ -101,12 +99,12 @@ class ThreadController extends Controller
         SEOTools::opengraph()->setUrl(route('comunity.index'));
         SEOTools::opengraph()->addProperty('type', 'website');
 
-        return view('threads.index', compact('threads', 'categories', 'topContributors', 'filter', 'currentCategory'));
+        return view('threads.index', compact('threads', 'tags', 'topContributors', 'filter', 'currentTag'));
     }
 
     public function create()
     {
-        $categories = ThreadCategory::all()->pluck('name', 'id');
+        $tags = Tag::all()->pluck('name', 'id');
 
         // SEO for create thread page
         SEOTools::setTitle('Buat Thread - ' . config('app.name'));
@@ -114,23 +112,24 @@ class ThreadController extends Controller
         SEOTools::setCanonical(route('comunity.create'));
         SEOTools::opengraph()->setUrl(route('comunity.create'));
 
-        return view('threads.create', compact('categories'));
+        return view('threads.create', compact('tags'));
     }
 
     public function store(\App\Http\Requests\ThreadRequest $request)
     {
         $data = $request->validated();
 
+
         $thread = Thread::create($data);
 
-        $thread->categories()->attach($data['category_ids'] ?? []);
+        $thread->tags()->attach($data['tag_ids'] ?? []);
 
         return redirect()->route('comunity.show', $thread->id)->with('status', 'Thread berhasil dibuat.');
     }
 
     public function show(Thread $thread)
     {
-        $thread->load(['user', 'categories', 'bookmarks', 'comments' => function ($q) {
+        $thread->load(['user', 'tags', 'bookmarks', 'comments' => function ($q) {
             // only load top-level comments (parent_id = NULL), exclude hidden ones
             $q->where('is_hidden', false)
                 ->whereNull('parent_id')
@@ -165,7 +164,7 @@ class ThreadController extends Controller
         // only thread owner may edit
         $this->authorize('update', $thread);
 
-        $categories = ThreadCategory::all()->pluck('name', 'id');
+        $tags = Tag::all()->pluck('name', 'id');
 
         // SEO for edit page
         $title = 'Edit: ' . $thread->title . ' - ' . config('app.name');
@@ -174,7 +173,7 @@ class ThreadController extends Controller
         SEOTools::setCanonical(route('comunity.edit', $thread->id));
         SEOTools::opengraph()->setUrl(route('comunity.edit', $thread->id));
 
-        return view('threads.edit', compact('thread', 'categories'));
+        return view('threads.edit', compact('thread', 'tags'));
     }
 
     public function update(\App\Http\Requests\ThreadRequest $request, Thread $thread)
@@ -183,9 +182,10 @@ class ThreadController extends Controller
 
         $data = $request->validated();
 
+
         $thread->update($data);
 
-        $thread->categories()->sync($data['category_ids'] ?? []);
+        $thread->tags()->sync($data['tag_ids'] ?? []);
 
         return redirect()->route('comunity.show', $thread->id)->with('status', 'Thread berhasil diperbarui.');
     }
@@ -342,7 +342,7 @@ class ThreadController extends Controller
             ->where(function ($wb) use ($likePrefix, $likeContains) {
                 $wb->where('title', 'like', $likePrefix)
                     ->orWhere('title', 'like', $likeContains)
-                    ->orWhereHas('categories', function ($c) use ($likeContains) {
+                    ->orWhereHas('tags', function ($c) use ($likeContains) {
                         $c->where('name', 'like', $likeContains)
                             ->orWhere('slug', 'like', $likeContains);
                     });

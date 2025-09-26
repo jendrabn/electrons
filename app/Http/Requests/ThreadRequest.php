@@ -28,16 +28,16 @@ class ThreadRequest extends FormRequest
                 'user_id' => ['required', 'exists:users,id'],
                 'slug' => ['required', 'string', 'max:255', 'unique:threads,slug'],
                 'body' => ['required', 'string'],
-                'category_ids' => ['required', 'array'],
-                'category_ids.*' => ['required', 'numeric', 'exists:categories,id'],
+                'tag_ids' => ['required', 'array'],
+                'tag_ids.*' => ['required', 'numeric', 'exists:tags,id'],
             ];
         } else if ($this->routeIs('comunity.update')) {
             return [
                 'title' => ['required', 'string', 'max:200'],
                 'slug' => ['required', 'string', 'max:255', 'unique:threads,slug,' . $this->thread->id],
                 'body' => ['required', 'string'],
-                'category_ids' => ['required', 'array'],
-                'category_ids.*' => ['required', 'numeric', 'exists:categories,id'],
+                'tag_ids' => ['required', 'array'],
+                'tag_ids.*' => ['required', 'numeric', 'exists:tags,id'],
             ];
         } else {
             return [];

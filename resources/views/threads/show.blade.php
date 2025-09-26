@@ -78,8 +78,8 @@
                         <h3 class="fw-bold mb-2">{{ $thread->title }}</h3>
                         <div class="mb-3">{!! $thread->body !!}</div>
                         <div class="mb-2">
-                            @foreach ($thread->categories as $cat)
-                                <span class="badge bg-primary">{{ $cat->name }}</span>
+                            @foreach ($thread->tags as $tag)
+                                <span class="badge bg-primary">{{ $tag->name }}</span>
                             @endforeach
                         </div>
                     </div>

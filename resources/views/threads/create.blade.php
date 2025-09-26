@@ -41,18 +41,18 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"
-                                       for="category_ids">Kategori</label>
-                                <select class="@error('category_ids') is-invalid @enderror"
-                                        id="category_ids"
+                                       for="tag_ids">Tag</label>
+                                <select class="@error('tag_ids') is-invalid @enderror"
+                                        id="tag_ids"
                                         multiple
-                                        name="category_ids[]"
+                                        name="tag_ids[]"
                                         required>
-                                    @foreach ($categories as $id => $name)
+                                    @foreach ($tags as $id => $name)
                                         <option value="{{ $id }}">{{ $name }}</option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">Pilih satu atau lebih kategori</small>
-                                @error('category_ids')
+                                <small class="text-muted">Pilih satu atau lebih tag</small>
+                                @error('tag_ids')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -294,7 +294,7 @@
                 document.getElementById('body').value = quill.root.innerHTML;
             });
 
-            const ts = new TomSelect('#category_ids', {
+            const ts = new TomSelect('#tag_ids', {
                 plugins: ['remove_button'],
             });
         });

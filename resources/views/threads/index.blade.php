@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-3 py-lg-4">
         <div class="row">
             {{-- Sidebar Kiri --}}
-            <div class="col-lg-3">
+            <div class="col-lg-3 order-2 order-lg-1">
                 {{-- Top Contributors --}}
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-white">
@@ -17,11 +17,11 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <img alt="{{ $user->name }}"
                                              class="rounded-circle"
-                                             height="32"
+                                             height="30"
                                              src="{{ $user->avatar_url }}"
-                                             width="32">
+                                             width="30">
                                         <div>
-                                            <a class="fw-medium text-decoration-none"
+                                            <a class="fw-medium text-decoration-none small"
                                                href="{{ route('users.show', $user->id) }}">{{ '@' . $user->username }}</a>
                                         </div>
                                     </div>
@@ -34,15 +34,14 @@
                 {{-- Categories --}}
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white">
-                        <h5 class="card-title mb-0 fw-bold">Kategori</h5>
+                        <h5 class="card-title mb-0 fw-bold">Tag</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex flex-wrap gap-2">
-                            @foreach ($categories as $category)
+                            @foreach ($tags as $category)
                                 @php
-                                    $isActiveCat =
-                                        request('category') == $category->slug || request('category') == $category->id;
-                                    $query = array_merge(request()->query(), ['category' => $category->slug]);
+                                    $isActiveCat = request('tag') == $category->slug || request('tag') == $category->id;
+                                    $query = array_merge(request()->query(), ['tag' => $category->slug]);
                                 @endphp
                                 <a class="badge rounded-pill text-decoration-none badge-category @if ($isActiveCat) text-bg-primary @else text-bg-light @endif"
                                    href="{{ route('comunity.index', $query) }}">
@@ -55,10 +54,11 @@
             </div>
 
             {{-- Konten Utama --}}
-            <div class="col-lg-9">
+            <div class="col-lg-9 order-1 order-lg-2">
+                {{-- Header --}}
                 <div class="mb-4 thread-header d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="thread-hero-icon d-flex align-items-center justify-content-center">
+                        <div class="thread-hero-icon d-none d-md-flex align-items-center justify-content-center">
                             <!-- chat bubble SVG -->
                             <svg aria-hidden="true"
                                  fill="none"
@@ -104,25 +104,74 @@
 
                 {{-- Thread List --}}
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div aria-label="Thread filters"
-                         class="btn-group"
-                         role="group">
-                        <a class="btn btn-sm @if (empty($filter)) btn-primary @else btn-outline-secondary @endif"
-                           href="{{ route('comunity.index') }}">Semua</a>
-                        @auth
-                            <a class="btn btn-sm @if ($filter === 'mine') btn-primary @else btn-outline-secondary @endif"
-                               href="{{ route('comunity.index', ['filter' => 'mine']) }}">Thread Saya</a>
-                            <a class="btn btn-sm @if ($filter === 'bookmarks') btn-primary @else btn-outline-secondary @endif"
-                               href="{{ route('comunity.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
-                        @endauth
-                        <a class="btn btn-sm @if ($filter === 'answered') btn-primary @else btn-outline-secondary @endif"
-                           href="{{ route('comunity.index', ['filter' => 'answered']) }}">Terjawab</a>
-                    </div>
-
                     <a class="btn btn-primary"
                        href="{{ route('comunity.create') }}">
                         <i class="bi bi-plus-lg"></i> Buat Thread
                     </a>
+
+                    {{-- Responsive thread filters: dropdown on small/medium, btn-group on large+ --}}
+                    <div class="thread-filters d-flex align-items-center">
+                        @php
+                            $filterLabel = 'Filter';
+                            if (empty($filter)) {
+                                $filterLabel = 'Semua';
+                            } elseif ($filter === 'mine') {
+                                $filterLabel = 'Thread Saya';
+                            } elseif ($filter === 'bookmarks') {
+                                $filterLabel = 'Bookmark';
+                            } elseif ($filter === 'answered') {
+                                $filterLabel = 'Terjawab';
+                            }
+                        @endphp
+
+                        {{-- Mobile / Tablet: dropdown visible up to lg --}}
+                        <div class="dropdown d-inline-block d-lg-none me-2">
+                            <button aria-expanded="false"
+                                    class="btn btn-primary dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    id="threadFilterDropdownMobile"
+                                    type="button">
+                                <i class="bi bi-funnel"></i> {{ $filterLabel }}
+                            </button>
+                            <ul aria-labelledby="threadFilterDropdownMobile"
+                                class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item @if (empty($filter)) active @endif"
+                                       href="{{ route('comunity.index') }}">Semua</a>
+                                </li>
+                                @auth
+                                    <li>
+                                        <a class="dropdown-item @if ($filter === 'mine') active @endif"
+                                           href="{{ route('comunity.index', ['filter' => 'mine']) }}">Thread Saya</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item @if ($filter === 'bookmarks') active @endif"
+                                           href="{{ route('comunity.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
+                                    </li>
+                                @endauth
+                                <li>
+                                    <a class="dropdown-item @if ($filter === 'answered') active @endif"
+                                       href="{{ route('comunity.index', ['filter' => 'answered']) }}">Terjawab</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {{-- Desktop: keep original btn-group (visible on lg+) --}}
+                        <div aria-label="Thread filters"
+                             class="btn-group d-none d-lg-inline-flex"
+                             role="group">
+                            <a class="btn @if (empty($filter)) btn-primary @else btn-outline-secondary @endif"
+                               href="{{ route('comunity.index') }}">Semua</a>
+                            @auth
+                                <a class="btn @if ($filter === 'mine') btn-primary @else btn-outline-secondary @endif"
+                                   href="{{ route('comunity.index', ['filter' => 'mine']) }}">Thread Saya</a>
+                                <a class="btn @if ($filter === 'bookmarks') btn-primary @else btn-outline-secondary @endif"
+                                   href="{{ route('comunity.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
+                            @endauth
+                            <a class="btn @if ($filter === 'answered') btn-primary @else btn-outline-secondary @endif"
+                               href="{{ route('comunity.index', ['filter' => 'answered']) }}">Terjawab</a>
+                        </div>
+                    </div>
                 </div>
 
                 @forelse($threads as $thread)
@@ -165,7 +214,7 @@
 
                                     {{-- Categories --}}
                                     <div class="mb-2">
-                                        @foreach ($thread->categories as $category)
+                                        @foreach ($thread->tags as $category)
                                             <span class="badge rounded-pill text-bg-light">
                                                 {{ $category->name }}
                                             </span>

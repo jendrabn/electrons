@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('thread_category', function (Blueprint $table) {
+        Schema::create('thread_tag', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('thread_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('thread_category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('thread_id')->constrained('threads')->cascadeOnDelete();
+            $table->foreignId('tag_id')->constrained('tags')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('thread_category');
+        Schema::dropIfExists('thread_tag');
     }
 };

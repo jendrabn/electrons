@@ -15,7 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleAndPermissionSeeder::class,
-            UserSeeder::class
+            CategorySeeder::class,
+            TagSeeder::class,
+            UserSeeder::class,
         ]);
+
+        // create role admin and author using spatie/laravel-permission
     }
 }

@@ -2,22 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ThreadCategory>
+ * ThreadCategoryFactory removed - keep a minimal stub to avoid autoload issues during transition.
  */
-class ThreadCategoryFactory extends Factory
+class ThreadCategoryFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
+    // removed
 }

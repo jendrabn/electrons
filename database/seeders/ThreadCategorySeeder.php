@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ThreadCategory;
+use App\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -114,7 +114,7 @@ class ThreadCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            ThreadCategory::create($category);
+            Tag::firstOrCreate(['slug' => $category['slug']], ['name' => $category['name']]);
         }
     }
 }

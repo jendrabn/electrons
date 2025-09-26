@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\ThreadComment;
 use App\Models\Like;
+use App\Models\Tag;
 
 class Thread extends Model
 {
@@ -34,9 +35,9 @@ class Thread extends Model
         return $this->morphMany(Like::class, 'likeable');
     }
 
-    public function categories(): BelongsToMany
+    public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(ThreadCategory::class, 'thread_category');
+        return $this->belongsToMany(Tag::class, 'thread_tag', 'thread_id', 'tag_id');
     }
 
     public function bookmarks(): HasMany
