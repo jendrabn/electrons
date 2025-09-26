@@ -237,6 +237,7 @@
 @endsection
 
 @section('scripts')
+    <script></script>
     <script>
         document.addEventListener('click', function(e) {
             // comment like (top-level comment)
@@ -293,6 +294,68 @@
                 showToast('danger', 'Terjadi kesalahan jaringan');
             });
         });
+    </script>
+
+    <script>
+        // Replace copied text from .content-body with attribution per user request
+        (function() {
+            document.addEventListener('copy', function(e) {
+                try {
+                    const selection = document.getSelection();
+                    if (!selection || selection.isCollapsed) return;
+
+                    const anchor = selection.anchorNode;
+                    if (!anchor) return;
+
+                    const contentEl = anchor.nodeType === Node.ELEMENT_NODE ?
+                        anchor.closest && anchor.closest('.content-body') :
+                        anchor.parentElement && anchor.parentElement.closest('.content-body');
+                    if (!contentEl) return;
+
+                    const postTitle = {!! json_encode($post->title) !!};
+                    const postUrl = window.location.href;
+                    const siteName = {!! json_encode(config('app.name')) !!};
+
+                    // exact plain text format requested
+                    const attributionText = "\n\nArtikel ini telah tayang di " + siteName +
+                        " dengan judul [\"" + postTitle + "\"], Klik untu baca: " + postUrl;
+
+                    // build HTML attribution
+                    const attributionHtml =
+                        '<div style="margin-top:8px;border-top:1px solid #ddd;padding-top:8px;font-size:90%;color:#555">Artikel ini telah tayang di <strong>' +
+                        escapeHtml(siteName) + '</strong> dengan judul "' + escapeHtml(postTitle) +
+                        '", <a href="' + postUrl + '">Klik untu baca</a></div>';
+
+                    // get HTML/text of selection
+                    const container = document.createElement('div');
+                    for (let i = 0; i < selection.rangeCount; i++) {
+                        const range = selection.getRangeAt(i).cloneRange();
+                        container.appendChild(range.cloneContents());
+                    }
+
+                    const selectedHtml = container.innerHTML || selection.toString();
+                    const selectedText = selection.toString();
+
+                    if (e.clipboardData) {
+                        e.clipboardData.setData('text/html', selectedHtml + attributionHtml);
+                        e.clipboardData.setData('text/plain', selectedText + attributionText);
+                        e.preventDefault();
+                    }
+                } catch (err) {
+                    console.error('copy attribution error', err);
+                    // let default copy happen
+                }
+            });
+
+            function escapeHtml(unsafe) {
+                return String(unsafe)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        })();
     </script>
 
     <script>
