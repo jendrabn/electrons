@@ -37,6 +37,6 @@ class ThreadComment extends Model
 
     public function likes(): MorphMany
     {
-        return $this->morphMany(ThreadLike::class, 'likeable');
+        return $this->morphMany(Like::class, 'likeable');
     }
 }

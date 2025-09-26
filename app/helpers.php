@@ -25,17 +25,3 @@ if (! function_exists('linkify_mentions')) {
         }, $html);
     }
 }
-
-
-// function linkify_mentions(string $html, string $linkClass = 'text-mention text-decoration-none'): string
-// {
-//     return preg_replace_callback('/@([A-Za-z0-9_\-]+)/', function ($m) use ($linkClass) {
-//         $username = $m[1];
-//         $user = \App\Models\User::where('username', $username)->first();
-//         if ($user) {
-//             $url = route('users.show', $user->id);
-//             return '<a class="' . e($linkClass) . '" href="' . e($url) . '">@' . e($username) . '</a>';
-//         }
-//         return '@' . $username;
-//     }, $html);
-// }

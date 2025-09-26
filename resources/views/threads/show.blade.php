@@ -13,8 +13,12 @@
                                  src="{{ $thread->user->avatar_url }}"
                                  style="width:48px;height:48px;object-fit:cover;">
                             <div>
-                                <div class="fw-semibold">{{ $thread->user->name }}</div>
-                                <div class="small text-info">{{ '@' . $thread->user->username }}</div>
+                                <div class="fw-normal">
+                                    <a class="text-primary fw-semibold text-decoration-none"
+                                       href="{{ route('users.show', $thread->user->id) }}">{{ '@' . $thread->user->username }}</a>
+                                    <span class="mx-1 text-muted">&bull;</span>
+                                    <small class="text-muted"> {{ $thread->created_at->diffForHumans() }}</small>
+                                </div>
                             </div>
                             <div class="ms-auto d-flex align-items-stretch">
                                 @can('update', $thread)

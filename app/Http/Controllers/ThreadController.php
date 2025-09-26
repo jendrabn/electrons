@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\ThreadBookmark;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ThreadLike;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -284,7 +283,7 @@ class ThreadController extends Controller
     {
         $userId = Auth::id();
 
-        $existing = ThreadLike::where('likeable_type', Thread::class)
+        $existing = \App\Models\Like::where('likeable_type', Thread::class)
             ->where('likeable_id', $thread->id)
             ->where('user_id', $userId)
             ->first();
@@ -294,7 +293,7 @@ class ThreadController extends Controller
             $existing->delete();
             $liked = false;
         } else {
-            ThreadLike::create([
+            \App\Models\Like::create([
                 'user_id' => $userId,
                 'likeable_type' => Thread::class,
                 'likeable_id' => $thread->id,
@@ -302,7 +301,7 @@ class ThreadController extends Controller
             $liked = true;
         }
 
-        $count = ThreadLike::where('likeable_type', Thread::class)
+        $count = \App\Models\Like::where('likeable_type', Thread::class)
             ->where('likeable_id', $thread->id)
             ->count();
 

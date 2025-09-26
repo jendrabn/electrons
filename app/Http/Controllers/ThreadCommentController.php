@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Thread;
 use App\Models\ThreadComment;
-use App\Models\ThreadLike;
+use App\Models\Like;
 use Illuminate\Http\Request;
 use App\Http\Requests\ThreadCommentRequest;
 use Illuminate\Http\RedirectResponse;
@@ -147,7 +147,7 @@ class ThreadCommentController extends Controller
     {
         $userId = Auth::id();
 
-        $existing = ThreadLike::where('likeable_type', ThreadComment::class)
+        $existing = Like::where('likeable_type', ThreadComment::class)
             ->where('likeable_id', $comment->id)
             ->where('user_id', $userId)
             ->first();
@@ -155,9 +155,8 @@ class ThreadCommentController extends Controller
         $liked = false;
         if ($existing) {
             $existing->delete();
-            // dd($request->all()); // Commented out for debugging purposes
         } else {
-            ThreadLike::create([
+            Like::create([
                 'user_id' => $userId,
                 'likeable_type' => ThreadComment::class,
                 'likeable_id' => $comment->id,
@@ -165,7 +164,7 @@ class ThreadCommentController extends Controller
             $liked = true;
         }
 
-        $count = ThreadLike::where('likeable_type', ThreadComment::class)
+        $count = Like::where('likeable_type', ThreadComment::class)
             ->where('likeable_id', $comment->id)
             ->count();
 

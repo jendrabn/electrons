@@ -100,12 +100,12 @@ Route::get('/posts/author/{user:id}', [App\Http\Controllers\PostController::clas
 // Comments listing (AJAX) and authenticated actions
 Route::get('/comments/{post}', [App\Http\Controllers\PostCommentController::class, 'list'])->name('comments.list');
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/comments', [App\Http\Controllers\PostCommentController::class, 'store'])->name('comments.store');
-    Route::put('/comments/{comment}', [App\Http\Controllers\PostCommentController::class, 'update'])->name('comments.update');
-    Route::post('/comments/{comment}/reply', [App\Http\Controllers\PostCommentController::class, 'reply'])->name('comments.reply');
-    Route::post('/comments/{comment}/like', [App\Http\Controllers\PostCommentController::class, 'like'])->name('comments.like');
-    Route::delete('/comments/{comment}', [App\Http\Controllers\PostCommentController::class, 'destroy'])->name('comments.destroy');
+Route::middleware(['auth'])->prefix('posts')->name('posts.')->group(function () {
+    Route::post('/{post}/comments', [App\Http\Controllers\PostCommentController::class, 'store'])->name('comments.store');
+    Route::get('/{post}/comments/{comment}/edit', [App\Http\Controllers\PostCommentController::class, 'edit'])->name('comments.edit');
+    Route::put('/{post}/comments/{comment}', [App\Http\Controllers\PostCommentController::class, 'update'])->name('comments.update');
+    Route::delete('/{post}/comments/{comment}', [App\Http\Controllers\PostCommentController::class, 'destroy'])->name('comments.destroy');
+    Route::post('/{post}/comments/{comment}/like', [App\Http\Controllers\PostCommentController::class, 'like'])->name('comments.like');
 });
 
 

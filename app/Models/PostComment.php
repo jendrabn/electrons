@@ -7,19 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class Comment extends Model
+class PostComment extends Model
 {
-    /** @use HasFactory<\Database\Factories\CommentFactory> */
     use HasFactory;
+
+    protected $table = 'post_comments';
 
     protected $guarded = [];
 
     protected $appends = ['created_at_human', 'liked'];
-
-    // protected $with = ['user', 'replies'];
-
-    // protected $withCount = ['likes', 'replies'];
 
     public function user(): BelongsTo
     {
@@ -33,17 +31,17 @@ class Comment extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Comment::class, 'parent_id');
+        return $this->belongsTo(PostComment::class, 'parent_id');
     }
 
     public function replies(): HasMany
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(PostComment::class, 'parent_id');
     }
 
-    public function likes(): HasMany
+    public function likes(): MorphMany
     {
-        return $this->hasMany(CommentLike::class, 'comment_id');
+        return $this->morphMany(Like::class, 'likeable');
     }
 
     public function createdAtHuman(): Attribute

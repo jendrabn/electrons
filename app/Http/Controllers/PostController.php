@@ -127,7 +127,11 @@ class PostController extends Controller
     public function show(Post $post): View
     {
         $post->increment('views_count');
-        $post->load(['category', 'user', 'tags']);
+        $post->load(['category', 'user', 'tags', 'comments' => function ($query) {
+            $query->whereNull('parent_id')->with(['user', 'likes', 'replies' => function ($q) {
+                $q->with(['user', 'likes']);
+            }]);
+        }]);
 
         // Related posts by title similarity using full-text search
         $relatedPosts = Post::query()

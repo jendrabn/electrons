@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\ThreadComment;
+use App\Models\Like;
 
 class Thread extends Model
 {
@@ -30,7 +31,7 @@ class Thread extends Model
 
     public function likes(): MorphMany
     {
-        return $this->morphMany(ThreadLike::class, 'likeable');
+        return $this->morphMany(Like::class, 'likeable');
     }
 
     public function categories(): BelongsToMany

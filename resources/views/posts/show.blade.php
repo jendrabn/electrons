@@ -185,8 +185,11 @@
                                     object-fit: cover;
                                 " />
                                 @endif
-                                <form class="flex-grow-1"
-                                      id="commentForm">
+                                <form action="{{ route('posts.comments.store', $post->id) }}"
+                                      class="flex-grow-1"
+                                      id="comment-form"
+                                      method="POST">
+                                    @csrf
                                     <div class="mb-3">
                                         <textarea class="form-control"
                                                   id="commentBody"
@@ -195,98 +198,20 @@
                                                   required
                                                   rows="3"></textarea>
                                     </div>
-                                    <button class="btn btn-primary btn-sm"
-                                            type="submit">
-                                        <i class="bi bi-send"></i> Kirim
-                                    </button>
+                                    <div class="mt-2 text-end">
+                                        <button class="btn btn-primary"
+                                                type="submit">
+                                            <i class="bi bi-send"></i> Kirim
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
 
-                        {{-- Daftar Komentar --}}
-                        <div id="commentList"></div>
+                        @include('posts.partials._comments-list')
                     </div>
                     {{-- End Comments --}}
 
-                    {{-- Modal Edit Komentar --}}
-                    <div aria-hidden="true"
-                         aria-labelledby="editCommentModalLabel"
-                         class="modal fade"
-                         data-bs-backdrop="static"
-                         data-bs-keyboard="false"
-                         id="editCommentModal"
-                         tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <form class="modal-content"
-                                  id="editCommentForm">
-                                <div class="modal-header border-bottom-0">
-                                    <h5 class="modal-title"
-                                        id="editCommentModalLabel">
-                                        Edit Komentar
-                                    </h5>
-                                    <button class="btn-close"
-                                            data-bs-dismiss="modal"
-                                            type="button"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <textarea class="form-control"
-                                              id="editCommentBody"
-                                              name="body"
-                                              required
-                                              rows="3"></textarea>
-                                </div>
-                                <div class="modal-footer border-top-0">
-                                    <button class="btn btn-link text-decoration-none text-primary"
-                                            data-bs-dismiss="modal"
-                                            type="button">
-                                        Batal
-                                    </button>
-                                    <button class="btn btn-link text-decoration-none text-primary"
-                                            type="submit">
-                                        Simpan
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    {{-- Modal Konfirmasi Hapus Komentar --}}
-                    <div aria-hidden="true"
-                         aria-labelledby="deleteCommentModalLabel"
-                         class="modal fade"
-                         data-bs-backdrop="static"
-                         data-bs-keyboard="false"
-                         id="deleteCommentModal"
-                         tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <form class="modal-content"
-                                  id="deleteCommentForm">
-                                <div class="modal-header border-bottom-0">
-                                    <h5 class="modal-title"
-                                        id="deleteCommentModalLabel">
-                                        Perhatian
-                                    </h5>
-                                    <button class="btn-close"
-                                            data-bs-dismiss="modal"
-                                            type="button"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Apakah Anda yakin ingin menghapus komentar ini?
-                                </div>
-                                <div class="modal-footer border-top-0">
-                                    <button class="btn btn-link text-decoration-none text-primary"
-                                            data-bs-dismiss="modal"
-                                            type="button">
-                                        Batal
-                                    </button>
-                                    <button class="btn btn-link text-decoration-none text-danger"
-                                            type="submit">
-                                        Hapus
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="col-lg-4">@include('partials.sidebar')</div>
@@ -308,319 +233,368 @@
         @endif
     </div>
 
-    <!-- Modal Social Media Share -->
-    <div aria-hidden="true"
-         aria-labelledby="shareModalLabel"
-         class="modal fade"
-         id="shareModal"
-         tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0">
-                <div class="modal-header d-flex align-items-start border-bottom-0">
-                    <h5 class="modal-title text-wrap text-truncate fs-6 line-clamp-2"
-                        id="shareModalLabel">
-                        {{ $post->title }}
-                    </h5>
-                    <button aria-label="Tutup"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            type="button"></button>
-                </div>
-
-                <div class="modal-body">
-                    <p class="mb-4 text-center">Bagikan artikel ini melalui:</p>
-                    <x-social-media-share :post="$post" />
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+    @include('posts.partials._modals')
 @endsection
 
-@push('scripts')
+@section('scripts')
     <script>
-        const postId = {{ $post->id }};
-        const userId = {{ auth()->id() ?? 'null' }};
-        const avatarUrl = '{{ auth()->user()->avatar_url ?? '' }}';
+        document.addEventListener('click', function(e) {
+            // comment like (top-level comment)
+            const commentLikeBtn = e.target.closest('.comment-like-btn, .reply-like-btn');
+            if (!commentLikeBtn) return;
 
-        let comments = [];
-        let editCommentId = null;
-        let deleteCommentId = null;
-
-        // Render comments & replies
-        function renderComments() {
-            const container = document.getElementById('commentList');
-
-            container.innerHTML = comments.map(comment => `
-            <div class="comment mb-4" data-id="${comment.id}">
-                <div class="d-flex align-items-start">
-                    <img alt="${comment.user.name}" class="rounded-circle me-3" src="${comment.user.avatar_url}" style="width:40px;height:40px;object-fit:cover;">
-                    <div class="flex-grow-1">
-                        <div class="d-flex align-items-center mb-1">
-                            <span class="fw-semibold me-2">${comment.user.name}</span>
-                            <span class="text-muted small">${comment.created_at_human}</span>
-                            ${userId === comment.user_id ? `
-                                    <div class="ms-auto d-flex gap-2">
-                                        <button class="btn btn-link btn-sm p-0 text-decoration-none edit-btn" data-id="${comment.id}" type="button">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn" data-id="${comment.id}" type="button">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                ` : ''}
-
-                        </div>
-                        <div class="mb-2">${comment.body}</div>
-                        <div class="d-flex align-items-center gap-3">
-                            <button class="btn btn-link btn-sm p-0 text-decoration-none reply-btn" data-id="${comment.id}" type="button">
-                                <i class="bi bi-reply"></i> Balas
-                            </button>
-                            <button class="btn btn-link btn-sm p-0 text-decoration-none like-btn" data-id="${comment.id}" type="button">
-                                <i class="bi ${comment.liked ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up'}"></i>
-                                <span class="like-count">${comment.likes_count}</span>
-                            </button>
-                            ${comment.replies.length > 0 ? `
-                                    <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#repliesCollapse${comment.id}">
-                                        <i class="bi bi-chat-left-text"></i> Lihat ${comment.replies.length} Balasan
-                                    </button>
-                                ` : ''}
-                        </div>
-                        <form class="reply-form mt-3 d-none" data-id="${comment.id}">
-                            <textarea class="form-control mb-2" name="body" rows="2" placeholder="Tulis balasan..." required></textarea>
-                            <button class="btn btn-primary btn-sm" type="submit"><i class="bi bi-send"></i> Kirim Balasan</button>
-                        </form>
-                        <div class="collapse mt-2" id="repliesCollapse${comment.id}">
-                            ${comment.replies.map(reply => `
-                                    <div class="comment reply mt-3 ms-4" data-id="${reply.id}">
-                                        <div class="d-flex align-items-start">
-                                            <img alt="${reply.user.name}" class="rounded-circle me-2" src="${reply.user.avatar_url}" style="width:32px;height:32px;object-fit:cover;">
-                                            <div class="flex-grow-1">
-                                                <div class="d-flex align-items-center mb-1">
-                                                    <span class="fw-semibold me-2">${reply.user.name}</span>
-                                                    <span class="text-muted small">${reply.created_at_human}</span>
-                                                    ${userId === reply.user_id ? `
-                                            <div class="ms-auto d-flex gap-2">
-                                                <button class="btn btn-link btn-sm p-0 text-decoration-none edit-btn" data-id="${reply.id}" type="button">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn" data-id="${reply.id}" type="button">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                        ` : ''}
-                                                </div>
-                                                <div class="mb-2">${reply.body}</div>
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <button class="btn btn-link btn-sm p-0 text-decoration-none like-btn" data-id="${reply.id}" type="button">
-                                                        <i class="bi ${reply.liked ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up'}"></i>
-                                                        <span class="like-count">${reply.likes_count}</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-            attachCommentEvents();
-        }
-
-        // Fetch comments
-        function fetchComments() {
-            fetch("{{ route('comments.list', $post->id) }}")
-                .then(res => res.json())
-                .then(data => {
-                    comments = data;
-                    renderComments();
-                });
-        }
-
-        // Submit new comment
-        document.getElementById('commentForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const body = document.getElementById('commentBody').value;
-            fetch("{{ route('comments.store') }}", {
+
+            const url = commentLikeBtn.dataset.url;
+            if (!url) return;
+
+            const icon = commentLikeBtn.querySelector('i.bi');
+            const counter = commentLikeBtn.querySelector('.like-count');
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            }).then(async (res) => {
+                if (res.status === 401 || res.status === 403) {
+                    showToast('danger', 'Anda harus login untuk melakukan aksi ini.');
+                    return;
+                }
+
+                const json = await res.json();
+                if (json?.success) {
+                    // update like UI
+                    if (json.liked) {
+                        if (icon) {
+                            icon.classList.remove('bi-hand-thumbs-up');
+                            icon.classList.add('bi-hand-thumbs-up-fill', 'text-primary');
+                        }
+                    } else {
+                        if (icon) {
+                            icon.classList.remove('bi-hand-thumbs-up-fill', 'text-primary');
+                            icon.classList.add('bi-hand-thumbs-up');
+                        }
+                    }
+
+                    if (counter) {
+                        counter.textContent = json.count ?? counter.textContent;
+                    }
+                } else {
+                    showToast('danger', json?.message ?? 'Terjadi kesalahan');
+                }
+            }).catch((err) => {
+                console.error(err);
+                showToast('danger', 'Terjadi kesalahan jaringan');
+            });
+        });
+    </script>
+
+    <script>
+        (function() {
+            const deleteModalEl = document.getElementById('commentDeleteModal');
+            const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
+            const deleteConfirmBtn = document.getElementById('commentDeleteConfirmBtn');
+            let pendingDelete = null;
+
+            // Open confirmation modal when delete button clicked
+            document.addEventListener('click', function(e) {
+                const delBtn = e.target.closest('.comment-delete, .reply-delete');
+                if (!delBtn) return;
+
+                e.preventDefault();
+
+                const url = delBtn.dataset.url;
+                const id = delBtn.dataset.id;
+                if (!url || !id) return;
+
+                // set modal message
+                if (deleteModalEl) {
+                    deleteModalEl.querySelector('.modal-body').textContent =
+                        'Yakin ingin menghapus komentar ini? Tindakan ini tidak bisa dibatalkan.';
+                }
+
+                // store pending delete info on confirm button dataset
+                if (deleteConfirmBtn) {
+                    deleteConfirmBtn.dataset.url = url;
+                    deleteConfirmBtn.dataset.id = id;
+                }
+
+                pendingDelete = {
+                    url,
+                    id
+                };
+
+                if (deleteModal) {
+                    deleteModal.show();
+                }
+            });
+
+            // Confirm delete click
+            if (deleteConfirmBtn) {
+                deleteConfirmBtn.addEventListener('click', function(ev) {
+                    ev.preventDefault();
+
+                    const url = deleteConfirmBtn.dataset.url;
+                    const id = deleteConfirmBtn.dataset.id;
+                    if (!url || !id) return;
+
+                    // disable button while request in-flight
+                    deleteConfirmBtn.disabled = true;
+                    deleteConfirmBtn.textContent = 'Menghapus...';
+
+                    fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    }).then(async (res) => {
+                        if (res.status === 401 || res.status === 403) {
+                            showToast('danger',
+                                'Anda tidak memiliki izin untuk menghapus komentar ini.');
+                            return;
+                        }
+
+                        const json = await res.json();
+                        if (json?.success) {
+                            // remove comment element from DOM
+                            const el = document.getElementById('comment-' + json.id);
+                            if (el) el.remove();
+
+                            // if reply deletion, update parent reply count badge/button
+                            if (json.parent_id) {
+                                const parentToggle = document.querySelector(
+                                    '[data-bs-target="#repliesCollapse' + json.parent_id + '"]');
+                                if (parentToggle) {
+                                    parentToggle.innerHTML =
+                                        '<i class="bi bi-chat-left-text"></i> Lihat ' + (json
+                                            .count ?? 0) + ' Balasan';
+                                }
+                            }
+
+                            showToast('success', 'Komentar dihapus.');
+                            // hide modal
+                            if (deleteModal) deleteModal.hide();
+                        } else {
+                            showToast('danger', json?.message ?? 'Gagal menghapus komentar');
+                        }
+                    }).catch((err) => {
+                        console.error(err);
+                        showToast('danger', 'Terjadi kesalahan jaringan');
+                    }).finally(() => {
+                        deleteConfirmBtn.disabled = false;
+                        deleteConfirmBtn.textContent = 'Hapus';
+                    });
+                });
+            }
+        })();
+    </script>
+
+    <script>
+        (function() {
+            // Handle reply form submissions via AJAX (delegated)
+            document.addEventListener('submit', function(e) {
+                const form = e.target.closest('.reply-form');
+                if (!form) return;
+
+                e.preventDefault();
+
+                const action = form.getAttribute('action') || window.location.href;
+                const textarea = form.querySelector('textarea[name="body"]');
+                const parentInput = form.querySelector('input[name="parent_id"]');
+                const parentId = parentInput ? parentInput.value : null;
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                if (!action || !textarea) return;
+
+                const payload = {
+                    body: textarea.value
+                };
+                if (parentId) payload.parent_id = parentId;
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    const origHtml = submitBtn.innerHTML;
+                    submitBtn.textContent = 'Mengirim ...';
+                }
+
+                fetch(action, {
                     method: 'POST',
                     headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content'),
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        body,
-                        post_id: postId
-                    })
-                })
-                .then(res => res.json())
-                .then((data) => {
-                    document.getElementById('commentBody').value = '';
-                    showToast(data.success, data.message);
-                    fetchComments();
-                });
-        });
-
-        // Attach events after comments are rendered
-        function attachCommentEvents() {
-            // Reply form toggle
-            document.querySelectorAll('.reply-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const id = btn.getAttribute('data-id');
-                    const form = btn.closest('.comment').querySelector('.reply-form[data-id="' + id + '"]');
-                    form.classList.toggle('d-none');
-                    form.querySelector('textarea').focus();
-                };
-            });
-
-            // Submit reply
-            document.querySelectorAll('.reply-form').forEach(form => {
-                form.onsubmit = function(e) {
-                    e.preventDefault();
-                    const id = form.getAttribute('data-id');
-                    const body = form.querySelector('textarea').value;
-                    fetch(`/comments/${id}/reply`, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                body
-                            })
-                        })
-                        .then(res => res.json())
-                        .then((data) => {
-                            form.querySelector('textarea').value = '';
-                            form.classList.add('d-none');
-                            showToast(data.success, data.message);
-                            fetchComments();
-                        });
-                };
-            });
-
-            // Like/unlike
-            document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const id = btn.getAttribute('data-id');
-                    fetch(`/comments/${id}/like`, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        })
-                        .then(res => res.json())
-                        .then((data) => {
-                            showToast(data.success, data.message);
-                            fetchComments()
-                        });
-                };
-            });
-
-            // Edit
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.onclick = function() {
-                    editCommentId = btn.getAttribute('data-id');
-                    const comment = findCommentById(editCommentId);
-                    document.getElementById('editCommentBody').value = comment.body;
-                    new bootstrap.Modal(document.getElementById('editCommentModal')).show();
-                };
-            });
-
-            // Delete
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.onclick = function() {
-                    deleteCommentId = btn.getAttribute('data-id');
-                    new bootstrap.Modal(document.getElementById('deleteCommentModal')).show();
-                };
-            });
-        }
-
-        // Submit edit
-        document.getElementById('editCommentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const body = document.getElementById('editCommentBody').value;
-            fetch(`/comments/${editCommentId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        body
-                    })
-                })
-                .then(res => res.json())
-                .then((data) => {
-                    bootstrap.Modal.getInstance(document.getElementById('editCommentModal')).hide();
-                    showToast(data.success, data.message);
-                    fetchComments();
-                });
-        });
-
-        // Submit delete
-        document.getElementById('deleteCommentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            fetch(`/comments/${deleteCommentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    body: JSON.stringify(payload)
+                }).then(async (res) => {
+                    if (res.status === 401 || res.status === 403) {
+                        showToast('danger', 'Anda harus login untuk membalas komentar.');
+                        return;
                     }
-                })
-                .then(res => res.json())
-                .then((data) => {
-                    bootstrap.Modal.getInstance(document.getElementById('deleteCommentModal')).hide();
-                    showToast(data.success, data.message);
-                    fetchComments();
+
+                    const json = await res.json();
+                    if (json?.success) {
+                        // insert the returned HTML into replies container
+                        const target = document.getElementById('repliesCollapse' + (json
+                            .parent_id ?? parentId));
+                        if (target) {
+                            target.insertAdjacentHTML('beforeend', json.html);
+                        }
+
+                        // update replies count on the toggle button
+                        const parentToggle = document.querySelector(
+                            '[data-bs-target="#repliesCollapse' + (json.parent_id ?? parentId) +
+                            '"]');
+                        if (parentToggle) {
+                            parentToggle.innerHTML = '<i class="bi bi-chat-left-text"></i> Lihat ' +
+                                (json.count ?? 0) + ' Balasan';
+                        }
+
+                        // clear textarea
+                        textarea.value = '';
+                        showToast('success', json.message ?? 'Balasan dikirim.');
+                    } else {
+                        showToast('danger', json?.message ?? 'Gagal mengirim balasan');
+                    }
+                }).catch((err) => {
+                    console.error(err);
+                    showToast('danger', 'Terjadi kesalahan jaringan');
+                }).finally(() => {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        // restore original label (try to be safe)
+                        submitBtn.innerHTML = '<i class="bi bi-send"></i> Kirim';
+                    }
                 });
-        });
-
-        // Find comment
-        function findCommentById(id) {
-            for (const c of comments) {
-                if (c.id == id) return c;
-                for (const r of c.replies) {
-                    if (r.id == id) return r;
-                }
-            }
-            return null;
-        }
-
-        // Show toast
-        function showToast(success, message) {
-            const toastId = 'toast-' + Date.now();
-            const bgClass = success ? 'bg-success text-white' : 'bg-danger text-white';
-
-            if (!success !== 'boolean') {
-                success = false;
-            }
-
-            const toastHtml = `
-            <div id="${toastId}" class="toast align-items-center ${bgClass} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                <div class="toast-body">${message ?? 'Terjadi kesalahan'}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>`;
-
-            document.querySelector('.toast-container').insertAdjacentHTML('beforeend', toastHtml);
-
-            const toastEl = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastEl, {
-                delay: 3000
             });
-            toast.show();
-
-            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchComments);
+        })();
     </script>
-@endpush
+
+    <script>
+        (function() {
+            // Edit comment / reply via AJAX
+            document.addEventListener('click', async function(e) {
+                const editBtn = e.target.closest('.comment-edit, .reply-edit');
+                if (!editBtn) return;
+
+                e.preventDefault();
+
+                const url = editBtn.dataset.url;
+                if (!url) return;
+
+                // fetch the edit form HTML
+                try {
+                    const res = await fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (res.status === 401 || res.status === 403) {
+                        showToast('danger', 'Anda tidak memiliki izin untuk mengedit komentar ini.');
+                        return;
+                    }
+
+                    const json = await res.json();
+                    if (!json?.html) {
+                        showToast('danger', 'Gagal memuat form edit');
+                        return;
+                    }
+
+                    // decide which modal to use based on button class
+                    let modalEl, bodyEl, modalObj;
+                    if (editBtn.classList.contains('comment-edit')) {
+                        modalEl = document.getElementById('commentEditModal');
+                        bodyEl = document.getElementById('commentEditModalBody');
+                    } else {
+                        modalEl = document.getElementById('replyEditModal');
+                        bodyEl = document.getElementById('replyEditModalBody');
+                    }
+
+                    if (!modalEl || !bodyEl) {
+                        showToast('danger', 'Modal edit tidak tersedia');
+                        return;
+                    }
+
+                    bodyEl.innerHTML = json.html;
+                    modalObj = new bootstrap.Modal(modalEl);
+                    modalObj.show();
+
+                    // intercept form submit inside modal
+                    const form = bodyEl.querySelector('form');
+                    if (!form) return;
+
+                    form.addEventListener('submit', async function(ev) {
+                        ev.preventDefault();
+                        const action = form.getAttribute('action');
+                        const method = (form.querySelector('input[name="_method"]') || {})
+                            .value || form.method || 'POST';
+
+                        const formData = new FormData(form);
+                        const payload = {};
+                        for (const [k, v] of formData.entries()) payload[k] = v;
+
+                        // send PUT via fetch
+                        try {
+                            const putRes = await fetch(action, {
+                                method: 'PUT',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]').getAttribute(
+                                        'content'),
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (putRes.status === 401 || putRes.status === 403) {
+                                showToast('danger',
+                                    'Anda tidak memiliki izin untuk mengedit komentar ini.');
+                                return;
+                            }
+
+                            const putJson = await putRes.json();
+                            if (putJson?.success) {
+                                // update DOM: find comment/reply body
+                                const id = putJson.id;
+                                const el = document.querySelector('#comment-' + id +
+                                    ' .comment-body, #comment-' + id + ' .reply-body');
+                                if (el) el.innerHTML = putJson.body;
+
+                                showToast('success', 'Komentar diperbarui.');
+                                modalObj.hide();
+                            } else {
+                                showToast('danger', putJson?.message ??
+                                    'Gagal menyimpan perubahan');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            showToast('danger', 'Terjadi kesalahan jaringan');
+                        }
+                    }, {
+                        once: true
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    showToast('danger', 'Gagal memuat form edit');
+                }
+            });
+        })();
+    </script>
+@endsection

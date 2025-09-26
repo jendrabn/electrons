@@ -12,6 +12,6 @@ class ThreadLikeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        // Legacy seeder placeholder — likes are now stored in the polymorphic `likes` table.
     }
 }

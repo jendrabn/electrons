@@ -23,8 +23,6 @@ class Post extends Model
 
     protected $appends = ['image_url'];
 
-
-
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -84,6 +82,6 @@ class Post extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(PostComment::class);
     }
 }
