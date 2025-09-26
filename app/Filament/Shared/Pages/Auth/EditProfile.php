@@ -23,20 +23,40 @@ class EditProfile extends BaseEditProfile
         return $schema
             ->schema([
                 Grid::make(2)->schema([
-                    TextInput::make('name')->required()->maxLength(255),
-                    TextInput::make('username')->maxLength(50),
-                    TextInput::make('email')->required()->email()->maxLength(255),
-                    TextInput::make('phone')->maxLength(20),
-                    Select::make('sex')->options([
-                        'male' => 'Male',
-                        'female' => 'Female',
-                    ])->placeholder('Select gender'),
-                    DatePicker::make('birth_date'),
-                    TextInput::make('address')->maxLength(255),
+                    $this->getNameFormComponent(),
+                    TextInput::make('username')
+                        ->required()
+                        ->unique(ignoreRecord: true)
+                        ->minLength(3)
+                        ->maxLength(50),
+                    $this->getEmailFormComponent(),
+                    TextInput::make('phone')
+                        ->nullable()
+                        ->string()
+                        ->startsWith('62')
+                        ->minLength(10)
+                        ->maxLength(15),
+                    Select::make('sex')
+                        ->nullable()
+                        ->string()
+                        ->in(['male', 'female'])
+                        ->options([
+                            'male' => 'Male',
+                            'female' => 'Female',
+                        ])
+                        ->placeholder('Select gender'),
+                    DatePicker::make('birth_date')
+                        ->nullable()
+                        ->placeholder('Select birth date'),
+                    TextInput::make('address')
+                        ->nullable()
+                        ->string()
+                        ->minLength(5)
+                        ->maxLength(255),
                 ]),
                 FileUpload::make('avatar')
                     ->image()
-                    ->directory('avatars')
+                    ->directory('upload/avatars')
                     ->disk('public')
                     ->maxSize(1024)
                     ->columnSpanFull(),
