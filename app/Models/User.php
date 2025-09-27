@@ -9,6 +9,7 @@ use App\Traits\Auditable;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,7 +21,7 @@ use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 
-class User extends Authenticatable implements MustVerifyEmail, HasAvatar
+class User extends Authenticatable implements MustVerifyEmail, HasAvatar, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, Auditable;
@@ -51,6 +52,26 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Determine if the user can access the given Filament panel.
+     *
+     * @param \Filament\Panel $panel
+     * @return bool
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if (! $this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        return match ($panel->getId()) {
+            'admin'  => $this->isAdmin(),
+            'author' => $this->isAuthor(),
+            default  => false,
+        };
+    }
+
 
     public function posts(): HasMany
     {

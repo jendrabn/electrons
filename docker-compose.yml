@@ -1,0 +1,98 @@
+﻿services:
+  app:
+    build:
+      context: .
+      target: php
+    image: electrons-app:php83
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stack
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage:/var/www/electrons/storage
+    expose:
+      - "9000"
+    networks:
+      - backend
+
+  queue:
+    image: electrons-app:php83
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage:/var/www/electrons/storage
+    networks:
+      - backend
+
+  nginx:
+    build:
+      context: .
+      target: nginx
+    image: electrons-nginx:latest
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    ports:
+      - "80:80"
+    volumes:
+      - storage:/var/www/electrons/storage:ro
+    networks:
+      - backend
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    command: --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: electrons
+      MYSQL_USER: electrons
+      MYSQL_PASSWORD: electrons
+      MYSQL_ROOT_PASSWORD: supersecret
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  storage:
+  db_data:
+  redis_data:
