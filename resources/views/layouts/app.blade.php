@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1"
           name="viewport">
 
-    {!! SEO::generate() !!}
+    {!! SEO::generate(true) !!}
     {!! JsonLd::generate() !!}
 
     <title>{{ config('app.name') }}</title>
