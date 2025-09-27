@@ -187,7 +187,7 @@ class AuthController extends Controller
             'username' => Str::slug($googleUser->getNickname() ?? explode('@', $googleUser->getEmail())[0]) . rand(100, 999),
             'google_id' => $googleUser->getId(),
             'password' => bcrypt(Str::random(16)),
-            'avatar' => $googleUser->getAvatar(),
+            // 'avatar' => $googleUser->getAvatar(),
         ]);
 
         if (method_exists($user, 'assignRole') && $user->getRoleNames()->isEmpty()) {
