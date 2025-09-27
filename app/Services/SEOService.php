@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Thread;
 use App\Models\User;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
@@ -43,12 +44,15 @@ class SEOService
             'belajar pemrograman',
             'web development',
             'mobile development',
-            'tutorial laravel',
-            'tutorial react',
-            'tutorial nodejs',
+            'laravel tutorial',
+            'react tutorial',
+            'nodejs tutorial',
             'ui ux design',
-            'ci cd pipeline',
+            'ci cd',
             'software testing',
+            'komunitas developer',
+            'komunitas pemrograman',
+            'tanya jawab coding',
         ];
     }
 
@@ -58,8 +62,8 @@ class SEOService
 
     public function setHomeSEO(Collection $newPosts, Collection $sections): void
     {
-        $title       = "$this->siteName - Tutorial Programming, Web & Mobile Development Indonesia";
-        $description = 'Blog teknologi yang membahas tutorial coding, pemrograman web & mobile, Laravel, React, Flutter, UI/UX, CI/CD, testing, dan tren teknologi terbaru.';
+        $title       = "{$this->siteName} — Blog & Komunitas Pemrograman Indonesia";
+        $description = 'Situs belajar dan komunitas teknologi: tutorial coding, panduan framework (Laravel, React, Flutter), tips pengembangan web & mobile, serta komunitas untuk diskusi dan tanya jawab developer.';
         $keywords    = $this->defaultKeywords;
 
         $this->applyBasicMeta($title, $description, $keywords, url('/'), $this->defaultImage);
@@ -139,12 +143,12 @@ class SEOService
     public function setPostIndexSEO(?string $searchQuery = null, ?LengthAwarePaginator $paginator = null): void
     {
         if ($searchQuery) {
-            $title       = "Hasil Pencarian: {$searchQuery} - {$this->siteName}";
-            $description = "Temukan artikel terkait “{$searchQuery}”: programming, web & mobile development, tutorial, tips, dan panduan developer.";
+            $title       = "Hasil Pencarian: {$searchQuery} — {$this->siteName}";
+            $description = "Hasil pencarian untuk \"{$searchQuery}\": kumpulan artikel, tutorial, dan diskusi terkait pemrograman dan pengembangan software.";
             $noindex     = true; // hasil pencarian sebaiknya noindex
         } else {
-            $title       = 'Blog Programming & Development - Tutorial Web, Mobile & Software Development';
-            $description = 'Kumpulan artikel: web development, mobile app, tips coding, framework terbaru, dan panduan developer profesional.';
+            $title       = "Artikel & Panduan — {$this->siteName}";
+            $description = 'Kumpulan artikel dan tutorial: web & mobile development, best practice, tips coding, dan panduan framework untuk developer Indonesia.';
             $noindex     = false;
         }
 
@@ -166,8 +170,8 @@ class SEOService
 
     public function setCategorySEO(Category $category, ?LengthAwarePaginator $paginator = null): void
     {
-        $title       = "Tutorial {$category->name} - {$this->siteName}";
-        $description = "Artikel dan tutorial {$category->name} dari dasar hingga advanced, dengan panduan step-by-step.";
+        $title       = "Tutorial {$category->name} — {$this->siteName}";
+        $description = "Kumpulan artikel dan tutorial tentang {$category->name}: panduan dari dasar hingga praktik lanjutan, contoh kode, dan studi kasus.";
 
         $keywords = array_values(array_unique(array_merge($this->defaultKeywords, [
             $category->name,
@@ -206,8 +210,8 @@ class SEOService
 
     public function setTagSEO(Tag $tag, ?LengthAwarePaginator $paginator = null): void
     {
-        $title       = "Artikel dengan Tag {$tag->name} - {$this->siteName}";
-        $description = "Semua artikel terkait {$tag->name}: tutorial, tips, dan panduan development terbaru.";
+        $title       = "Tag: {$tag->name} — {$this->siteName}";
+        $description = "Artikel, tutorial, dan diskusi terkait {$tag->name}. Temukan panduan praktis, contoh kode, dan sharing pengalaman dari komunitas.";
 
         $keywords = array_values(array_unique(array_merge($this->defaultKeywords, [
             $tag->name,
@@ -242,8 +246,8 @@ class SEOService
 
     public function setAuthorSEO(User $user, ?LengthAwarePaginator $paginator = null): void
     {
-        $title       = "Artikel oleh {$user->name} - {$this->siteName}";
-        $description = "Artikel programming oleh {$user->name}: tutorial, tips coding, dan pengalaman development.";
+        $title       = "Artikel oleh {$user->name} — {$this->siteName}";
+        $description = "Kumpulan tulisan oleh {$user->name}: tutorial, pengalaman pengembangan, dan insight teknis untuk developer.";
 
         $keywords = array_values(array_unique(array_merge($this->defaultKeywords, [
             $user->name,
@@ -442,6 +446,169 @@ class SEOService
             ->setUrl($url)
             ->addValue('@context', 'https://schema.org')
             ->addValue('@graph', $graph);
+    }
+
+    /**
+     * Set SEO for thread index (forum listing)
+     */
+    public function setThreadIndexSEO(?string $searchQuery = null, ?LengthAwarePaginator $paginator = null): void
+    {
+        if ($searchQuery) {
+            $title       = "Hasil Pencarian Diskusi: {$searchQuery} — {$this->siteName}";
+            $description = "Hasil pencarian diskusi untuk \"{$searchQuery}\": pertanyaan, jawaban, dan diskusi terkait pemrograman dari komunitas.";
+            $noindex     = true;
+        } else {
+            $title       = "Diskusi & Komunitas — {$this->siteName}";
+            $description = 'Komunitas tanya-jawab dan diskusi developer: ajukan pertanyaan, bantu jawaban, dan diskusikan masalah teknis bersama komunitas.';
+            $noindex     = false;
+        }
+
+        $this->applyBasicMeta($title, $description, $this->defaultKeywords, $this->buildCanonicalWithPage(), $this->defaultImage, $noindex);
+        OpenGraph::setType('website');
+
+        JsonLd::addValues([
+            '@context'   => 'https://schema.org',
+            '@type'      => 'CollectionPage',
+            'name'       => $title,
+            'headline'   => $title,
+            'url'        => url()->current(),
+            'inLanguage' => $this->inLanguage,
+            'mainEntity' => $this->buildThreadItemListFromPaginator($paginator),
+        ]);
+
+        $this->applyPaginationRel($paginator);
+    }
+
+    /**
+     * Set SEO for single thread (show)
+     */
+    public function setThreadSEO(Thread $thread): void
+    {
+        $baseUrl = rtrim(url('/'), '/') . '/';
+        $url     = route('comunity.show', $thread);
+
+        $title = Str::of((string)($thread->title ?? ''))->trim()->isNotEmpty()
+            ? (string) $thread->title . ' - ' . $this->siteName
+            : ($this->siteName . ' — Diskusi');
+
+        $description = Str::limit(strip_tags($thread->content ?? $thread->body ?? ''), 160, '');
+        $image       = $this->pickImage($thread->image ?? null, $thread->content ?? '') ?? $this->defaultImage;
+
+        $keywordsArr = method_exists($thread, 'tags') ? (array) ($thread->tags?->pluck('name')->all() ?? []) : [];
+
+        $this->applyBasicMeta($title, $description, array_values(array_unique(array_merge($this->defaultKeywords, $keywordsArr))), $url, $image);
+
+        OpenGraph::setType('article')
+            ->addProperty('article:author', $thread->user->name ?? $this->siteName)
+            ->addProperty('article:published_time', optional($thread->created_at)->toAtomString())
+            ->addProperty('article:modified_time', optional($thread->updated_at)->toAtomString());
+
+        TwitterCard::setType('summary_large_image')
+            ->setSite($this->twitterHandle)
+            ->setTitle($title)->setDescription($description)->setUrl($url)->setImage($image);
+
+        $questionId = $url . '#question';
+
+        $answersCount = method_exists($thread, 'comments') ? ($thread->comments?->count() ?? 0) : null;
+
+        $graph = [
+            [
+                '@type'       => 'Question',
+                '@id'         => $questionId,
+                'name'        => $thread->title,
+                'text'        => Str::limit(strip_tags($thread->content ?? $thread->body ?? ''), 300, ''),
+                'answerCount' => $answersCount,
+                'author'      => ['@type' => 'Person', 'name' => $thread->user->name ?? null],
+                'dateCreated' => optional($thread->created_at)->toAtomString(),
+                'inLanguage'  => $this->inLanguage,
+            ],
+            [
+                '@type' => 'WebPage',
+                '@id'   => $url,
+                'url'   => $url,
+                'name'  => $title,
+                'isPartOf'  => ['@id' => $baseUrl . '#website'],
+                'breadcrumb' => ['@id' => $url . '#breadcrumb'],
+                'inLanguage' => $this->inLanguage,
+                'mainEntity' => ['@id' => $questionId],
+            ],
+            $this->organizationNode($baseUrl),
+        ];
+
+        JsonLd::setTitle($title)
+            ->setSite($this->siteName)
+            ->setDescription($description)
+            ->setUrl($url)
+            ->addValue('@context', 'https://schema.org')
+            ->addValue('@graph', $graph);
+    }
+
+    /**
+     * Set SEO for create thread page (typically a form). Mark as noindex.
+     */
+    public function setThreadCreateSEO(?string $canonicalUrl = null): void
+    {
+        $title       = 'Buat Thread - ' . $this->siteName;
+        $description = 'Buat thread baru untuk berdiskusi atau meminta bantuan. Berikan judul yang jelas dan jelaskan masalah Anda.';
+        $canonical   = $canonicalUrl ?? url()->current();
+
+        // mark create/edit forms as noindex
+        $this->applyBasicMeta($title, $description, $this->defaultKeywords, $canonical, $this->defaultImage, true);
+
+        OpenGraph::setType('website')->setUrl($canonical);
+
+        JsonLd::addValues([
+            '@context' => 'https://schema.org',
+            '@type'    => 'WebPage',
+            'name'     => $title,
+            'url'      => $canonical,
+            'inLanguage' => $this->inLanguage,
+        ]);
+    }
+
+    /**
+     * Set SEO for edit thread page (form). Mark as noindex.
+     */
+    public function setThreadEditSEO(Thread $thread, ?string $canonicalUrl = null): void
+    {
+        $title       = 'Edit: ' . ($thread->title ?? '') . ' - ' . $this->siteName;
+        $description = 'Edit thread Anda — pastikan judul dan konten jelas agar komunitas dapat membantu.';
+        $canonical   = $canonicalUrl ?? url()->current();
+
+        $this->applyBasicMeta($title, $description, $this->defaultKeywords, $canonical, $this->defaultImage, true);
+
+        OpenGraph::setType('website')->setUrl($canonical)->setTitle($title)->setDescription($description);
+
+        JsonLd::addValues([
+            '@context' => 'https://schema.org',
+            '@type'    => 'WebPage',
+            'name'     => $title,
+            'url'      => $canonical,
+            'inLanguage' => $this->inLanguage,
+        ]);
+    }
+
+    /**
+     * Build ItemList for threads (used in JSON-LD for index pages)
+     */
+    private function buildThreadItemListFromPaginator(?LengthAwarePaginator $paginator): ?array
+    {
+        if (!$paginator) return null;
+        $items = [];
+        $i = 1 + (($paginator->currentPage() - 1) * $paginator->perPage());
+        foreach (collect($paginator->items())->take(10) as $thread) {
+            $threadUrl = route('comunity.show', $thread);
+            $image     = $this->pickImage($thread->image ?? null, $thread->content ?? '') ?? $this->defaultImage;
+            $items[] = [
+                '@type'         => 'ListItem',
+                'position'      => $i++,
+                'url'           => $threadUrl,
+                'name'          => (string) ($thread->title ?? ''),
+                'image'         => $image,
+                'datePublished' => optional($thread->created_at)->toAtomString(),
+            ];
+        }
+        return ['@type' => 'ItemList', 'itemListElement' => $items];
     }
 
     /* =========================

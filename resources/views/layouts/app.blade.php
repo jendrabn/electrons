@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1"
           name="viewport">
 
-    {!! SEO::generate() !!}
+    {!! SEO::generate(true) !!}
     {!! JsonLd::generate() !!}
 
     <title>{{ config('app.name') }}</title>
@@ -27,6 +27,13 @@
 
     <meta content="{{ csrf_token() }}"
           name="csrf-token">
+
+    <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9750508834370473"
+            crossorigin="anonymous"></script>
+
+    <meta content="ca-pub-9750508834370473"
+          name="google-adsense-account">
 
     @vite('resources/scss/style.scss')
     @yield('styles')

@@ -12,9 +12,14 @@ use Illuminate\Support\Facades\Auth;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Services\SEOService;
 
 class ThreadController extends Controller
 {
+
+    public function __construct(private SEOService $seoService) {}
+
+
     public function index(Request $request)
     {
         $topContributors = User::withCount('threadComments')->orderBy('thread_comments_count', 'desc')->take(5)->get();
@@ -92,12 +97,8 @@ class ThreadController extends Controller
 
         $tags = Tag::all();
 
-        // SEO
-        SEOTools::setTitle('Komunitas - ' . config('app.name'));
-        SEOTools::setDescription('Temukan diskusi, tanya jawab, dan solusi teknis di komunitas kami. Jelajahi thread terbaru dan top contributor.');
-        SEOTools::setCanonical(route('comunity.index'));
-        SEOTools::opengraph()->setUrl(route('comunity.index'));
-        SEOTools::opengraph()->addProperty('type', 'website');
+        // SEO (use centralized SEOService)
+        $this->seoService->setThreadIndexSEO($search ?: null, $threads);
 
         return view('threads.index', compact('threads', 'tags', 'topContributors', 'filter', 'currentTag'));
     }
@@ -107,10 +108,7 @@ class ThreadController extends Controller
         $tags = Tag::all()->pluck('name', 'id');
 
         // SEO for create thread page
-        SEOTools::setTitle('Buat Thread - ' . config('app.name'));
-        SEOTools::setDescription('Buat thread baru untuk berdiskusi atau meminta bantuan. Berikan judul yang jelas dan jelaskan masalah Anda.');
-        SEOTools::setCanonical(route('comunity.create'));
-        SEOTools::opengraph()->setUrl(route('comunity.create'));
+        $this->seoService->setThreadCreateSEO(route('comunity.create'));
 
         return view('threads.create', compact('tags'));
     }
@@ -141,20 +139,8 @@ class ThreadController extends Controller
                 ->orderByDesc('created_at');
         }]);
 
-        // SEO for thread show
-        $title = $thread->title . ' - ' . config('app.name');
-        $description = Str::limit(strip_tags($thread->body), 160);
-        SEOTools::setTitle($title);
-        SEOTools::setDescription($description ?: config('app.name'));
-        SEOTools::setCanonical(route('comunity.show', $thread->id));
-        SEOTools::opengraph()->setUrl(route('comunity.show', $thread->id));
-        SEOTools::opengraph()->addProperty('type', 'article');
-        SEOTools::opengraph()->setTitle($title);
-        SEOTools::opengraph()->setDescription($description);
-        // add image if user avatar exists
-        if (!empty($thread->user->avatar_url)) {
-            SEOTools::opengraph()->addImage($thread->user->avatar_url);
-        }
+        // SEO for thread show (use centralized SEOService)
+        $this->seoService->setThreadSEO($thread);
 
         return view('threads.show', compact('thread'));
     }
@@ -167,11 +153,7 @@ class ThreadController extends Controller
         $tags = Tag::all()->pluck('name', 'id');
 
         // SEO for edit page
-        $title = 'Edit: ' . $thread->title . ' - ' . config('app.name');
-        SEOTools::setTitle($title);
-        SEOTools::setDescription('Edit thread Anda — pastikan judul dan konten jelas agar komunitas dapat membantu.');
-        SEOTools::setCanonical(route('comunity.edit', $thread->id));
-        SEOTools::opengraph()->setUrl(route('comunity.edit', $thread->id));
+        $this->seoService->setThreadEditSEO($thread, route('comunity.edit', $thread->id));
 
         return view('threads.edit', compact('thread', 'tags'));
     }
