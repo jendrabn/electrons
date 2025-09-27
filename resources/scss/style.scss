@@ -210,3 +210,8 @@ $font-family-base: "Poppins", sans-serif;
 
 @import "./custom";
 @import "./responsive.scss";
+
+/* Collapse AdSense slot jika tidak terisi */
+.adsbygoogle[data-ad-status="unfilled"] {
+    display: none !important;
+}
