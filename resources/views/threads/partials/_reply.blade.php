@@ -17,8 +17,10 @@
                      </div>
                  </div>
 
+                 @php $threadDone = isset($thread) ? (bool) $thread->is_done : false; @endphp
+
                  <div class="ms-auto d-flex gap-2">
-                     @if (auth()->check())
+                     @if (auth()->check() && !$threadDone)
                          <button aria-label="Balas komentar"
                                  class="btn btn-link btn-sm p-0 text-decoration-none reply-btn"
                                  data-bs-target="#replyCollapse{{ $reply->id }}"
@@ -42,7 +44,7 @@
                          <span class="like-count">{{ $reply->likes->count() }}</span>
                      </button>
 
-                     @if (auth()->check() && auth()->id() === $reply->user_id)
+                     @if (auth()->check() && auth()->id() === $reply->user_id && !$threadDone)
                          <button aria-label="Edit komentar"
                                  class="btn btn-link btn-sm p-0 text-decoration-none edit-btn reply-edit"
                                  data-id="{{ $reply->id }}"

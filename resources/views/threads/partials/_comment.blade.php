@@ -68,7 +68,7 @@
                 {!! linkify_mentions($comment->body) !!}</div>
 
             <div class="d-flex align-items-center gap-3">
-                @if (auth()->check())
+                @if (auth()->check() && !$threadDone)
                     <button aria-label="Balas komentar"
                             class="btn btn-link btn-sm p-0 text-decoration-none reply-btn"
                             data-bs-target="#replyCollapse{{ $comment->id }}"
@@ -136,7 +136,11 @@
                 <div class="collapse mt-2"
                      id="repliesCollapse{{ $comment->id }}">
                     @foreach ($comment->replies as $reply)
-                        @include('threads.partials._reply', ['reply' => $reply, 'comment' => $comment])
+                        @include('threads.partials._reply', [
+                            'reply' => $reply,
+                            'comment' => $comment,
+                            'thread' => $thread,
+                        ])
                     @endforeach
                 </div>
             @else

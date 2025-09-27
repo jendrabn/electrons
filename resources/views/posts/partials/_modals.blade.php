@@ -174,27 +174,28 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Edit reply modal (body will be injected via AJAX) -->
-    <div aria-hidden="true"
-         aria-labelledby="replyEditModalLabel"
-         class="modal fade"
-         id="replyEditModal"
-         tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-bottom-0">
-                    <h5 class="modal-title"
-                        id="replyEditModalLabel">Edit Balasan</h5>
-                    <button aria-label="Close"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            type="button"></button>
-                </div>
-                <div class="modal-body"
-                     id="replyEditModalBody">
-                    <!-- HTML form will be loaded here via AJAX -->
-                </div>
+<!-- Edit reply modal (body will be injected via AJAX) -->
+<div aria-hidden="true"
+     aria-labelledby="replyEditModalLabel"
+     class="modal fade"
+     id="replyEditModal"
+     tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title"
+                    id="replyEditModalLabel">Edit Balasan</h5>
+                <button aria-label="Close"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        type="button"></button>
+            </div>
+            <div class="modal-body"
+                 id="replyEditModalBody">
+                <!-- HTML form will be loaded here via AJAX -->
             </div>
         </div>
     </div>
+</div>

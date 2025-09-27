@@ -62,7 +62,7 @@ class ThreadCommentController extends Controller
 
         // If AJAX request, render the reply partial HTML and return it with updated reply count
         if ($request->wantsJson() || $request->ajax()) {
-            $html = view('threads.partials._reply_item', ['reply' => $comment, 'thread' => $thread])->render();
+            $html = view('threads.partials._reply', ['reply' => $comment, 'thread' => $thread])->render();
             $count = ThreadComment::where('thread_id', $thread->id)->where('parent_id', $parentId)->count();
             return response()->json(['success' => true, 'message' => 'Komentar ditambahkan.', 'id' => $comment->id, 'parent_id' => $parentId, 'html' => $html, 'count' => $count]);
         }
