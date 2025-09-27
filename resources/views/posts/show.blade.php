@@ -55,6 +55,9 @@
                     </h1>
                     {{-- End Title --}}
 
+                    {{-- Iklan: setelah judul artikel --}}
+                    @include('partials.ads.display-responsive', ['slot' => '8485643721'])
+
                     {{-- Meta Mobile --}}
                     <div class="content-meta-mobile d-lg-none mb-3">
                         <div>
@@ -151,6 +154,9 @@
                         {!! $post->content !!}
                     </div>
                     {{-- End Content --}}
+
+                    {{-- Iklan: setelah isi artikel --}}
+                    @include('partials.ads.display-responsive', ['slot' => '8485643721'])
 
                     {{-- Tags --}}
                     <div class="content-tags mb-3">

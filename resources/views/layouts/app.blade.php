@@ -45,8 +45,14 @@
         @include('partials.navbar')
     </header>
 
-    <main class="my-5">
+    <main class="my-5 container">
+        {{-- Iklan di bawah navbar / atas konten --}}
+        @include('partials.ads.display-responsive', ['slot' => '8485643721'])
+
         @yield('content')
+
+        {{-- Iklan di akhir konten / sebelum footer --}}
+        @include('partials.ads.display-responsive', ['slot' => '8485643721'])
     </main>
 
     @include('partials.footer')
