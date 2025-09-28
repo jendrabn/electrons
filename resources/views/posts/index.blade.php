@@ -21,12 +21,24 @@
                 @endif
 
                 <div class="row gx-0 gy-2 gy-lg-4">
-                    @foreach ($posts as $post)
+                    @forelse ($posts as $post)
                         <div class="col-12">
                             <x-post-item :post="$post"
                                          type="horizontal" />
                         </div>
-                    @endforeach
+                    @empty
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <div class="mb-3">
+                                    <i class="bi bi-card-list display-1 text-muted"></i>
+                                </div>
+                                <h4>Belum ada artikel</h4>
+                                <p class="text-muted">
+                                    Tidak ada artikel yang ditemukan.
+                                </p>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
 
                 <div class="mt-4">
