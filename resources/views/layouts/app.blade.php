@@ -6,6 +6,12 @@
     <meta content="width=device-width, initial-scale=1"
           name="viewport">
 
+    <meta content="{{ csrf_token() }}"
+          name="csrf-token">
+
+    <meta content="ca-pub-9750508834370473"
+          name="google-adsense-account">
+
     {!! SEO::generate(true) !!}
     {!! JsonLd::generate() !!}
 
@@ -25,15 +31,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.7.9/glider.min.css"
           rel="stylesheet">
 
-    <meta content="{{ csrf_token() }}"
-          name="csrf-token">
-
     <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9750508834370473"
             crossorigin="anonymous"></script>
-
-    <meta content="ca-pub-9750508834370473"
-          name="google-adsense-account">
 
     @vite('resources/scss/style.scss')
     @yield('styles')
@@ -45,19 +45,20 @@
         @include('partials.navbar')
     </header>
 
-    <main class="my-5 container">
-        {{-- Iklan di bawah navbar / atas konten --}}
-        @include('partials.ads.display-responsive', ['slot' => '8485643721'])
-
+    <main class="my-4 my-lg-5 container">
         @yield('content')
 
-        {{-- Iklan di akhir konten / sebelum footer --}}
         @include('partials.ads.display-responsive', ['slot' => '8485643721'])
     </main>
 
     @include('partials.footer')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.7.9/glider.min.js"></script>
+
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
     <script>
         // Small helper to show Bootstrap 5 toasts from JS
         function showToast(type, message) {

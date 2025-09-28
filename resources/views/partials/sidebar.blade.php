@@ -15,6 +15,8 @@
             </div>
         </div>
 
+        {{-- @include('partials.ads.display-responsive', ['slot' => '8485643721']) --}}
+
         <div class="card shadow-sm border-0">
             <div class="card-body pb-2">
                 <h5 class="mb-3 fw-bold">Terbaru</h5>
@@ -28,6 +30,8 @@
                 </ul>
             </div>
         </div>
+
+        {{-- @include('partials.ads.display-responsive', ['slot' => '8485643721']) --}}
 
         <div class="card shadow-sm border-0">
             <div class="card-body pb-2">
@@ -46,6 +50,8 @@
             </div>
         </div>
 
+        {{-- @include('partials.ads.display-responsive', ['slot' => '8485643721']) --}}
+
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <h5 class="mb-3 fw-bold">Tag</h5>
@@ -57,5 +63,6 @@
             </div>
         </div>
 
+        @include('partials.ads.display-responsive', ['slot' => '8485643721'])
     </div>
 </aside>

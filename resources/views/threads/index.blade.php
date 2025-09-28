@@ -31,6 +31,8 @@
                     </div>
                 </div>
 
+                {{-- @include('partials.ads.display-responsive', ['slot' => '8485643721']) --}}
+
                 {{-- Categories --}}
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white">
@@ -51,6 +53,8 @@
                         </div>
                     </div>
                 </div>
+
+                @include('partials.ads.display-responsive', ['slot' => '8485643721'])
             </div>
 
             {{-- Konten Utama --}}
