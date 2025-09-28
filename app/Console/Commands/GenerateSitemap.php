@@ -17,6 +17,8 @@ use Spatie\Sitemap\Tags\Url;
 
 class GenerateSitemap extends Command
 {
+    /** Base URL to prefix sitemap links (from --base or config('app.url')) */
+    protected string $baseUrl = '';
     protected $signature = 'sitemap:generate
                             {--base= : Override base URL}
                             {--path=sitemaps : Output dir relative to public_path}
@@ -30,6 +32,7 @@ class GenerateSitemap extends Command
         $tStart = microtime(true);
 
         $baseUrl = rtrim($this->option('base') ?: (config('app.url') ?: url('/')), '/');
+        $this->baseUrl = $baseUrl;
         $outDir  = public_path(trim($this->option('path'), '/'));
         $chunk   = max(100, (int) $this->option('chunk'));
         $withGz  = (bool) $this->option('gzip');
@@ -63,13 +66,13 @@ class GenerateSitemap extends Command
         $publicPrefix = $publicPrefix ? '/' . trim($publicPrefix, '/') : '';
 
         $index = SitemapIndex::create()
-            ->add($baseUrl . $publicPrefix . '/sitemap-home.xml')
-            ->add($baseUrl . $publicPrefix . '/sitemap-posts.xml')
-            ->add($baseUrl . $publicPrefix . '/sitemap-threads.xml')
-            ->add($baseUrl . $publicPrefix . '/sitemap-categories.xml')
-            ->add($baseUrl . $publicPrefix . '/sitemap-tags.xml')
-            ->add($baseUrl . $publicPrefix . '/sitemap-authors.xml')
-            ->add($baseUrl . $publicPrefix . '/sitemap-static.xml');
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-home.xml')
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-posts.xml')
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-threads.xml')
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-categories.xml')
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-tags.xml')
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-authors.xml')
+            ->add($this->baseUrl . $publicPrefix . '/sitemap-static.xml');
 
         $index->writeToFile($indexPath);
 
@@ -89,7 +92,7 @@ class GenerateSitemap extends Command
 
         $elapsed = number_format(microtime(true) - $tStart, 2);
         $this->info("Sitemap generated to: {$publicPrefix}/ (done in {$elapsed}s)");
-        $this->line('Robots hint: Sitemap: ' . $baseUrl . $publicPrefix . '/sitemap.xml');
+        $this->line('Robots hint: Sitemap: ' . $this->baseUrl . $publicPrefix . '/sitemap.xml');
 
         return self::SUCCESS;
     }
@@ -113,7 +116,7 @@ class GenerateSitemap extends Command
 
         // Home (pakai nama rute)
         $sm->add(
-            Url::create(FacadesUrl::route('home', [], true))
+            Url::create($this->buildRouteUrl('home'))
                 ->setLastModificationDate(Carbon::now()->startOfDay())
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(1.0)
@@ -121,14 +124,14 @@ class GenerateSitemap extends Command
 
         // Listing posts
         $sm->add(
-            Url::create(FacadesUrl::route('posts.index', [], true))
+            Url::create($this->buildRouteUrl('posts.index'))
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(0.9)
         );
 
         // Community / threads listing
         $sm->add(
-            Url::create(FacadesUrl::route('comunity.index', [], true))
+            Url::create($this->buildRouteUrl('comunity.index'))
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(0.8)
         );
@@ -147,7 +150,7 @@ class GenerateSitemap extends Command
             ->orderBy('id')
             ->chunkById($chunk, function ($posts) use ($sm) {
                 foreach ($posts as $post) {
-                    $url = FacadesUrl::route('posts.show', $post, true);
+                    $url = $this->buildRouteUrl('posts.show', $post);
                     $lastmod = $post->updated_at ?? $post->published_at ?? now();
 
                     $sm->add(
@@ -172,7 +175,7 @@ class GenerateSitemap extends Command
             ->orderBy('id')
             ->chunkById($chunk, function ($threads) use ($sm) {
                 foreach ($threads as $thread) {
-                    $url = FacadesUrl::route('comunity.show', $thread, true);
+                    $url = $this->buildRouteUrl('comunity.show', $thread);
                     $lastmod = $thread->updated_at ?? now();
 
                     $sm->add(
@@ -197,7 +200,7 @@ class GenerateSitemap extends Command
             ->chunkById(1000, function ($cats) use ($sm) {
                 foreach ($cats as $cat) {
                     $sm->add(
-                        Url::create(FacadesUrl::route('posts.category', $cat, true))
+                        Url::create($this->buildRouteUrl('posts.category', $cat))
                             ->setLastModificationDate($cat->updated_at ?? now())
                             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                             ->setPriority(0.6)
@@ -218,7 +221,7 @@ class GenerateSitemap extends Command
             ->chunkById(1000, function ($tags) use ($sm) {
                 foreach ($tags as $tag) {
                     $sm->add(
-                        Url::create(FacadesUrl::route('posts.tag', $tag, true))
+                        Url::create($this->buildRouteUrl('posts.tag', $tag))
                             ->setLastModificationDate($tag->updated_at ?? now())
                             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                             ->setPriority(0.5)
@@ -239,7 +242,7 @@ class GenerateSitemap extends Command
             ->chunkById(1000, function ($users) use ($sm) {
                 foreach ($users as $user) {
                     $sm->add(
-                        Url::create(FacadesUrl::route('posts.author', $user, true))
+                        Url::create($this->buildRouteUrl('posts.author', $user))
                             ->setLastModificationDate($user->updated_at ?? now())
                             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                             ->setPriority(0.4)
@@ -263,7 +266,7 @@ class GenerateSitemap extends Command
 
         foreach ($static as $item) {
             $sm->add(
-                Url::create(FacadesUrl::route($item['route'], [], true))
+                Url::create($this->buildRouteUrl($item['route']))
                     ->setLastModificationDate(Carbon::now()->startOfDay())
                     ->setChangeFrequency($item['freq'])
                     ->setPriority($item['priority'])
@@ -271,6 +274,25 @@ class GenerateSitemap extends Command
         }
 
         $sm->writeToFile($path);
+    }
+
+    /**
+     * Build an absolute URL using the configured baseUrl and named route.
+     * Falls back to baseUrl if route generation fails.
+     */
+    private function buildRouteUrl(string $name, mixed $params = null): string
+    {
+        try {
+            // route(..., false) returns a relative path; prefix with baseUrl
+            $relative = FacadesUrl::route($name, $params, false);
+            if (Str::startsWith($relative, ['http://', 'https://'])) {
+                return rtrim($relative, '/');
+            }
+
+            return rtrim($this->baseUrl, '/') . '/' . ltrim($relative, '/');
+        } catch (\Throwable $e) {
+            return $this->baseUrl;
+        }
     }
 
     private function gzipCopy(string $xmlPath): void
