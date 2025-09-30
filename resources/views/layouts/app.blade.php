@@ -136,24 +136,7 @@
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(
                 tooltipTriggerEl))
 
-            new Glider(document.querySelector('.glider'), {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                draggable: true,
-                gaps: 10,
-                dots: '#dots',
-                arrows: {
-                    prev: '.glider-prev',
-                    next: '.glider-next'
-                },
-                responsive: [{
-                    breakpoint: 768,
-                    settings: {
-                        slidesToShow: 2.25,
-                        slidesToScroll: 2
-                    }
-                }, ]
-            });
+
         });
     </script>
     @yield('scripts')

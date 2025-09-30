@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,13 +16,12 @@ use Illuminate\Support\Facades\Auth;
 // Home
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-
 // Community (threads) routes
 Route::prefix('comunity')->name('comunity.')->group(function () {
     // Public listing
     Route::get('/', [App\Http\Controllers\ThreadController::class, 'index'])->name('index');
 
-    // Protected actions (create/store/edit/update) — register BEFORE the wildcard show
+    // Protected actions (create/store/edit/update) â€” register BEFORE the wildcard show
     // so static paths like '/create' are not captured by the wildcard show route.
     Route::middleware(['auth'])->group(function () {
         Route::get('/create', [App\Http\Controllers\ThreadController::class, 'create'])->name('create');
@@ -50,12 +49,9 @@ Route::prefix('comunity')->name('comunity.')->group(function () {
     // Suggest endpoint for search autocomplete
     Route::get('/suggest', [App\Http\Controllers\ThreadController::class, 'suggest'])->name('suggest');
 
-    // Public show (wildcard) — keep this last so it doesn't match earlier static routes
+    // Public show (wildcard) â€” keep this last so it doesn't match earlier static routes
     Route::get('/{thread}', [App\Http\Controllers\ThreadController::class, 'show'])->name('show');
 });
-
-
-
 
 // Provide a named 'login' route for compatibility with packages (Filament, etc.)
 Route::get('/login', function () {
@@ -67,6 +63,7 @@ Route::post('/filament/admin/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
+
     return redirect()->route('auth.show.login');
 })->middleware('auth')->name('compat.filament.admin.logout');
 
@@ -74,6 +71,7 @@ Route::post('/filament/author/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
+
     return redirect()->route('auth.show.login');
 })->middleware('auth')->name('compat.filament.author.logout');
 
@@ -81,14 +79,12 @@ Route::get('/users/{user}', function () {
     return 'user profile page';
 })->name('users.show');
 
-
-
 // Thread image uploads (publicly addressable route used by the editor)
 Route::post('/threads/uploads', [App\Http\Controllers\ThreadController::class, 'uploadImage'])->name('threads.upload-image');
 
 // Static pages
-Route::get('/contact', fn() => view('contact'))->name('contact');
-Route::get('/about', fn() => view('about'))->name('about');
+Route::get('/contact', fn () => view('contact'))->name('contact');
+Route::get('/about', fn () => view('about'))->name('about');
 
 // Posts routes (index, show, filters)
 Route::get('/posts', [App\Http\Controllers\PostController::class, 'index'])->name('posts.index');
@@ -108,7 +104,6 @@ Route::middleware(['auth'])->prefix('posts')->name('posts.')->group(function () 
     Route::post('/{post}/comments/{comment}/like', [App\Http\Controllers\PostCommentController::class, 'like'])->name('comments.like');
 });
 
-
 // Custom auth routes (explicit, well-named)
 Route::prefix('auth')->name('auth.')->group(function () {
     // Routes available only to guests
@@ -117,13 +112,11 @@ Route::prefix('auth')->name('auth.')->group(function () {
         Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('show.login');
         Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('show.register');
         Route::get('/forgot', [App\Http\Controllers\AuthController::class, 'showForgot'])->name('forgot');
-        Route::get('/reset/{token}', [App\Http\Controllers\AuthController::class, 'showReset'])->name('reset.form');
 
         // Form submissions
         Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
         Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register');
         Route::post('/send-reset', [App\Http\Controllers\AuthController::class, 'sendResetLinkEmail'])->name('send-reset');
-        Route::post('/reset', [App\Http\Controllers\AuthController::class, 'reset'])->name('reset');
 
         // Social login (Google)
         Route::get('/google', [App\Http\Controllers\AuthController::class, 'redirectToGoogle'])->name('google');
@@ -134,6 +127,10 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->middleware('auth')->name('logout');
 });
 
+Route::middleware('guest')->group(function () {
+    Route::get('/reset-password/{token}', [App\Http\Controllers\AuthController::class, 'showReset'])->name('password.reset');
+    Route::post('/reset-password', [App\Http\Controllers\AuthController::class, 'reset'])->name('password.store');
+});
 // Optional routes: export and sitemap
 Route::middleware(['auth'])->group(function () {
     Route::get('/audit-logs/export', function () {
@@ -144,12 +141,12 @@ Route::middleware(['auth'])->group(function () {
 $serveSitemap = function () {
     $path = public_path('sitemaps/sitemap.xml');
 
-    if (!file_exists($path)) {
+    if (! file_exists($path)) {
         abort(404, 'Sitemap not found. Please generate sitemap first.');
     }
 
     return response()->file($path, [
-        'Content-Type' => 'application/xml'
+        'Content-Type' => 'application/xml',
     ]);
 };
 

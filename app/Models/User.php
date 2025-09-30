@@ -16,15 +16,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
-
-class User extends Authenticatable implements MustVerifyEmail, HasAvatar, FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
+    /**
+     * Send the password reset notification using custom Indonesian notification.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPassword($token));
+    }
+
+    /**
+     * Send the email verification notification using custom Indonesian notification.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new \App\Notifications\VerifyEmail);
+    }
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, Auditable;
+    use Auditable, HasFactory, HasRoles, Notifiable;
 
     protected $guarded = [];
 
@@ -77,7 +91,7 @@ class User extends Authenticatable implements MustVerifyEmail, HasAvatar, Filame
 
         if ($this->avatar == null) {
             $url = 'https://ui-avatars.com/api/?name=' . Str::substr($this->name, 0, 1) . '&color=FFFFFF&background=oklch(0.141%200.005%20285.823)';
-        } else if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+        } elseif (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
             $url = $this->avatar;
         } else {
             $url = asset('storage/' . $this->avatar);

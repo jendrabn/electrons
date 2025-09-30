@@ -53,3 +53,26 @@
         @endforeach
     </section>
 @endsection
+
+@section('scripts')
+    <script>
+        new Glider(document.querySelector('.glider'), {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            draggable: true,
+            gaps: 10,
+            dots: '#dots',
+            arrows: {
+                prev: '.glider-prev',
+                next: '.glider-next'
+            },
+            responsive: [{
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2.25,
+                    slidesToScroll: 2
+                }
+            }, ]
+        });
+    </script>
+@endsection

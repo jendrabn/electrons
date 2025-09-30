@@ -1,4 +1,4 @@
-@extends('layouts.auth')
+﻿@extends('layouts.auth')
 
 @section('auth-form')
     <div class="py-3">
@@ -6,7 +6,7 @@
              style="max-width:480px;">
             <h3 class="mb-3 fw-bold text-center">Reset Password</h3>
 
-            <form action="{{ route('auth.reset') }}"
+            <form action="{{ route('password.store') }}"
                   method="POST">
                 @csrf
                 <input name="token"
@@ -18,7 +18,7 @@
                     <input class="form-control"
                            name="email"
                            required
-                           value="{{ old('email') }}" />
+                           value="{{ old('email', request('email')) }}" />
                 </div>
 
                 <div class="mb-3">
