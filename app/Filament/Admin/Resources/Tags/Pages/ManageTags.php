@@ -17,13 +17,13 @@ class ManageTags extends ManageRecords
 
         return [
             CreateAction::make()
-                ->label('Add Tag')
+                ->label('Tambah Tag')
                 ->modalWidth($modalConfig['width'])
-                ->modalHeading('Create Tag')
+                ->modalHeading('Buat Tag')
                 ->modalAlignment($modalConfig['alignment'])
                 ->schema(TagFormSchema::getSchema())
-                ->mutateDataUsing(fn($data) => TagFormSchema::mutateDataUsing($data))
-                ->successNotificationTitle('Tag created successfully'),
+                ->mutateDataUsing(fn ($data) => TagFormSchema::mutateDataUsing($data))
+                ->successNotificationTitle('Tag berhasil dibuat'),
         ];
     }
 }

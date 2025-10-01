@@ -18,33 +18,33 @@ class PostInfolist
         return $schema
             ->components([
                 // Header Section with Image and Basic Info
-                Section::make('Post Overview')
+                Section::make('Ringkasan Blog Post')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 ImageEntry::make('image_url')
-                                    ->label('Featured Image')
+                                    ->label('Gambar Utama')
                                     ->extraImgAttributes([
                                         'class' => 'rounded-lg object-cover w-full h-auto',
-                                        'style' => 'max-height: none; height: auto;'
+                                        'style' => 'max-height: none; height: auto;',
                                     ])
                                     ->columnSpan(1),
 
                                 Group::make([
                                     TextEntry::make('title')
-                                        ->label('Title')
+                                        ->label('Judul')
                                         ->weight(FontWeight::Bold)
                                         ->size('lg'),
 
                                     TextEntry::make('image_caption')
-                                        ->label('Image Caption')
-                                        ->placeholder('No caption provided')
+                                        ->label('Keterangan Gambar')
+                                        ->placeholder('Tidak ada keterangan')
                                         ->extraAttributes([
                                             'class' => 'italic',
                                         ]),
 
                                     TextEntry::make('category.name')
-                                        ->label('Category')
+                                        ->label('Kategori')
                                         ->badge()
                                         ->color('info'),
 
@@ -54,49 +54,49 @@ class PostInfolist
                                         ->formatStateUsing(fn($state) => Status::tryFrom($state)?->getLabel() ?? ucfirst($state))
                                         ->color(fn($state) => Status::tryFrom($state)?->GetColor() ?? 'secondary'),
                                 ])->columnSpan(1),
-                            ])
+                            ]),
                     ])
                     ->collapsible()
                     ->icon('heroicon-o-eye')
                     ->columnSpanFull(),
 
                 // Post Details Section
-                Section::make('Post Information')
+                Section::make('Informasi Blog Post')
                     ->schema([
                         TextEntry::make('id')
-                            ->label('Post ID')
+                            ->label('ID Blog Post')
                             ->badge()
                             ->color('gray'),
 
                         TextEntry::make('slug')
                             ->label('Slug')
                             ->copyable()
-                            ->copyMessage('Slug copied!')
+                            ->copyMessage('Slug disalin!')
                             ->copyMessageDuration(1500),
 
                         TextEntry::make('user.name')
-                            ->label('Author')
+                            ->label('Penulis')
                             ->badge()
                             ->color('success')
                             ->icon('heroicon-o-user'),
 
                         TextEntry::make('min_read')
-                            ->label('Reading Time')
-                            ->suffix(' minutes')
+                            ->label('Waktu Baca')
+                            ->suffix(' menit')
                             ->badge()
                             ->color('warning'),
 
                         TextEntry::make('views_count')
-                            ->label('Total Views')
+                            ->label('Total Dilihat')
                             ->numeric()
                             ->badge()
                             ->color('info')
                             ->icon('heroicon-o-eye'),
 
                         TextEntry::make('published_at')
-                            ->label('Published Date')
+                            ->label('Tanggal Terbit')
                             ->dateTime('d M Y, H:i:s')
-                            ->placeholder('Not published yet')
+                            ->placeholder('Belum diterbitkan')
                             ->icon('heroicon-o-calendar'),
                     ])
                     ->columns(2)
@@ -105,17 +105,17 @@ class PostInfolist
                     ->columnSpanFull(),
 
                 // Content Section
-                Section::make('Content')
+                Section::make('Konten')
                     ->schema([
                         TextEntry::make('teaser')
-                            ->label('Teaser')
-                            ->placeholder('No teaser provided')
+                            ->label('Ringkasan')
+                            ->placeholder('Tidak ada ringkasan')
                             ->prose()
                             ->markdown()
                             ->columnSpanFull(),
 
                         TextEntry::make('content')
-                            ->label('Full Content')
+                            ->label('Konten Lengkap')
                             ->html()
                             ->prose()
                             ->columnSpanFull(),
@@ -125,25 +125,25 @@ class PostInfolist
                     ->columnSpanFull(),
 
                 // Tags Section
-                Section::make('Tags & Categorization')
+                Section::make('Tag & Kategorisasi')
                     ->schema([
                         TextEntry::make('tags.name')
-                            ->label('Tags')
+                            ->label('Tag')
                             ->badge()
                             ->separator(',')
                             ->color('primary')
-                            ->placeholder('No tags assigned'),
+                            ->placeholder('Belum ada tag'),
                     ])
                     ->collapsible()
                     ->icon('heroicon-o-tag')
                     ->columnSpanFull(),
 
                 // Rejection Reason (if applicable)
-                Section::make('Moderation Details')
+                Section::make('Detail Moderasi')
                     ->schema([
                         TextEntry::make('rejected_reason')
-                            ->label('Rejection Reason')
-                            ->placeholder('Not applicable')
+                            ->label('Alasan Penolakan')
+                            ->placeholder('Tidak berlaku')
                             ->color('danger')
                             ->prose(),
                     ])
@@ -153,22 +153,22 @@ class PostInfolist
                     ->columnSpanFull(),
 
                 // Timestamps Section
-                Section::make('System Information')
+                Section::make('Informasi Sistem')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('created_at')
-                                    ->label('Created At')
+                                    ->label('Dibuat Pada')
                                     ->dateTime('d M Y, H:i:s')
                                     ->icon('heroicon-o-plus-circle')
                                     ->color('success'),
 
                                 TextEntry::make('updated_at')
-                                    ->label('Last Updated')
+                                    ->label('Terakhir Diperbarui')
                                     ->dateTime('d M Y, H:i:s')
                                     ->icon('heroicon-o-pencil-square')
                                     ->color('warning'),
-                            ])
+                            ]),
                     ])
                     ->collapsible()
                     ->icon('heroicon-o-clock')

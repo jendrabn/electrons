@@ -22,13 +22,22 @@ class TagResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Tag;
 
-    protected static ?string $recordTitleAttribute = 'Tag';
+    protected static ?string $modelLabel = 'Tag';
+
+    protected static ?string $pluralModelLabel = 'Tag';
+
+    protected static ?string $navigationLabel = 'Tag';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?int $navigationSort = 40;
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('Tag')
+                TextInput::make('name')
+                    ->label('Nama Tag')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -39,37 +48,43 @@ class TagResource extends Resource
         $modalConfig = TagFormSchema::getModalConfig();
 
         return $table
-            ->recordTitleAttribute('Tag')
+            ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label('NAMA')
+                    ->size('sm')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label('SLUG')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('posts_count')
-                    ->label('Posts Count')
+                    ->label('JUMLAH BLOG POST')
+                    ->size('sm')
                     ->counts('posts')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Date & Time Created')
+                    ->label('TANGGAL & WAKTU DIBUAT')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('updated_at')
-                    ->label('Date & Time Updated')
+                    ->label('TANGGAL & WAKTU DIPERBARUI')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
 
             ])
             ->defaultSort('id', 'desc')
@@ -79,20 +94,20 @@ class TagResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->modalWidth($modalConfig['width'])
-                    ->modalHeading('Edit Tag')
+                    ->modalHeading('Ubah Tag')
                     ->modalAlignment($modalConfig['alignment'])
                     ->schema(TagFormSchema::getSchema())
                     ->mutateDataUsing(fn($data) => TagFormSchema::mutateDataUsing($data))
-                    ->successNotificationTitle('Tag updated successfully'),
+                    ->successNotificationTitle('Tag berhasil diperbarui'),
                 DeleteAction::make()
                     ->requiresConfirmation()
-                    ->successNotificationTitle('Tag deleted successfully'),
+                    ->successNotificationTitle('Tag berhasil dihapus'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->requiresConfirmation()
-                        ->successNotificationTitle('Tags deleted successfully'),
+                        ->successNotificationTitle('Tag berhasil dihapus'),
                 ]),
             ]);
     }

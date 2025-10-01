@@ -17,19 +17,19 @@ class StatsOverview extends StatsOverviewWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('All Posts', Post::count())
+            Stat::make('Semua Blog Post', Post::count())
                 ->icon(Heroicon::Newspaper),
-            Stat::make('Published Posts', Post::query()->published()->count())
+            Stat::make('Blog Post Terbit', Post::query()->published()->count())
                 ->icon(Heroicon::Newspaper),
-            Stat::make('Post Sections', PostSection::count())
+            Stat::make('Post Section', PostSection::count())
                 ->icon(Heroicon::Bars2),
-            Stat::make('Categories', Category::count())
+            Stat::make('Kategori', Category::count())
                 ->icon(Heroicon::RectangleStack),
-            Stat::make('Tags', Tag::count())
+            Stat::make('Tag', Tag::count())
                 ->icon(Heroicon::Tag),
             Stat::make('Admin', User::role(Role::ADMIN->value)->count())
                 ->icon(Heroicon::Users),
-            Stat::make('Author', User::role(Role::AUTHOR->value)->count())
+            Stat::make('Penulis', User::role(Role::AUTHOR->value)->count())
                 ->icon(Heroicon::Users),
         ];
     }

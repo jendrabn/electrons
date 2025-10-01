@@ -12,11 +12,12 @@
         "php": "^8.2",
         "artesaos/seotools": "*",
         "filament/filament": "^4.0",
+        "intervention/image": "^3.11",
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
-        "malzariey/filament-lexical-editor": "^2.0",
         "mckenziearts/laravel-notify": "^2.7",
+        "mdobes/rich-editor-fullscreen": "^1.2",
         "spatie/laravel-permission": "^6.21",
         "spatie/laravel-sitemap": "^7.3"
     },

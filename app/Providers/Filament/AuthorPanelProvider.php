@@ -3,20 +3,17 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Shared\Pages\Auth\EditProfile;
-use App\Filament\Shared\Pages\Auth\Login;
-use App\Filament\Shared\Pages\Auth\Register;
-use App\Filament\Shared\Pages\Auth\ResetPassword;
 use App\Http\Middleware\EnsureUserIsAuthor;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -35,8 +32,18 @@ class AuthorPanelProvider extends PanelProvider
                 'primary' => Color::Blue,
             ])
             ->topNavigation()
+            ->navigationItems([
+                NavigationItem::make('Blog')
+                    ->url(url('/'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->sort(80),
+                NavigationItem::make('Komunitas')
+                    ->url(url('/comunity'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->sort(90),
+            ])
             ->resourceCreatePageRedirect('index')
-            ->profile(EditProfile::class, false)
+            ->profile(EditProfile::class)
             ->emailVerification(isRequired: env('FILAMENT_EMAIL_VERIFICATION', false))
             ->renderHook('panels::auth.login.form.after', fn() => view('filament.components.button-google'))
             ->discoverResources(in: app_path('Filament/Author/Resources'), for: 'App\Filament\Author\Resources')

@@ -2,23 +2,18 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Shared\Pages\Auth\EditProfile;
-use App\Filament\Shared\Pages\Auth\Login;
-use App\Filament\Shared\Pages\Auth\Register;
-use App\Filament\Shared\Pages\Auth\ResetPassword;
 use App\Http\Middleware\EnsureUserIsAdmin;
-use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\FontFamily;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -39,7 +34,17 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
-            ->topNavigation()
+            ->sidebarCollapsibleOnDesktop()
+            ->navigationItems([
+                NavigationItem::make('Blog')
+                    ->url(url('/'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->sort(80),
+                NavigationItem::make('Komunitas')
+                    ->url(url('/comunity'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->sort(90),
+            ])
             ->resourceCreatePageRedirect('index')
             ->renderHook('panels::auth.login.form.after', fn() => view('filament.components.button-google'))
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')

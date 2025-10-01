@@ -17,13 +17,13 @@ class ManagePostSections extends ManageRecords
 
         return [
             CreateAction::make()
-                ->label('Add Post Section')
+                ->label('Tambah Seksi Blog Post')
                 ->modalWidth($modalConfig['width'])
-                ->modalHeading('Create Post Section')
+                ->modalHeading('Buat Seksi Blog Post')
                 ->modalAlignment($modalConfig['alignment'])
                 ->schema(PostSectionSchema::getSchema())
                 ->mutateDataUsing(fn($data) => PostSectionSchema::mutateDataUsing($data))
-                ->successNotificationTitle('Post section created successfully'),
+                ->successNotificationTitle('Seksi postingan berhasil dibuat'),
         ];
     }
 }

@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Resources\AuditLogs;
 
 use App\Filament\Admin\Resources\AuditLogs\Pages\ListAuditLogs;
 use App\Filament\Admin\Resources\AuditLogs\Pages\ViewAuditLog;
-use App\Filament\Admin\Resources\AuditLogs\Schemas\AuditLogForm;
 use App\Filament\Admin\Resources\AuditLogs\Schemas\AuditLogInfolist;
 use App\Filament\Admin\Resources\AuditLogs\Tables\AuditLogsTable;
 use App\Models\AuditLog;
@@ -21,6 +20,8 @@ class AuditLogResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Audit Log';
+
+    protected static ?int $navigationSort = 60;
 
     public static function infolist(Schema $schema): Schema
     {

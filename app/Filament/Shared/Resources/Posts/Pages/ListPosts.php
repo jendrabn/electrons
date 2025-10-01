@@ -18,7 +18,7 @@ class ListPosts extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Add Post'),
+                ->label('Tambah Blog Post'),
         ];
     }
 
@@ -37,7 +37,7 @@ class ListPosts extends ListRecords
 
                     return 0;
                 }),
-            'draft' => Tab::make('Draft')
+            'draft' => Tab::make('Draf')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', Status::DRAFT->value))
                 ->badge(function () {
                     if (auth()->user()->isAdmin()) {
@@ -50,11 +50,11 @@ class ListPosts extends ListRecords
 
                     return 0;
                 }),
-            'pending' => Tab::make('Pending')
+            'pending' => Tab::make('Tertunda')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', Status::PENDING->value))
                 ->badge(function () {
                     if (auth()->user()->isAdmin()) {
-                        Post::where('status', Status::PENDING->value)->count();
+                        return Post::where('status', Status::PENDING->value)->count();
                     }
 
                     if (auth()->user()->isAuthor()) {
@@ -63,7 +63,7 @@ class ListPosts extends ListRecords
 
                     return 0;
                 }),
-            'published' => Tab::make('Published')
+            'published' => Tab::make('Terbit')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', Status::PUBLISHED))
                 ->badge(function () {
                     if (auth()->user()->isAdmin()) {
@@ -76,7 +76,7 @@ class ListPosts extends ListRecords
 
                     return 0;
                 }),
-            'rejected' => Tab::make('Rejected')
+            'rejected' => Tab::make('Ditolak')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', Status::REJECTED))
                 ->badge(function () {
                     if (auth()->user()->isAdmin()) {
@@ -89,7 +89,7 @@ class ListPosts extends ListRecords
 
                     return 0;
                 }),
-            'archived' => Tab::make('Archived')
+            'archived' => Tab::make('Arsip')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', Status::ARCHIVED))
                 ->badge(function () {
                     if (auth()->user()->isAdmin()) {
@@ -99,6 +99,8 @@ class ListPosts extends ListRecords
                     if (auth()->user()->isAuthor()) {
                         return Post::where('user_id', auth()->id())->where('status', Status::ARCHIVED)->count();
                     }
+
+                    return 0;
                 }),
 
         ];

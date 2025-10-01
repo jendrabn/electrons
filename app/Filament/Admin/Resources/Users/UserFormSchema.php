@@ -17,11 +17,13 @@ class UserFormSchema
             Grid::make(2)
                 ->schema([
                     TextInput::make('name')
+                        ->label('Nama')
                         ->required()
                         ->string()
                         ->minLength(5)
                         ->maxLength(30),
                     TextInput::make('username')
+                        ->label('Username')
                         ->required()
                         ->string()
                         ->minLength(5)
@@ -29,6 +31,7 @@ class UserFormSchema
                         ->alphaDash()
                         ->unique(ignoreRecord: true),
                     TextInput::make('email')
+                        ->label('Email')
                         ->required()
                         ->email()
                         ->unique(ignoreRecord: true)
@@ -43,6 +46,7 @@ class UserFormSchema
                             }
                         }),
                     TextInput::make('password')
+                        ->label('Password')
                         ->required(
                             fn($context) => $context === 'create'
                         )
@@ -50,9 +54,9 @@ class UserFormSchema
                         ->minLength(8)
                         ->maxLength(30)
                         ->helperText(
-                            fn($context) => $context === 'edit' ? 'Leave blank if you don\'t want to change the password' : null
+                            fn($context) => $context === 'edit' ? 'Biarkan kosong jika Anda tidak ingin mengubah kata sandi' : null
                         ),
-                ])
+                ]),
         ];
     }
 

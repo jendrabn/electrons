@@ -9,3 +9,20 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+.fi-fo-rich-editor:where(:fullscreen, :-webkit-full-screen) {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+}
+
+.fi-fo-rich-editor:where(:fullscreen, :-webkit-full-screen) .fi-fo-rich-editor-main {
+    flex: 1 1 auto;
+}
+
+.fi-fo-rich-editor:where(:fullscreen, :-webkit-full-screen) .fi-fo-rich-editor-content {
+    height: 100%;
+    overflow-y: auto;
+}

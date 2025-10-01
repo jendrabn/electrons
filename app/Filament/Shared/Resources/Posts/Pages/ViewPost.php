@@ -19,12 +19,12 @@ class ViewPost extends ViewRecord
     {
         return [
             ViewAction::make('backToList')
-                ->label('Back to List')
+                ->label('Kembali ke Daftar')
                 ->icon('heroicon-o-arrow-left')
                 ->color('gray')
                 ->url($this->getResource()::getUrl('index')),
             Action::make('changeStatus')
-                ->label('Change Status')
+                ->label('Ubah Status')
                 ->icon('heroicon-o-cog')
                 ->color('info')
                 ->schema([
@@ -35,10 +35,10 @@ class ViewPost extends ViewRecord
                         ->enum(Status::class)
                         ->live(),
                     Textarea::make('rejected_reason')
-                        ->label('Rejection Reason')
+                        ->label('Alasan Penolakan')
                         ->visible(fn(Get $get) => $get('status') === Status::REJECTED)
                         ->dehydrated(fn(Get $get) => $get('status') === Status::REJECTED)
-                        ->required(fn(Get $get) => $get('status') === Status::REJECTED)
+                        ->required(fn(Get $get) => $get('status') === Status::REJECTED),
                 ])
                 ->action(function (array $data) {
                     $data['status'] = $data['status']->value;
@@ -56,14 +56,14 @@ class ViewPost extends ViewRecord
                     $this->refreshFormData([
                         'status',
                         'rejected_reason',
-                        'published_at'
+                        'published_at',
                     ]);
                 })
-                ->successNotificationTitle('Status changed successfully')
+                ->successNotificationTitle('Status berhasil diperbarui')
                 ->visible(fn() => auth()->user()->isAdmin()),
 
             Action::make('viewOnSite')
-                ->label('View on Site')
+                ->label('Lihat di Situs')
                 ->icon('heroicon-o-arrow-top-right-on-square')
                 ->color('success')
                 ->url(fn() => route('posts.show', $this->record->slug))
@@ -81,7 +81,7 @@ class ViewPost extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'View Post';
+        return 'Lihat Blog Post';
     }
 
     protected function getHeaderTabsColor(): string
@@ -91,6 +91,6 @@ class ViewPost extends ViewRecord
 
     public static function getNavigationLabel(): string
     {
-        return 'View Post';
+        return 'Lihat Blog Post';
     }
 }

@@ -45,7 +45,7 @@
         @include('partials.navbar')
     </header>
 
-    <main class="my-4 my-lg-5 container">
+    <main class="my-4 my-lg-5">
         @yield('content')
 
         @include('partials.ads.display-responsive', ['slot' => '8485643721'])

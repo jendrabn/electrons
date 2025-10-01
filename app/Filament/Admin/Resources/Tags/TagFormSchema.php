@@ -12,6 +12,7 @@ class TagFormSchema
     {
         return [
             TextInput::make('name')
+                ->label('Nama Tag')
                 ->required()
                 ->string()
                 ->minLength(3)
@@ -24,6 +25,7 @@ class TagFormSchema
     public static function mutateDataUsing(array $data): array
     {
         $data['slug'] = str()->slug($data['name']);
+
         return $data;
     }
 

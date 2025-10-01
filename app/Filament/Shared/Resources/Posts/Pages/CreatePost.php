@@ -17,7 +17,7 @@ class CreatePost extends CreateRecord
     {
         return [
             Action::make('create')
-                ->label('Create')
+                ->label('Buat')
                 ->color('primary')
                 ->action(function () {
                     $this->additionalData = [
@@ -27,7 +27,7 @@ class CreatePost extends CreateRecord
                     $this->create();
                 }),
             Action::make('createAnother')
-                ->label('Create & create another')
+                ->label('Buat & buat lainnya')
                 ->color('gray')
                 ->action(function () {
                     $this->additionalData = [
@@ -37,22 +37,22 @@ class CreatePost extends CreateRecord
                     $this->create();
                 }),
             Action::make('createDraft')
-                ->label('Save as Draft')
+                ->label('Simpan sebagai Draf')
                 ->color('gray')
                 ->action(function () {
                     $this->additionalData = [
-                        'status' => Status::DRAFT->value
+                        'status' => Status::DRAFT->value,
                     ];
 
                     $this->create();
                 }),
             Action::make('createPublish')
-                ->label('Save & Publish')
+                ->label('Simpan & Terbitkan')
                 ->color('success')
                 ->action(function () {
                     $this->additionalData = [
                         'status' => Status::PUBLISHED->value,
-                        'published_at' => now()
+                        'published_at' => now(),
                     ];
 
                     $this->create();
@@ -80,6 +80,6 @@ class CreatePost extends CreateRecord
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Post created successfully.';
+        return 'Blog Post berhasil dibuat.';
     }
 }

@@ -3,14 +3,12 @@
 namespace App\Filament\Admin\Resources\Categories;
 
 use App\Filament\Admin\Resources\Categories\Pages\ManageCategories;
-use App\Filament\Admin\Resources\Categories\CategoryFormSchema;
 use App\Models\Category;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -24,6 +22,8 @@ class CategoryResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Category';
+
+    protected static ?int $navigationSort = 30;
 
     public static function form(Schema $schema): Schema
     {
@@ -40,33 +40,40 @@ class CategoryResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label('NAMA')
+                    ->size('sm')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label('SLUG')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('description')
-                    ->label('Description')
+                    ->label('DESKRIPSI')
+                    ->size('sm')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('posts_count')
-                    ->label('Posts Count')
+                    ->label('JUMLAH BLOG POST')
+                    ->size('sm')
                     ->counts('posts')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Date & Time Created')
+                    ->label('TANGGAL & WAKTU DIBUAT')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('updated_at')
-                    ->label('Date & Time Updated')
+                    ->label('TANGGAL & WAKTU DIPERBARUI')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
@@ -80,20 +87,20 @@ class CategoryResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->modalWidth($modalConfig['width'])
-                    ->modalHeading('Edit Category')
+                    ->modalHeading('Ubah Kategori')
                     ->modalAlignment($modalConfig['alignment'])
                     ->schema(CategoryFormSchema::getSchema())
                     ->mutateDataUsing(fn($data) => CategoryFormSchema::mutateDataUsing($data))
-                    ->successNotificationTitle('Category updated successfully'),
+                    ->successNotificationTitle('Kategori berhasil diperbarui'),
                 DeleteAction::make()
                     ->requiresConfirmation()
-                    ->successNotificationTitle('Category deleted successfully'),
+                    ->successNotificationTitle('Kategori berhasil dihapus'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->requiresConfirmation()
-                        ->successNotificationTitle('Categories deleted successfully'),
+                        ->successNotificationTitle('Kategori berhasil dihapus'),
                 ]),
             ]);
     }

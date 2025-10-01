@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\PostSections;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\Width;
@@ -11,12 +10,11 @@ use Illuminate\Support\HtmlString;
 
 class PostSectionSchema
 {
-
     public static function getSchema(): array
     {
         return [
             TextInput::make('name')
-                ->label('Section Name')
+                ->label('Nama Seksi')
                 ->required()
                 ->unique(ignoreRecord: true)
                 ->maxLength(100)
@@ -28,7 +26,7 @@ class PostSectionSchema
                 ->relationship(
                     name: 'posts',
                     titleAttribute: 'title',
-                    modifyQueryUsing: fn($query) => $query
+                    modifyQueryUsing: fn ($query) => $query
                         ->where('posts.status', 'published')
                         ->leftJoin('categories', 'posts.category_id', '=', 'categories.id')
                         ->leftJoin('users', 'posts.user_id', '=', 'users.id')
@@ -37,8 +35,8 @@ class PostSectionSchema
                         ->orderBy('posts.created_at', 'desc')
                 )
                 ->getOptionLabelFromRecordUsing(function ($record) {
-                    $category = $record->category?->name ?? 'No Category';
-                    $author = $record->user?->name ?? 'No Author';
+                    $category = $record->category?->name ?? 'Tidak Ada Kategori';
+                    $author = $record->user?->name ?? 'Tidak Ada Penulis';
                     $date = $record->created_at->format('d M Y');
 
                     return new HtmlString("
@@ -49,9 +47,9 @@ class PostSectionSchema
                                             </span>
                                         </div>
                                         <div class='text-xs text-gray-500 dark:text-gray-400 space-y-1'>
-                                            <div>👤 Author: <span class='text-green-600 dark:text-green-400'>{$author}</span></div>
-                                            <div>📂 Category: <span class='text-purple-600 dark:text-purple-400'>{$category}</span></div>
-                                            <div>📅 Created: <span class='text-blue-600 dark:text-blue-400'>{$date}</span></div>
+                                            <div>👤 Penulis: <span class='text-green-600 dark:text-green-400'>{$author}</span></div>
+                                            <div>📂 Kategori: <span class='text-purple-600 dark:text-purple-400'>{$category}</span></div>
+                                            <div>📅 Dibuat: <span class='text-blue-600 dark:text-blue-400'>{$date}</span></div>
                                         </div>
                                     </div>
                                 ");
@@ -59,7 +57,7 @@ class PostSectionSchema
                 ->allowHtml()
                 ->searchable(['posts.title', 'categories.name', 'users.name'])
                 ->preload()
-                ->placeholder('Select posts to add to section')
+                ->placeholder('Pilih postingan untuk ditambahkan ke seksi')
                 ->columnSpanFull(),
 
         ];
@@ -68,6 +66,7 @@ class PostSectionSchema
     public static function mutateDataUsing(array $data): array
     {
         $data['slug'] = str()->slug($data['name']);
+
         return $data;
     }
 

@@ -16,7 +16,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -30,51 +29,60 @@ class PostsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
 
                 ImageColumn::make('image_url')
-                    ->label('Image'),
+                    ->label('GAMBAR'),
 
                 TextColumn::make('image_caption')
-                    ->label('Image Caption')
+                    ->label('KETERANGAN GAMBAR')
+                    ->size('sm')
                     ->default('-')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('title')
-                    ->label('Title')
+                    ->label('JUDUL')
+                    ->size('sm')
                     ->lineClamp(2)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('slug')
+                    ->label('SLUG')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('user.name')
-                    ->label('Author')
+                    ->label('PENULIS')
+                    ->size('sm')
                     ->words(2, '')
                     ->sortable()
                     ->searchable()
                     ->visible(fn() => auth()->user()->isAdmin()),
 
                 TextColumn::make('category.name')
-                    ->label('Category')
+                    ->label('KATEGORI')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('tags.name')
-                    ->label('Tags')
+                    ->label('TAG')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->badge()
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label('STATUS')
+                    ->size('sm')
                     ->badge()
                     ->toggleable()
                     ->sortable()
@@ -84,37 +92,44 @@ class PostsTable
                     ->tooltip(fn(Post $record) => $record->status === Status::REJECTED->value ? 'Reason: ' . $record->rejected_reason : null),
 
                 TextColumn::make('min_read')
-                    ->label('Min Read')
+                    ->label('MENIT BACA')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('views_count')
-                    ->label('Views Count')
+                    ->label('JUMLAH DILIHAT')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('created_at')
-                    ->label('Date & Time Created')
+                    ->label('TANGGAL & WAKTU DIBUAT')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('updated_at')
-                    ->label('Date & Time Updated')
+                    ->label('TANGGAL & WAKTU DIPERBARUI')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label('Status')
                     ->options(Status::class),
                 SelectFilter::make('category')
+                    ->label('Kategori')
                     ->relationship('category', 'name'),
                 SelectFilter::make('tags')
+                    ->label('Tag')
                     ->relationship('tags', 'name'),
             ])
             ->recordActions([
@@ -123,7 +138,7 @@ class PostsTable
                     EditAction::make(),
                     DeleteAction::make(),
                     Action::make('ChangeStatus')
-                        ->label('Change Status ')
+                        ->label('Ubah Status')
                         ->icon('heroicon-o-cog')
                         ->schema([
                             Select::make('status')
@@ -133,10 +148,10 @@ class PostsTable
                                 ->enum(Status::class)
                                 ->live(),
                             Textarea::make('rejected_reason')
-                                ->label('Rejection Reason')
+                                ->label('Alasan Penolakan')
                                 ->visible(fn(Get $get) => $get('status') === Status::REJECTED)
                                 ->dehydrated(fn(Get $get) => $get('status') === Status::REJECTED)
-                                ->required(fn(Get $get) => $get('status') === Status::REJECTED)
+                                ->required(fn(Get $get) => $get('status') === Status::REJECTED),
                         ])
                         ->action(function (Post $record, array $data) {
                             $data['status'] = $data['status']->value;
@@ -151,11 +166,11 @@ class PostsTable
 
                             $record->update($data);
                         })
-                        ->successNotificationTitle('Status changed successfully')
+                        ->successNotificationTitle('Status berhasil diperbarui')
                         ->visible(fn() => auth()->user()->isAdmin()),
 
                     Action::make('View Data Changes')
-                        ->label('View Data Changes')
+                        ->label('Lihat Perubahan Data')
                         ->icon('heroicon-o-eye')
                         ->color('info')
                         ->action(function (Post $record) {
@@ -166,17 +181,17 @@ class PostsTable
                             if ($latestAudit) {
                                 return redirect()
                                     ->to(AuditLogResource::getUrl('view', ['record' => $latestAudit]))
-                                    ->with('success', 'Viewing latest audit log for this post.');
+                                    ->with('success', 'Menampilkan log audit terbaru untuk postingan ini.');
                             } else {
                                 Notification::make()
-                                    ->title('No audit logs found')
-                                    ->body('This post has no audit logs yet.')
+                                    ->title('Log audit tidak ditemukan')
+                                    ->body('Blog Post ini belum memiliki log audit.')
                                     ->warning()
                                     ->send();
                             }
                         })
                         ->visible(fn(Post $record) => $record->audits()->exists() && auth()->user()->isAdmin()),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

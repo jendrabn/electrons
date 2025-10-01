@@ -148,6 +148,15 @@ footer {
     max-width: 800px;
 }
 
+.content-body {
+    img,
+    picture img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+}
+
 /* Beri bullet otomatis antar li (kecuali yang pertama & terakhir ms-auto) */
 .content-meta li {
     display: inline-flex;

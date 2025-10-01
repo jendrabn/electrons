@@ -22,22 +22,27 @@ class AuditLogsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('auditable_type')
-                    ->label('Model')
-                    ->formatStateUsing(fn($state) => class_basename($state))
+                    ->label('MODEL')
+                    ->size('sm')
+                    ->formatStateUsing(fn ($state) => class_basename($state))
                     ->badge()
                     ->color('gray')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('auditable_id')
-                    ->label('Record ID')
+                    ->label('ID REKAMAN')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('action')
+                    ->label('AKSI')
+                    ->size('sm')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -45,87 +50,94 @@ class AuditLogsTable
                     })
                     ->sortable(),
                 TextColumn::make('description')
+                    ->label('DESKRIPSI')
+                    ->size('sm')
                     ->limit(60)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
+
                         return strlen($state) > 60 ? $state : null;
                     })
                     ->searchable(),
                 TextColumn::make('user.name')
-                    ->label('User')
-                    ->default('System')
+                    ->label('PENGGUNA')
+                    ->size('sm')
+                    ->default('Sistem')
                     ->searchable(),
                 TextColumn::make('ip_address')
-                    ->label('IP Address')
+                    ->label('ALAMAT IP')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label('Date & Time')
+                    ->label('TANGGAL & WAKTU')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
-                    ->sortable()
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('action')
-                    ->label('Action')
+                    ->label('Aksi')
                     ->options([
-                        'created' => 'Created',
-                        'updated' => 'Updated',
-                        'deleted' => 'Deleted',
+                        'created' => 'Dibuat',
+                        'updated' => 'Diperbarui',
+                        'deleted' => 'Dihapus',
                     ])
                     ->multiple()
-                    ->placeholder('All Actions'),
+                    ->placeholder('Semua Aksi'),
                 SelectFilter::make('auditable_type')
-                    ->label('Model Type')
+                    ->label('Tipe Model')
                     ->options(function () {
                         return AuditLog::select('auditable_type')
                             ->distinct()
                             ->pluck('auditable_type')
-                            ->mapWithKeys(fn($type) => [$type => class_basename($type)])
+                            ->mapWithKeys(fn ($type) => [$type => class_basename($type)])
                             ->sort()
                             ->toArray();
                     })
                     ->multiple()
-                    ->placeholder('All Models'),
+                    ->placeholder('Semua Model'),
                 SelectFilter::make('user_id')
-                    ->label('User')
+                    ->label('Pengguna')
                     ->relationship('user', 'name')
                     ->multiple()
-                    ->placeholder('All Users'),
+                    ->placeholder('Semua Pengguna'),
                 Filter::make('created_at')
-                    ->label('Date Range')
+                    ->label('Rentang Tanggal')
                     ->form([
                         DatePicker::make('created_from')
-                            ->label('From Date')
-                            ->placeholder('Select start date'),
+                            ->label('Tanggal Mulai')
+                            ->placeholder('Pilih tanggal mulai'),
                         DatePicker::make('created_until')
-                            ->label('Until Date')
-                            ->placeholder('Select end date'),
+                            ->label('Tanggal Selesai')
+                            ->placeholder('Pilih tanggal selesai'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
                         if ($data['created_from'] ?? null) {
-                            $indicators[] = 'From: ' . $data['created_from'];
+                            $indicators[] = 'Dari: '.$data['created_from'];
                         }
                         if ($data['created_until'] ?? null) {
-                            $indicators[] = 'Until: ' . $data['created_until'];
+                            $indicators[] = 'Sampai: '.$data['created_until'];
                         }
+
                         return $indicators;
                     }),
 
                 Filter::make('has_changes')
-                    ->label('Has Data Changes')
-                    ->query(fn(Builder $query): Builder => $query->where(function ($q) {
+                    ->label('Memiliki Perubahan Data')
+                    ->query(fn (Builder $query): Builder => $query->where(function ($q) {
                         $q->whereNotNull('old_values')->orWhereNotNull('new_values');
                     }))
                     ->toggle(),
@@ -168,9 +180,14 @@ class AuditLogsTable
     {
         return [
             'Model' => class_basename($record->auditable_type),
-            'Action' => ucfirst($record->action),
-            'User' => $record->user?->name ?? 'System',
-            'Date' => $record->created_at->format('d M Y, H:i'),
+            'Aksi' => match ($record->action) {
+                'created' => 'Dibuat',
+                'updated' => 'Diperbarui',
+                'deleted' => 'Dihapus',
+                default => ucfirst($record->action),
+            },
+            'Pengguna' => $record->user?->name ?? 'Sistem',
+            'Tanggal' => $record->created_at->format('d M Y, H:i'),
         ];
     }
 }

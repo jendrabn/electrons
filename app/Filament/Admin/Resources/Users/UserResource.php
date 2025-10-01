@@ -26,7 +26,15 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Users;
 
-    protected static ?string $recordTitleAttribute = 'User';
+    protected static ?string $modelLabel = 'Pengguna';
+
+    protected static ?string $pluralModelLabel = 'Pengguna';
+
+    protected static ?int $navigationSort = 10;
+
+    protected static ?string $navigationLabel = 'Pengguna';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -43,37 +51,37 @@ class UserResource extends Resource
                 TextEntry::make('id')
                     ->label('ID'),
                 TextEntry::make('name')
-                    ->label('Name'),
+                    ->label('Nama'),
                 TextEntry::make('username')
-                    ->label('Username')
-                    ->placeholder('Not set'),
+                    ->label('USERNAME')
+                    ->placeholder('Belum diisi'),
                 TextEntry::make('email')
                     ->label('Email')
                     ->copyable(),
 
                 // Personal Information
                 TextEntry::make('sex')
-                    ->label('Gender')
+                    ->label('Jenis Kelamin')
                     ->formatStateUsing(fn(?string $state): string => match ($state) {
-                        'male' => 'Male',
-                        'female' => 'Female',
-                        default => 'Not specified',
+                        'male' => 'Laki-laki',
+                        'female' => 'Perempuan',
+                        default => 'Tidak ditentukan',
                     }),
                 TextEntry::make('birth_date')
-                    ->label('Date of Birth')
+                    ->label('Tanggal Lahir')
                     ->date('F j, Y')
-                    ->placeholder('Not set'),
+                    ->placeholder('Belum diisi'),
                 TextEntry::make('phone')
-                    ->label('Phone Number')
-                    ->placeholder('Not provided')
+                    ->label('Nomor Telepon')
+                    ->placeholder('Tidak tersedia')
                     ->copyable(),
                 TextEntry::make('address')
-                    ->label('Address')
-                    ->placeholder('Not provided'),
+                    ->label('Alamat')
+                    ->placeholder('Tidak tersedia'),
 
                 // Role & Statistics
                 TextEntry::make('role')
-                    ->label('Role')
+                    ->label('Peran')
                     ->badge()
                     ->colors([
                         'primary' => Role::ADMIN->value,
@@ -81,44 +89,44 @@ class UserResource extends Resource
                     ])
                     ->getStateUsing(fn(User $record): string => $record->getRoleNames()->first()),
                 TextEntry::make('posts_count')
-                    ->label('Total Posts')
+                    ->label('Total Blog Post')
                     ->numeric()
-                    ->suffix(' posts')
+                    ->suffix(' postingan')
                     ->color('info'),
 
                 // Account Status
                 TextEntry::make('is_suspended')
-                    ->label('Account Status')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Suspended' : 'Active')
+                    ->label('Status Akun')
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Ditangguhkan' : 'Aktif')
                     ->color(fn(bool $state): string => $state ? 'danger' : 'success'),
                 TextEntry::make('suspend_reason')
-                    ->label('Suspension Reason')
-                    ->placeholder('No reason')
+                    ->label('Alasan Penangguhan')
+                    ->placeholder('Tanpa alasan')
                     ->visible(fn($record): bool => $record?->is_suspended ?? false),
 
                 // Verification
                 TextEntry::make('email_verified_at')
-                    ->label('Email Verified')
-                    ->formatStateUsing(fn(?string $state): string => $state ? 'Yes' : 'No')
+                    ->label('Email Terverifikasi')
+                    ->formatStateUsing(fn(?string $state): string => $state ? 'Ya' : 'Tidak')
                     ->color(fn(?string $state): string => $state ? 'success' : 'danger'),
                 TextEntry::make('google_id')
-                    ->label('Google Account')
-                    ->formatStateUsing(fn(?string $state): string => $state ? 'Connected' : 'Not Connected')
+                    ->label('Akun Google')
+                    ->formatStateUsing(fn(?string $state): string => $state ? 'Terhubung' : 'Tidak Terhubung')
                     ->color(fn(?string $state): string => $state ? 'success' : 'gray'),
 
                 // Timestamps
                 TextEntry::make('created_at')
-                    ->label('Registered At')
+                    ->label('Terdaftar Pada')
                     ->dateTime('M j, Y H:i'),
                 TextEntry::make('updated_at')
-                    ->label('Last Updated')
+                    ->label('Terakhir Diperbarui')
                     ->dateTime('M j, Y H:i'),
                 TextEntry::make('suspended_at')
-                    ->label('Suspended At')
+                    ->label('Ditangguhkan Pada')
                     ->dateTime('M j, Y H:i')
                     ->visible(fn($record): bool => $record?->suspended_at !== null),
                 TextEntry::make('unsuspended_at')
-                    ->label('Unsuspended At')
+                    ->label('Penangguhan Dicabut Pada')
                     ->dateTime('M j, Y H:i')
                     ->visible(fn($record): bool => $record?->unsuspended_at !== null),
             ]);
@@ -129,29 +137,34 @@ class UserResource extends Resource
         $modalConfig = UserFormSchema::getModalConfig();
 
         return $table
-            ->recordTitleAttribute('User')
+            ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 ImageColumn::make('avatar_url')
-                    ->label('Avatar')
+                    ->label('AVATAR')
                     ->circular(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label('NAMA')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('username')
-                    ->label('Username')
+                    ->label('USERNAME')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label('EMAIL')
+                    ->size('sm')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('role')
-                    ->label('Role')
+                    ->label('PERAN')
+                    ->size('sm')
                     ->badge()
                     ->colors([
                         'primary' => Role::ADMIN->value,
@@ -160,33 +173,39 @@ class UserResource extends Resource
                     ->getStateUsing(fn(User $record): string => $record->getRoleNames()->first())
                     ->searchable(),
                 TextColumn::make('posts_count')
-                    ->label('Posts Count')
+                    ->label('JUMLAH BLOG POST')
+                    ->size('sm')
                     ->counts('posts')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->label('Phone')
+                    ->label('TELEPON')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('sex')
-                    ->label('Gender')
+                    ->label('JENIS KELAMIN')
+                    ->size('sm')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('birth_date')
-                    ->label('Birth Date')
+                    ->label('TANGGAL LAHIR')
+                    ->size('sm')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('address')
-                    ->label('Address')
+                    ->label('ALAMAT')
+                    ->size('sm')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('is_suspended')
-                    ->label('Status')
+                    ->label('STATUS')
+                    ->size('sm')
                     ->sortable()
                     ->searchable()
                     ->badge()
@@ -194,59 +213,64 @@ class UserResource extends Resource
                         'danger' => '0',
                         'success' => '1',
                     ])
-                    ->getStateUsing(fn(User $record): string => $record->is_suspended ? 'Suspended' : 'Active')
+                    ->getStateUsing(fn(User $record): string => $record->is_suspended ? 'Ditangguhkan' : 'Aktif')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email_verified_at')
-                    ->label('Date & Time Verified')
+                    ->label('TANGGAL & WAKTU VERIFIKASI')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label('Date & Time Created')
+                    ->label('TANGGAL & WAKTU DIBUAT')
+                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('updated_at')
                     ->dateTime('d M Y, H:i:s')
-                    ->label('Date & Time Updated')
+                    ->label('TANGGAL & WAKTU DIPERBARUI')
+                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
             ])
             ->defaultSort('id', 'desc')
             ->filters([
                 SelectFilter::make('role')
+                    ->label('Peran')
                     ->relationship('roles', 'name')
                     ->options(Role::class),
                 SelectFilter::make('sex')
+                    ->label('Jenis Kelamin')
                     ->options([
-                        'male' => 'Male',
-                        'female' => 'Female',
+                        'male' => 'Laki-laki',
+                        'female' => 'Perempuan',
                     ]),
                 SelectFilter::make('is_suspended')
                     ->label('Status')
                     ->options([
-                        'active' => 'Active',
-                        'suspended' => 'Suspended',
+                        'active' => 'Aktif',
+                        'suspended' => 'Ditangguhkan',
                     ]),
                 SelectFilter::make('is_verified')
-                    ->label('Verified')
+                    ->label('Terverifikasi')
                     ->options([
-                        'verified' => 'Verified',
-                        'unverified' => 'Unverified',
-                    ])
+                        'verified' => 'Terverifikasi',
+                        'unverified' => 'Belum Terverifikasi',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make()
                     ->modalWidth($modalConfig['width'])
-                    ->modalHeading('User Details')
+                    ->modalHeading('Detail Pengguna')
                     ->modalAlignment($modalConfig['alignment'])
                     ->closeModalByClickingAway(false),
                 EditAction::make()
                     ->modalWidth($modalConfig['width'])
-                    ->modalHeading('Edit User')
+                    ->modalHeading('Ubah Pengguna')
                     ->modalAlignment($modalConfig['alignment'])
                     ->closeModalByClickingAway(false)
                     ->schema(UserFormSchema::getSchema())
@@ -265,16 +289,16 @@ class UserResource extends Resource
                     ->after(function (User $record, array $data) use (&$tempRole) {
                         $record->syncRoles([$tempRole]);
                     })
-                    ->successNotificationTitle('User updated successfully'),
+                    ->successNotificationTitle('Pengguna berhasil diperbarui'),
                 DeleteAction::make()
                     ->requiresConfirmation()
-                    ->successNotificationTitle('User Deleted Successfully'),
+                    ->successNotificationTitle('Pengguna berhasil dihapus'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->requiresConfirmation()
-                        ->successNotificationTitle('Users Deleted Successfully'),
+                        ->successNotificationTitle('Pengguna berhasil dihapus'),
                 ]),
             ]);
     }

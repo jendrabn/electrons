@@ -18,9 +18,9 @@ class ManageUsers extends ManageRecords
 
         return [
             CreateAction::make()
-                ->label('Add User')
+                ->label('Tambah Pengguna')
                 ->modalWidth($modalConfig['width'])
-                ->modalHeading('Create User')
+                ->modalHeading('Buat Pengguna')
                 ->modalAlignment($modalConfig['alignment'])
                 ->closeModalByClickingAway(false)
                 ->schema(UserFormSchema::getSchema())
@@ -34,7 +34,7 @@ class ManageUsers extends ManageRecords
                 ->after(function (User $record, array $data) use (&$tempRole) {
                     $record->assignRole($tempRole);
                 })
-                ->successNotificationTitle('User created successfully'),
+                ->successNotificationTitle('Pengguna berhasil dibuat'),
         ];
     }
 }

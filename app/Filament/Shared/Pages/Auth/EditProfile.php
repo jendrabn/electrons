@@ -3,67 +3,94 @@
 namespace App\Filament\Shared\Pages\Auth;
 
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
-use Filament\Schemas\Components\Grid;
-use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 
 class EditProfile extends BaseEditProfile
 {
-
     public function form(Schema $schema): Schema
     {
         return $schema
             ->schema([
-                Grid::make(2)->schema([
-                    $this->getNameFormComponent(),
-                    TextInput::make('username')
-                        ->required()
-                        ->unique(ignoreRecord: true)
-                        ->minLength(3)
-                        ->maxLength(50),
-                    $this->getEmailFormComponent(),
-                    TextInput::make('phone')
-                        ->nullable()
-                        ->string()
-                        ->startsWith('62')
-                        ->minLength(10)
-                        ->maxLength(15),
-                    Select::make('sex')
-                        ->nullable()
-                        ->string()
-                        ->in(['male', 'female'])
-                        ->options([
-                            'male' => 'Male',
-                            'female' => 'Female',
-                        ])
-                        ->placeholder('Select gender'),
-                    DatePicker::make('birth_date')
-                        ->nullable()
-                        ->placeholder('Select birth date'),
-                    TextInput::make('address')
-                        ->nullable()
-                        ->string()
-                        ->minLength(5)
-                        ->maxLength(255),
-                ]),
                 FileUpload::make('avatar')
                     ->image()
+                    ->avatar()
+                    ->alignCenter()
                     ->directory('upload/avatars')
                     ->disk('public')
-                    ->maxSize(1024)
-                    ->columnSpanFull(),
+                    ->maxSize(1024),
 
-                $this->getPasswordFormComponent(),
+                $this->getNameFormComponent()
+                    ->label('Nama Lengkap')
+                    ->required()
+                    ->minLength(3)
+                    ->maxLength(100),
 
-                Textarea::make('bio')->rows(3)->columnSpanFull(),
+                TextInput::make('username')
+                    ->label('Username')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->minLength(3)
+                    ->maxLength(100),
+
+                $this->getEmailFormComponent()
+                    ->label('Email'),
+
+                TextInput::make('phone')
+                    ->label('Nomor Telepon')
+                    ->nullable()
+                    ->string()
+                    ->startsWith('62')
+                    ->minLength(10)
+                    ->maxLength(15),
+
+                Select::make('sex')
+                    ->label('Jenis Kelamin')
+                    ->nullable()
+                    ->string()
+                    ->in(['male', 'female'])
+                    ->options([
+                        'male' => 'Laki-laki',
+                        'female' => 'Perempuan',
+                    ])
+                    ->placeholder('Pilih jenis kelamin'),
+
+                DatePicker::make('birth_date')
+                    ->label('Tanggal Lahir')
+                    ->nullable()
+                    ->minDate(now()->subYears(100))
+                    ->maxDate(now()->subYears(10))
+                    ->placeholder('Pilih tanggal lahir'),
+
+                Textarea::make('address')
+                    ->label('Alamat')
+                    ->nullable()
+                    ->string()
+                    ->minLength(5)
+                    ->maxLength(255),
+
+                Textarea::make('bio')
+                    ->label('Bio')
+                    ->rows(3),
+
+                $this->getPasswordFormComponent()
+                    ->label('Password Baru'),
+
+                $this->getPasswordConfirmationFormComponent()
+                    ->label('Konfirmasi Password Baru'),
+
+                $this->getCurrentPasswordFormComponent()
+                    ->label('Password Saat Ini'),
             ]);
+    }
+
+    public function getMaxContentWidth(): Width|string|null
+    {
+        return Width::ThreeExtraLarge;
     }
 }
