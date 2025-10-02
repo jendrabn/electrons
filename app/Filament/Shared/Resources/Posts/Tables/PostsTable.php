@@ -29,16 +29,18 @@ class PostsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->size('sm')
                     ->sortable()
                     ->searchable(),
 
                 ImageColumn::make('image_url')
-                    ->label('GAMBAR'),
+                    ->label('GAMBAR')
+                    ->imageSize(40)
+                    ->extraImgAttributes([
+                        'style' => 'object-fit: cover; border: 1px solid #fbbf24; padding: 1px; border-radius: 4px;',
+                    ]),
 
                 TextColumn::make('image_caption')
                     ->label('KETERANGAN GAMBAR')
-                    ->size('sm')
                     ->default('-')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
@@ -46,35 +48,30 @@ class PostsTable
 
                 TextColumn::make('title')
                     ->label('JUDUL')
-                    ->size('sm')
                     ->lineClamp(2)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('slug')
                     ->label('SLUG')
-                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('user.name')
                     ->label('PENULIS')
-                    ->size('sm')
                     ->words(2, '')
                     ->sortable()
                     ->searchable()
-                    ->visible(fn() => auth()->user()->isAdmin()),
+                    ->visible(fn () => auth()->user()->isAdmin()),
 
                 TextColumn::make('category.name')
                     ->label('KATEGORI')
-                    ->size('sm')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('tags.name')
                     ->label('TAG')
-                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->badge()
                     ->sortable()
@@ -82,32 +79,28 @@ class PostsTable
 
                 TextColumn::make('status')
                     ->label('STATUS')
-                    ->size('sm')
                     ->badge()
                     ->toggleable()
                     ->sortable()
                     ->searchable()
-                    ->formatStateUsing(fn($state) => Status::tryFrom($state)?->getLabel() ?? ucfirst($state))
-                    ->color(fn($state) => Status::tryFrom($state)?->GetColor() ?? 'secondary')
-                    ->tooltip(fn(Post $record) => $record->status === Status::REJECTED->value ? 'Reason: ' . $record->rejected_reason : null),
+                    ->formatStateUsing(fn ($state) => Status::tryFrom($state)?->getLabel() ?? ucfirst($state))
+                    ->color(fn ($state) => Status::tryFrom($state)?->GetColor() ?? 'secondary')
+                    ->tooltip(fn (Post $record) => $record->status === Status::REJECTED->value ? 'Reason: '.$record->rejected_reason : null),
 
                 TextColumn::make('min_read')
                     ->label('MENIT BACA')
-                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('views_count')
                     ->label('JUMLAH DILIHAT')
-                    ->size('sm')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('created_at')
                     ->label('TANGGAL & WAKTU DIBUAT')
-                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
@@ -115,7 +108,6 @@ class PostsTable
 
                 TextColumn::make('updated_at')
                     ->label('TANGGAL & WAKTU DIPERBARUI')
-                    ->size('sm')
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
@@ -149,9 +141,9 @@ class PostsTable
                                 ->live(),
                             Textarea::make('rejected_reason')
                                 ->label('Alasan Penolakan')
-                                ->visible(fn(Get $get) => $get('status') === Status::REJECTED)
-                                ->dehydrated(fn(Get $get) => $get('status') === Status::REJECTED)
-                                ->required(fn(Get $get) => $get('status') === Status::REJECTED),
+                                ->visible(fn (Get $get) => $get('status') === Status::REJECTED)
+                                ->dehydrated(fn (Get $get) => $get('status') === Status::REJECTED)
+                                ->required(fn (Get $get) => $get('status') === Status::REJECTED),
                         ])
                         ->action(function (Post $record, array $data) {
                             $data['status'] = $data['status']->value;
@@ -167,7 +159,7 @@ class PostsTable
                             $record->update($data);
                         })
                         ->successNotificationTitle('Status berhasil diperbarui')
-                        ->visible(fn() => auth()->user()->isAdmin()),
+                        ->visible(fn () => auth()->user()->isAdmin()),
 
                     Action::make('View Data Changes')
                         ->label('Lihat Perubahan Data')
@@ -190,7 +182,7 @@ class PostsTable
                                     ->send();
                             }
                         })
-                        ->visible(fn(Post $record) => $record->audits()->exists() && auth()->user()->isAdmin()),
+                        ->visible(fn (Post $record) => $record->audits()->exists() && auth()->user()->isAdmin()),
                 ]),
             ])
             ->toolbarActions([

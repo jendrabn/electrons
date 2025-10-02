@@ -69,11 +69,31 @@
                                 <span class="me-2">
                                     <i class="bi bi-clock me-1"></i>{{ $post->created_at->format('l, d F Y H:i') }}
                                 </span>
+                                <span class="me-2">
+                                    <i class="bi bi-heart me-1"></i><span
+                                          id="likes-count-mobile">{{ $post->likes_count }}</span>
+                                </span>
                                 <span>
-                                    <i class="bi bi-stopwatch me-1"></i>{{ $post->min_read }} min read
+                                    <i class="bi bi-chat me-1"></i>{{ $post->comments_count }}
                                 </span>
                             </div>
-                            <div>
+                            <div class="d-flex gap-2">
+                                @auth
+                                    <button class="btn btn-outline-danger btn-sm shadow-sm rounded-circle"
+                                            data-liked="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
+                                            data-post-id="{{ $post->id }}"
+                                            id="like-btn-mobile"
+                                            type="button">
+                                        <i
+                                           class="bi {{ $post->isLikedBy(auth()->user()) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                    </button>
+                                @else
+                                    <a class="btn btn-outline-danger btn-sm shadow-sm rounded-circle"
+                                       href="{{ route('auth.show.login') }}">
+                                        <i class="bi bi-heart"></i>
+                                    </a>
+                                @endauth
+
                                 <button aria-label="Share"
                                         class="btn btn-light btn-sm shadow-sm rounded-circle btn-share"
                                         data-bs-target="#shareModal"
@@ -113,11 +133,37 @@
                         </li>
 
                         <li>
+                            <i class="bi bi-heart me-1"></i>
+                            <span id="likes-count">{{ $post->likes_count }}</span> suka
+                        </li>
+
+                        <li>
+                            <i class="bi bi-chat me-1"></i>
+                            {{ $post->comments_count }} komentar
+                        </li>
+
+                        <li>
                             <i class="bi bi-eye me-1"></i>
                             {{ $post->views_count }}
                         </li>
 
-                        <li class="ms-auto">
+                        <li class="ms-auto d-flex gap-2">
+                            @auth
+                                <button class="btn btn-outline-danger btn-sm shadow-sm rounded-pill"
+                                        data-liked="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
+                                        data-post-id="{{ $post->id }}"
+                                        id="like-btn"
+                                        type="button">
+                                    <i class="bi {{ $post->isLikedBy(auth()->user()) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                    <span class="like-text">{{ $post->isLikedBy(auth()->user()) ? 'Disukai' : 'Suka' }}</span>
+                                </button>
+                            @else
+                                <a class="btn btn-outline-danger btn-sm shadow-sm rounded-pill"
+                                   href="{{ route('auth.show.login') }}">
+                                    <i class="bi bi-heart"></i> Suka
+                                </a>
+                            @endauth
+
                             <button aria-label="Share"
                                     class="btn btn-light btn-sm shadow-sm rounded-circle btn-share"
                                     data-bs-target="#shareModal"
@@ -230,7 +276,84 @@
 @endsection
 
 @section('scripts')
-    <script></script>
+    <script>
+        // Like functionality
+        document.addEventListener('click', function(e) {
+            const likeBtn = e.target.closest('#like-btn, #like-btn-mobile');
+            if (!likeBtn) return;
+
+            e.preventDefault();
+
+            const postId = likeBtn.dataset.postId;
+            const isLiked = likeBtn.dataset.liked === 'true';
+
+            // Disable button during request
+            likeBtn.disabled = true;
+
+            fetch(`/posts/${postId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            }).then(async (res) => {
+                if (res.status === 401) {
+                    window.location.href = '/auth/login';
+                    return;
+                }
+
+                const json = await res.json();
+                if (res.ok) {
+                    // Update both desktop and mobile buttons
+                    const desktopBtn = document.getElementById('like-btn');
+                    const mobileBtn = document.getElementById('like-btn-mobile');
+
+                    [desktopBtn, mobileBtn].forEach(btn => {
+                        if (!btn) return;
+
+                        const icon = btn.querySelector('i');
+                        const text = btn.querySelector('.like-text');
+
+                        if (json.liked) {
+                            icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill');
+                            if (text) text.textContent = 'Disukai';
+                            btn.dataset.liked = 'true';
+                        } else {
+                            icon.classList.remove('bi-heart-fill');
+                            icon.classList.add('bi-heart');
+                            if (text) text.textContent = 'Suka';
+                            btn.dataset.liked = 'false';
+                        }
+                    });
+
+                    // Update counts
+                    const desktopCount = document.getElementById('likes-count');
+                    const mobileCount = document.getElementById('likes-count-mobile');
+
+                    [desktopCount, mobileCount].forEach(count => {
+                        if (count) count.textContent = json.likes_count;
+                    });
+
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast('danger', json.error || 'Terjadi kesalahan');
+                    }
+                }
+            }).catch((err) => {
+                console.error(err);
+                if (typeof showToast === 'function') {
+                    showToast('danger', 'Terjadi kesalahan jaringan');
+                }
+            }).finally(() => {
+                likeBtn.disabled = false;
+            });
+        });
+    </script>
     <script>
         document.addEventListener('click', function(e) {
             // comment like (top-level comment)

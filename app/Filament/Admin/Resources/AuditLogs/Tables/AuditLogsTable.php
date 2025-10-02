@@ -22,12 +22,12 @@ class AuditLogsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('auditable_type')
                     ->label('MODEL')
-                    ->size('sm')
+
                     ->formatStateUsing(fn ($state) => class_basename($state))
                     ->badge()
                     ->color('gray')
@@ -35,12 +35,12 @@ class AuditLogsTable
                     ->searchable(),
                 TextColumn::make('auditable_id')
                     ->label('ID REKAMAN')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('action')
                     ->label('AKSI')
-                    ->size('sm')
+
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'created' => 'success',
@@ -51,7 +51,7 @@ class AuditLogsTable
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('DESKRIPSI')
-                    ->size('sm')
+
                     ->limit(60)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -61,17 +61,17 @@ class AuditLogsTable
                     ->searchable(),
                 TextColumn::make('user.name')
                     ->label('PENGGUNA')
-                    ->size('sm')
+
                     ->default('Sistem')
                     ->searchable(),
                 TextColumn::make('ip_address')
                     ->label('ALAMAT IP')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('TANGGAL & WAKTU')
-                    ->size('sm')
+
                     ->dateTime('d M Y, H:i:s')
                     ->sortable(),
             ])

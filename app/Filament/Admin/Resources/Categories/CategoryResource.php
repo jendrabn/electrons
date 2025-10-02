@@ -40,40 +40,46 @@ class CategoryResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('name')
                     ->label('NAMA')
-                    ->size('sm')
+
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('slug')
                     ->label('SLUG')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('DESKRIPSI')
-                    ->size('sm')
+
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('color')
+                    ->label('WARNA')
+                    ->badge()
+                    ->color(fn ($record) => $record->color)
+                    ->formatStateUsing(fn ($state) => strtoupper($state))
                     ->sortable(),
                 TextColumn::make('posts_count')
                     ->label('JUMLAH BLOG POST')
-                    ->size('sm')
+
                     ->counts('posts')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('TANGGAL & WAKTU DIBUAT')
-                    ->size('sm')
+
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('updated_at')
                     ->label('TANGGAL & WAKTU DIPERBARUI')
-                    ->size('sm')
+
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
@@ -90,7 +96,7 @@ class CategoryResource extends Resource
                     ->modalHeading('Ubah Kategori')
                     ->modalAlignment($modalConfig['alignment'])
                     ->schema(CategoryFormSchema::getSchema())
-                    ->mutateDataUsing(fn($data) => CategoryFormSchema::mutateDataUsing($data))
+                    ->mutateDataUsing(fn ($data) => CategoryFormSchema::mutateDataUsing($data))
                     ->successNotificationTitle('Kategori berhasil diperbarui'),
                 DeleteAction::make()
                     ->requiresConfirmation()

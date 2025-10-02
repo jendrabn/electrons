@@ -123,12 +123,25 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | AI Access Control
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether AI features are restricted to admin users only.
+    | When set to true, only users with 'admin' role can access AI generation.
+    | When set to false, all authenticated users can access AI features.
+    |
+    */
+
+    'ai_admin_only' => env('AI_ADMIN_ONLY', true),
+
     'aliases' => [
-        'SEOMeta'       => Artesaos\SEOTools\Facades\SEOMeta::class,
-        'OpenGraph'     => Artesaos\SEOTools\Facades\OpenGraph::class,
-        'Twitter'       => Artesaos\SEOTools\Facades\TwitterCard::class,
-        'JsonLd'        => Artesaos\SEOTools\Facades\JsonLd::class,
-        'JsonLdMulti'   => Artesaos\SEOTools\Facades\JsonLdMulti::class,
+        'SEOMeta' => Artesaos\SEOTools\Facades\SEOMeta::class,
+        'OpenGraph' => Artesaos\SEOTools\Facades\OpenGraph::class,
+        'Twitter' => Artesaos\SEOTools\Facades\TwitterCard::class,
+        'JsonLd' => Artesaos\SEOTools\Facades\JsonLd::class,
+        'JsonLdMulti' => Artesaos\SEOTools\Facades\JsonLdMulti::class,
         'SEO' => Artesaos\SEOTools\Facades\SEOTools::class,
     ],
 

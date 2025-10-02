@@ -14,13 +14,13 @@ class PostSectionSchema
     {
         return [
             TextInput::make('name')
-                ->label('Nama Seksi')
+                ->label('Nama Post Section')
                 ->required()
                 ->unique(ignoreRecord: true)
                 ->maxLength(100)
                 ->columnSpanFull(),
             Select::make('posts')
-                ->label('Posts')
+                ->label('Blog Posts')
                 ->required()
                 ->multiple()
                 ->relationship(

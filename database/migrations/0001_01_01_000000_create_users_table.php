@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->string('google_id')->nullable();
 
-            $table->string('username')->unique()->nullable();
+            $table->string('username')->unique();
             $table->enum('sex', ['male', 'female'])->nullable();
             $table->date('birth_date')->nullable();
             $table->string('address')->nullable();

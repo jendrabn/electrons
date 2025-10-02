@@ -4,12 +4,18 @@ namespace App\Filament\Shared\Resources\Posts\Schemas;
 
 use App\Enums\Status;
 use App\Models\Category;
+use App\Services\AIContentGeneratorService;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\RichEditor\Actions\AttachFilesAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
@@ -26,8 +32,8 @@ class PostForm
             ->components([
                 TextEntry::make('rejected_reason')
                     ->label('Alasan Penolakan')
-                    ->state(fn ($record) => $record->rejected_reason ?? '-')
-                    ->visible(fn ($record) => $record?->status === Status::REJECTED->value)
+                    ->state(fn($record) => $record->rejected_reason ?? '-')
+                    ->visible(fn($record) => $record?->status === Status::REJECTED->value)
                     ->color('danger')
                     ->inlineLabel()
                     ->columnSpanFull(),
@@ -64,10 +70,10 @@ class PostForm
                         if ($component->shouldPreserveFilenames()) {
                             $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-                            return Str::slug($name).'.webp';
+                            return Str::slug($name) . '.webp';
                         }
 
-                        return Str::ulid().'.webp';
+                        return Str::ulid() . '.webp';
                     })
                     ->saveUploadedFileUsing(function (FileUpload $component, TemporaryUploadedFile $file): ?string {
                         try {
@@ -124,6 +130,164 @@ class PostForm
                 RichEditor::make('content')
                     ->label('Konten')
                     ->required()
+                    ->hintActions([
+                        Action::make('generateWithAI')
+                            ->label('🤖 Generate dengan AI')
+                            ->color('info')
+                            ->icon('heroicon-o-sparkles')
+                            ->visible(fn() => app(AIContentGeneratorService::class)->canAccessAI())
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('topic')
+                                            ->label('Topik/Judul Artikel')
+                                            ->required()
+                                            ->placeholder('Contoh: Cara Membuat REST API dengan Laravel')
+                                            ->columnSpanFull(),
+                                        Select::make('ai_category')
+                                            ->label('Kategori')
+                                            ->options(Category::all()->pluck('name', 'name'))
+                                            ->searchable()
+                                            ->preload(),
+                                        Select::make('difficulty')
+                                            ->label('Tingkat Kesulitan')
+                                            ->options([
+                                                'Pemula' => 'Pemula',
+                                                'Menengah' => 'Menengah',
+                                                'Lanjutan' => 'Lanjutan',
+                                            ])
+                                            ->default('Pemula'),
+                                        Select::make('target_audience')
+                                            ->label('Target Pembaca')
+                                            ->options([
+                                                'Developer Pemula' => 'Developer Pemula',
+                                                'Junior Developer' => 'Junior Developer',
+                                                'Senior Developer' => 'Senior Developer',
+                                                'Mahasiswa IT' => 'Mahasiswa IT',
+                                                'Umum' => 'Umum',
+                                            ])
+                                            ->default('Developer Pemula'),
+                                        Select::make('programming_language')
+                                            ->label('Bahasa Pemrograman')
+                                            ->options([
+                                                'PHP' => 'PHP',
+                                                'JavaScript' => 'JavaScript',
+                                                'Python' => 'Python',
+                                                'Java' => 'Java',
+                                                'C#' => 'C#',
+                                                'Go' => 'Go',
+                                                'TypeScript' => 'TypeScript',
+                                                'HTML/CSS' => 'HTML/CSS',
+                                                'SQL' => 'SQL',
+                                                'Lainnya' => 'Lainnya',
+                                            ])
+                                            ->searchable(),
+                                        TextInput::make('framework_tools')
+                                            ->label('Framework/Tools')
+                                            ->placeholder('Contoh: Laravel, React, Vue.js, Bootstrap')
+                                            ->columnSpanFull(),
+                                        Select::make('article_length')
+                                            ->label('Panjang Artikel')
+                                            ->options([
+                                                'Pendek (500-800 kata)' => 'Pendek (500-800 kata)',
+                                                'Sedang (800-1500 kata)' => 'Sedang (800-1500 kata)',
+                                                'Panjang (1500+ kata)' => 'Panjang (1500+ kata)',
+                                            ])
+                                            ->default('Sedang (800-1500 kata)')
+                                            ->columnSpanFull(),
+                                        Textarea::make('key_points')
+                                            ->label('Poin-poin Kunci (Opsional)')
+                                            ->placeholder('Contoh:&#10;- Penjelasan tentang routing&#10;- Implementasi middleware&#10;- Contoh testing API')
+                                            ->rows(4)
+                                            ->columnSpanFull(),
+                                        Textarea::make('additional_requirements')
+                                            ->label('Persyaratan Tambahan (Opsional)')
+                                            ->placeholder('Contoh: Sertakan contoh kode untuk CRUD, jelaskan tentang validasi, tambahkan tips security')
+                                            ->rows(3)
+                                            ->columnSpanFull(),
+                                    ]),
+                            ])
+                            ->action(function (array $data, Set $set) {
+                                try {
+                                    $aiService = app(AIContentGeneratorService::class);
+                                    $result = $aiService->generateContent($data);
+
+                                    if ($result['success']) {
+                                        $set('content', $result['content']);
+
+                                        Notification::make()
+                                            ->title('Konten berhasil digenerate!')
+                                            ->body('Konten AI telah dimasukkan ke editor. Anda dapat mengedit sesuai kebutuhan.')
+                                            ->success()
+                                            ->send();
+                                    } else {
+                                        Notification::make()
+                                            ->title('Error Generate Konten')
+                                            ->body($result['error'])
+                                            ->danger()
+                                            ->send();
+                                    }
+                                } catch (\Exception $e) {
+                                    Notification::make()
+                                        ->title('Error')
+                                        ->body('Terjadi kesalahan: ' . $e->getMessage())
+                                        ->danger()
+                                        ->send();
+                                }
+                            })
+                            ->modalHeading('Generate Konten dengan AI')
+                            ->modalDescription('Isi form berikut untuk menghasilkan konten artikel tutorial coding yang berkualitas menggunakan AI.')
+                            ->modalSubmitActionLabel('Generate Konten')
+                            ->modalWidth('4xl'),
+                        Action::make('generateTitle')
+                            ->label('💡 Saran Judul')
+                            ->color('warning')
+                            ->icon('heroicon-o-light-bulb')
+                            ->visible(fn() => app(AIContentGeneratorService::class)->canAccessAI())
+                            ->schema([
+                                TextInput::make('topic_for_title')
+                                    ->label('Topik Artikel')
+                                    ->required()
+                                    ->placeholder('Contoh: Laravel API Authentication'),
+                                Select::make('category_for_title')
+                                    ->label('Kategori')
+                                    ->options(Category::all()->pluck('name', 'name'))
+                                    ->searchable()
+                                    ->preload(),
+                            ])
+                            ->action(function (array $data, Set $set) {
+                                try {
+                                    $aiService = app(AIContentGeneratorService::class);
+                                    $result = $aiService->generateTitleSuggestions(
+                                        $data['topic_for_title'],
+                                        $data['category_for_title'] ?? ''
+                                    );
+
+                                    if ($result['success']) {
+                                        Notification::make()
+                                            ->title('Saran Judul')
+                                            ->body($result['suggestions'])
+                                            ->info()
+                                            ->persistent()
+                                            ->send();
+                                    } else {
+                                        Notification::make()
+                                            ->title('Error Generate Judul')
+                                            ->body($result['error'])
+                                            ->danger()
+                                            ->send();
+                                    }
+                                } catch (\Exception $e) {
+                                    Notification::make()
+                                        ->title('Error')
+                                        ->body('Terjadi kesalahan: ' . $e->getMessage())
+                                        ->danger()
+                                        ->send();
+                                }
+                            })
+                            ->modalHeading('Generate Saran Judul')
+                            ->modalSubmitActionLabel('Generate Saran'),
+                    ])
                     ->toolbarButtons(
                         [
                             [
@@ -193,8 +357,8 @@ class PostForm
                     ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                     ->fileAttachmentsMaxSize(5120)
                     ->registerActions([
-                        fn (RichEditor $component) => AttachFilesAction::make()
-                            ->schema(fn (array $arguments, RichEditor $component): array => [
+                        fn(RichEditor $component) => AttachFilesAction::make()
+                            ->schema(fn(array $arguments, RichEditor $component): array => [
                                 FileUpload::make('file')
                                     ->label(filled($arguments['src'] ?? null)
                                         ? __('filament-forms::components.rich_editor.actions.attach_files.modal.form.file.label.existing')
@@ -286,7 +450,7 @@ class PostForm
                     ->columnSpanFull(),
                 Select::make('tags')
                     ->label('Tag')
-                    ->relationship(name: 'tags', titleAttribute: 'name', modifyQueryUsing: fn ($query) => $query->orderBy('name', 'asc'))
+                    ->relationship(name: 'tags', titleAttribute: 'name', modifyQueryUsing: fn($query) => $query->orderBy('name', 'asc'))
                     ->multiple()
                     ->preload()
                     ->searchable()

@@ -97,6 +97,7 @@ Route::get('/posts/author/{user:id}', [App\Http\Controllers\PostController::clas
 Route::get('/comments/{post}', [App\Http\Controllers\PostCommentController::class, 'list'])->name('comments.list');
 
 Route::middleware(['auth'])->prefix('posts')->name('posts.')->group(function () {
+    Route::post('/{post}/like', [App\Http\Controllers\PostController::class, 'like'])->name('like');
     Route::post('/{post}/comments', [App\Http\Controllers\PostCommentController::class, 'store'])->name('comments.store');
     Route::get('/{post}/comments/{comment}/edit', [App\Http\Controllers\PostCommentController::class, 'edit'])->name('comments.edit');
     Route::put('/{post}/comments/{comment}', [App\Http\Controllers\PostCommentController::class, 'update'])->name('comments.update');

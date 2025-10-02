@@ -41,40 +41,40 @@ class PostSectionResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('name')
                     ->label('NAMA')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('slug')
                     ->label('SLUG')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('posts_count')
                     ->counts('posts')
                     ->label('JUMLAH BLOG POST')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('order')
                     ->label('URUTAN')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('TANGGAL & WAKTU DIBUAT')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('updated_at')
                     ->label('TANGGAL & WAKTU DIPERBARUI')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
@@ -96,7 +96,7 @@ class PostSectionResource extends Resource
                     ->modalHeading('Ubah Seksi Blog Post')
                     ->modalAlignment($modalConfig['alignment'])
                     ->schema(PostSectionSchema::getSchema())
-                    ->mutateDataUsing(fn($data) => PostSectionSchema::mutateDataUsing($data))
+                    ->mutateDataUsing(fn ($data) => PostSectionSchema::mutateDataUsing($data))
                     ->successNotificationTitle('Seksi postingan berhasil diperbarui'),
                 DeleteAction::make()
                     ->requiresConfirmation()

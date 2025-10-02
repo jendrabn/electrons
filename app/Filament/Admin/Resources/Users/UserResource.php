@@ -62,7 +62,7 @@ class UserResource extends Resource
                 // Personal Information
                 TextEntry::make('sex')
                     ->label('Jenis Kelamin')
-                    ->formatStateUsing(fn(?string $state): string => match ($state) {
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'male' => 'Laki-laki',
                         'female' => 'Perempuan',
                         default => 'Tidak ditentukan',
@@ -87,7 +87,7 @@ class UserResource extends Resource
                         'primary' => Role::ADMIN->value,
                         'success' => Role::AUTHOR->value,
                     ])
-                    ->getStateUsing(fn(User $record): string => $record->getRoleNames()->first()),
+                    ->getStateUsing(fn (User $record): string => $record->getRoleNames()->first()),
                 TextEntry::make('posts_count')
                     ->label('Total Blog Post')
                     ->numeric()
@@ -97,22 +97,22 @@ class UserResource extends Resource
                 // Account Status
                 TextEntry::make('is_suspended')
                     ->label('Status Akun')
-                    ->formatStateUsing(fn(bool $state): string => $state ? 'Ditangguhkan' : 'Aktif')
-                    ->color(fn(bool $state): string => $state ? 'danger' : 'success'),
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Ditangguhkan' : 'Aktif')
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'success'),
                 TextEntry::make('suspend_reason')
                     ->label('Alasan Penangguhan')
                     ->placeholder('Tanpa alasan')
-                    ->visible(fn($record): bool => $record?->is_suspended ?? false),
+                    ->visible(fn ($record): bool => $record?->is_suspended ?? false),
 
                 // Verification
                 TextEntry::make('email_verified_at')
                     ->label('Email Terverifikasi')
-                    ->formatStateUsing(fn(?string $state): string => $state ? 'Ya' : 'Tidak')
-                    ->color(fn(?string $state): string => $state ? 'success' : 'danger'),
+                    ->formatStateUsing(fn (?string $state): string => $state ? 'Ya' : 'Tidak')
+                    ->color(fn (?string $state): string => $state ? 'success' : 'danger'),
                 TextEntry::make('google_id')
                     ->label('Akun Google')
-                    ->formatStateUsing(fn(?string $state): string => $state ? 'Terhubung' : 'Tidak Terhubung')
-                    ->color(fn(?string $state): string => $state ? 'success' : 'gray'),
+                    ->formatStateUsing(fn (?string $state): string => $state ? 'Terhubung' : 'Tidak Terhubung')
+                    ->color(fn (?string $state): string => $state ? 'success' : 'gray'),
 
                 // Timestamps
                 TextEntry::make('created_at')
@@ -124,11 +124,11 @@ class UserResource extends Resource
                 TextEntry::make('suspended_at')
                     ->label('Ditangguhkan Pada')
                     ->dateTime('M j, Y H:i')
-                    ->visible(fn($record): bool => $record?->suspended_at !== null),
+                    ->visible(fn ($record): bool => $record?->suspended_at !== null),
                 TextEntry::make('unsuspended_at')
                     ->label('Penangguhan Dicabut Pada')
                     ->dateTime('M j, Y H:i')
-                    ->visible(fn($record): bool => $record?->unsuspended_at !== null),
+                    ->visible(fn ($record): bool => $record?->unsuspended_at !== null),
             ]);
     }
 
@@ -141,71 +141,74 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 ImageColumn::make('avatar_url')
                     ->label('AVATAR')
-                    ->circular(),
+                    ->imageSize(40)
+                    ->extraImgAttributes([
+                        'style' => 'object-fit: cover; border: 1px solid #fbbf24; padding: 1px; border-radius: 4px;',
+                    ]),
                 TextColumn::make('name')
                     ->label('NAMA')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('username')
                     ->label('USERNAME')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('email')
                     ->label('EMAIL')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('role')
                     ->label('PERAN')
-                    ->size('sm')
+
                     ->badge()
                     ->colors([
                         'primary' => Role::ADMIN->value,
                         'success' => Role::AUTHOR->value,
                     ])
-                    ->getStateUsing(fn(User $record): string => $record->getRoleNames()->first())
+                    ->getStateUsing(fn (User $record): string => $record->getRoleNames()->first())
                     ->searchable(),
                 TextColumn::make('posts_count')
                     ->label('JUMLAH BLOG POST')
-                    ->size('sm')
+
                     ->counts('posts')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('phone')
                     ->label('TELEPON')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('sex')
                     ->label('JENIS KELAMIN')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('birth_date')
                     ->label('TANGGAL LAHIR')
-                    ->size('sm')
+
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('address')
                     ->label('ALAMAT')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('is_suspended')
                     ->label('STATUS')
-                    ->size('sm')
+
                     ->sortable()
                     ->searchable()
                     ->badge()
@@ -213,18 +216,18 @@ class UserResource extends Resource
                         'danger' => '0',
                         'success' => '1',
                     ])
-                    ->getStateUsing(fn(User $record): string => $record->is_suspended ? 'Ditangguhkan' : 'Aktif')
+                    ->getStateUsing(fn (User $record): string => $record->is_suspended ? 'Ditangguhkan' : 'Aktif')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email_verified_at')
                     ->label('TANGGAL & WAKTU VERIFIKASI')
-                    ->size('sm')
+
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('TANGGAL & WAKTU DIBUAT')
-                    ->size('sm')
+
                     ->dateTime('d M Y, H:i:s')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
@@ -232,7 +235,7 @@ class UserResource extends Resource
                 TextColumn::make('updated_at')
                     ->dateTime('d M Y, H:i:s')
                     ->label('TANGGAL & WAKTU DIPERBARUI')
-                    ->size('sm')
+
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),

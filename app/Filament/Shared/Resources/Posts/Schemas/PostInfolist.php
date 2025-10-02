@@ -25,8 +25,7 @@ class PostInfolist
                                 ImageEntry::make('image_url')
                                     ->label('Gambar Utama')
                                     ->extraImgAttributes([
-                                        'class' => 'rounded-lg object-cover w-full h-auto',
-                                        'style' => 'max-height: none; height: auto;',
+                                        'style' => 'border-radius: 8px; object-fit: cover; width: 100%; height: auto; max-height: 300px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);',
                                     ])
                                     ->columnSpan(1),
 
@@ -51,8 +50,8 @@ class PostInfolist
                                     TextEntry::make('status')
                                         ->label('Status')
                                         ->badge()
-                                        ->formatStateUsing(fn($state) => Status::tryFrom($state)?->getLabel() ?? ucfirst($state))
-                                        ->color(fn($state) => Status::tryFrom($state)?->GetColor() ?? 'secondary'),
+                                        ->formatStateUsing(fn ($state) => Status::tryFrom($state)?->getLabel() ?? ucfirst($state))
+                                        ->color(fn ($state) => Status::tryFrom($state)?->GetColor() ?? 'secondary'),
                                 ])->columnSpan(1),
                             ]),
                     ])
@@ -147,7 +146,7 @@ class PostInfolist
                             ->color('danger')
                             ->prose(),
                     ])
-                    ->visible(fn($record) => $record->status === Status::REJECTED->value)
+                    ->visible(fn ($record) => $record->status === Status::REJECTED->value)
                     ->collapsible()
                     ->icon('heroicon-o-exclamation-triangle')
                     ->columnSpanFull(),

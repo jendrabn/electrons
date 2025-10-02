@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 class Post extends Model
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
-    use HasFactory, Auditable;
+    use Auditable, HasFactory;
 
     protected $guarded = [];
 
@@ -46,7 +46,7 @@ class Post extends Model
     public function imageUrl(): Attribute
     {
         return Attribute::make(
-            get: fn() => filter_var($this->image, FILTER_VALIDATE_URL) ? $this->image : asset('storage/' . $this->image),
+            get: fn () => filter_var($this->image, FILTER_VALIDATE_URL) ? $this->image : asset('storage/'.$this->image),
         );
     }
 
@@ -76,12 +76,26 @@ class Post extends Model
     public function excerpt(): Attribute
     {
         return Attribute::make(
-            get: fn() => Str::limit(strip_tags($this->content), 130, '...'),
+            get: fn () => Str::limit(strip_tags($this->content), 130, '...'),
         );
     }
 
     public function comments(): HasMany
     {
         return $this->hasMany(PostComment::class);
+    }
+
+    public function likes(): MorphMany
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function isLikedBy(?User $user = null): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->likes()->where('user_id', $user->id)->exists();
     }
 }
