@@ -108,7 +108,7 @@ class ThreadController extends Controller
         $tags = Tag::all()->pluck('name', 'id');
 
         // SEO for create thread page
-        $this->seoService->setThreadCreateSEO(route('comunity.create'));
+        $this->seoService->setThreadCreateSEO(route('community.create'));
 
         return view('threads.create', compact('tags'));
     }
@@ -122,7 +122,7 @@ class ThreadController extends Controller
 
         $thread->tags()->attach($data['tag_ids'] ?? []);
 
-        return redirect()->route('comunity.show', $thread->id)->with('status', 'Thread berhasil dibuat.');
+        return redirect()->route('community.show', $thread->id)->with('status', 'Thread berhasil dibuat.');
     }
 
     public function show(Thread $thread)
@@ -153,7 +153,7 @@ class ThreadController extends Controller
         $tags = Tag::all()->pluck('name', 'id');
 
         // SEO for edit page
-        $this->seoService->setThreadEditSEO($thread, route('comunity.edit', $thread->id));
+        $this->seoService->setThreadEditSEO($thread, route('community.edit', $thread->id));
 
         return view('threads.edit', compact('thread', 'tags'));
     }
@@ -169,7 +169,7 @@ class ThreadController extends Controller
 
         $thread->tags()->sync($data['tag_ids'] ?? []);
 
-        return redirect()->route('comunity.show', $thread->id)->with('status', 'Thread berhasil diperbarui.');
+        return redirect()->route('community.show', $thread->id)->with('status', 'Thread berhasil diperbarui.');
     }
 
     public function destroy(Thread $thread)
@@ -178,7 +178,7 @@ class ThreadController extends Controller
 
         $thread->delete();
 
-        return redirect()->route('comunity.index')->with('status', 'Thread dihapus.');
+        return redirect()->route('community.index')->with('status', 'Thread dihapus.');
     }
 
     public function uploadImage(Request $request, Thread $thread)
@@ -335,7 +335,7 @@ class ThreadController extends Controller
             ->get();
 
         $suggestions = $results->map(function ($t) {
-            return ['id' => $t->id, 'title' => $t->title, 'url' => route('comunity.show', $t->id)];
+            return ['id' => $t->id, 'title' => $t->title, 'url' => route('community.show', $t->id)];
         })->values();
 
         return response()->json(['suggestions' => $suggestions]);

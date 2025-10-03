@@ -38,7 +38,7 @@ class AuthorPanelProvider extends PanelProvider
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->sort(80),
                 NavigationItem::make('Komunitas')
-                    ->url(url('/comunity'))
+                    ->url(url('/community'))
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->sort(90),
             ])

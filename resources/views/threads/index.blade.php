@@ -46,7 +46,7 @@
                                     $query = array_merge(request()->query(), ['tag' => $category->slug]);
                                 @endphp
                                 <a class="badge rounded-pill text-decoration-none badge-category @if ($isActiveCat) text-bg-primary @else text-bg-light @endif"
-                                   href="{{ route('comunity.index', $query) }}">
+                                   href="{{ route('community.index', $query) }}">
                                     {{ $category->name }}
                                 </a>
                             @endforeach
@@ -86,7 +86,7 @@
                 {{-- Search Bar --}}
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-body">
-                        <form action="{{ route('comunity.index') }}"
+                        <form action="{{ route('community.index') }}"
                               autocomplete="off"
                               method="GET">
                             <div class="input-group position-relative">
@@ -109,7 +109,7 @@
                 {{-- Thread List --}}
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <a class="btn btn-primary"
-                       href="{{ route('comunity.create') }}">
+                       href="{{ route('community.create') }}">
                         <i class="bi bi-plus-lg"></i> Buat Thread
                     </a>
 
@@ -141,21 +141,21 @@
                                 class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item @if (empty($filter)) active @endif"
-                                       href="{{ route('comunity.index') }}">Semua</a>
+                                       href="{{ route('community.index') }}">Semua</a>
                                 </li>
                                 @auth
                                     <li>
                                         <a class="dropdown-item @if ($filter === 'mine') active @endif"
-                                           href="{{ route('comunity.index', ['filter' => 'mine']) }}">Thread Saya</a>
+                                           href="{{ route('community.index', ['filter' => 'mine']) }}">Thread Saya</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item @if ($filter === 'bookmarks') active @endif"
-                                           href="{{ route('comunity.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
+                                           href="{{ route('community.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
                                     </li>
                                 @endauth
                                 <li>
                                     <a class="dropdown-item @if ($filter === 'answered') active @endif"
-                                       href="{{ route('comunity.index', ['filter' => 'answered']) }}">Terjawab</a>
+                                       href="{{ route('community.index', ['filter' => 'answered']) }}">Terjawab</a>
                                 </li>
                             </ul>
                         </div>
@@ -165,15 +165,15 @@
                              class="btn-group d-none d-lg-inline-flex"
                              role="group">
                             <a class="btn @if (empty($filter)) btn-primary @else btn-outline-secondary @endif"
-                               href="{{ route('comunity.index') }}">Semua</a>
+                               href="{{ route('community.index') }}">Semua</a>
                             @auth
                                 <a class="btn @if ($filter === 'mine') btn-primary @else btn-outline-secondary @endif"
-                                   href="{{ route('comunity.index', ['filter' => 'mine']) }}">Thread Saya</a>
+                                   href="{{ route('community.index', ['filter' => 'mine']) }}">Thread Saya</a>
                                 <a class="btn @if ($filter === 'bookmarks') btn-primary @else btn-outline-secondary @endif"
-                                   href="{{ route('comunity.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
+                                   href="{{ route('community.index', ['filter' => 'bookmarks']) }}">Bookmark</a>
                             @endauth
                             <a class="btn @if ($filter === 'answered') btn-primary @else btn-outline-secondary @endif"
-                               href="{{ route('comunity.index', ['filter' => 'answered']) }}">Terjawab</a>
+                               href="{{ route('community.index', ['filter' => 'answered']) }}">Terjawab</a>
                         </div>
                     </div>
                 </div>
@@ -195,7 +195,7 @@
                                 <div class="flex-grow-1">
                                     <h5 class="card-title mb-1">
                                         <a class="text-decoration-none"
-                                           href="{{ route('comunity.show', $thread->id) }}">
+                                           href="{{ route('community.show', $thread->id) }}">
                                             {{ $thread->title }}
                                         </a>
                                         @if (!empty($thread->is_done))

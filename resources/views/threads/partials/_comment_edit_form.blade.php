@@ -1,4 +1,4 @@
-<form action="{{ route('comunity.comments.update', [$comment->thread->id, $comment->id]) }}"
+<form action="{{ route('community.comments.update', [$comment->thread->id, $comment->id]) }}"
       id="comment-edit-form"
       method="POST">
     @csrf

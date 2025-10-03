@@ -62,7 +62,7 @@
                                     @can('update', $thread)
                                         <a aria-label="Edit thread"
                                            class="btn btn-sm btn-outline-primary me-2 d-flex align-items-center justify-content-center"
-                                           href="{{ route('comunity.edit', $thread->id) }}"
+                                           href="{{ route('community.edit', $thread->id) }}"
                                            id="threadEditBtn"
                                            title="Edit thread">
                                             <i class="bi bi-pencil"></i>
@@ -83,7 +83,7 @@
 
                                     @can('toggleDone', $thread)
                                         <button class="btn btn-sm btn-outline-success me-2 d-flex align-items-center justify-content-center"
-                                                data-url="{{ route('comunity.toggleDone', $thread->id) }}"
+                                                data-url="{{ route('community.toggleDone', $thread->id) }}"
                                                 id="threadToggleDoneBtn"
                                                 type="button">
                                             {{ $thread->is_done ? 'Buka Kembali' : 'Tandai Sudah Terjawab' }}
@@ -93,7 +93,7 @@
                                     <button aria-label="Like thread"
                                             class="btn btn-sm btn-outline-primary me-2 d-flex align-items-center justify-content-center thread-like-btn"
                                             data-id="{{ $thread->id }}"
-                                            data-url="{{ route('comunity.like', $thread->id) }}"
+                                            data-url="{{ route('community.like', $thread->id) }}"
                                             id="threadLikeBtn"
                                             title="Suka">
                                         <i
@@ -104,7 +104,7 @@
                                     <button aria-label="Bookmark thread"
                                             class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center thread-bookmark-btn"
                                             data-id="{{ $thread->id }}"
-                                            data-url="{{ route('comunity.bookmark', $thread->id) }}"
+                                            data-url="{{ route('community.bookmark', $thread->id) }}"
                                             id="threadBookmarkBtn"
                                             title="Simpan">
                                         <i
@@ -137,7 +137,7 @@
                     <div class="card-body">
                         @auth
                             @if (!$thread->is_done)
-                                <form action="{{ route('comunity.comments.store', $thread->id) }}"
+                                <form action="{{ route('community.comments.store', $thread->id) }}"
                                       id="comment-form"
                                       method="POST">
                                     @csrf
@@ -245,7 +245,7 @@
             const id = editBtn.getAttribute('data-id');
             const threadId = '{{ $thread->id }}';
             const btnUrl = editBtn.getAttribute('data-url');
-            const url = btnUrl ? btnUrl : `/comunity/${threadId}/comments/${id}/edit`;
+            const url = btnUrl ? btnUrl : `/community/${threadId}/comments/${id}/edit`;
 
             (async function() {
                 try {
@@ -428,7 +428,7 @@
                     confirm.addEventListener('click', function(ev) {
                         // Attempt to find a data-url on the original button, otherwise build from route pattern
                         const url = threadDeleteBtn.dataset.url ||
-                            '{{ route('comunity.destroy', $thread->id) }}';
+                            '{{ route('community.destroy', $thread->id) }}';
                         submitPlainPost(url, 'DELETE');
                     });
                 }

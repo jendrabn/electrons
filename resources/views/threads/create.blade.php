@@ -20,7 +20,7 @@
                                 <li>Gunakan bahasa yang sopan dan mudah dipahami.</li>
                             </ul>
                         </div>
-                        <form action="{{ route('comunity.store') }}"
+                        <form action="{{ route('community.store') }}"
                               id="threadForm"
                               method="POST">
                             @csrf
@@ -70,7 +70,7 @@
                             </div>
                             <div class="d-flex justify-content-end gap-2">
                                 <a class="btn btn-default"
-                                   href="{{ route('comunity.index') }}">
+                                   href="{{ route('community.index') }}">
                                     <i class="bi bi-x-circle"></i> Batal
                                 </a>
                                 <button class="btn btn-primary"

@@ -131,7 +131,7 @@ class GenerateSitemap extends Command
 
         // Community / threads listing
         $sm->add(
-            Url::create($this->buildRouteUrl('comunity.index'))
+            Url::create($this->buildRouteUrl('community.index'))
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(0.8)
         );
@@ -175,7 +175,7 @@ class GenerateSitemap extends Command
             ->orderBy('id')
             ->chunkById($chunk, function ($threads) use ($sm) {
                 foreach ($threads as $thread) {
-                    $url = $this->buildRouteUrl('comunity.show', $thread);
+                    $url = $this->buildRouteUrl('community.show', $thread);
                     $lastmod = $thread->updated_at ?? now();
 
                     $sm->add(

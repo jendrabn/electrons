@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Community (threads) routes
-Route::prefix('comunity')->name('comunity.')->group(function () {
+Route::prefix('community')->name('community.')->group(function () {
     // Public listing
     Route::get('/', [App\Http\Controllers\ThreadController::class, 'index'])->name('index');
 

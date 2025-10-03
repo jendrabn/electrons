@@ -485,7 +485,7 @@ class SEOService
     public function setThreadSEO(Thread $thread): void
     {
         $baseUrl = rtrim(url('/'), '/') . '/';
-        $url     = route('comunity.show', $thread);
+        $url     = route('community.show', $thread);
 
         $title = Str::of((string)($thread->title ?? ''))->trim()->isNotEmpty()
             ? (string) $thread->title . ' - ' . $this->siteName
@@ -597,7 +597,7 @@ class SEOService
         $items = [];
         $i = 1 + (($paginator->currentPage() - 1) * $paginator->perPage());
         foreach (collect($paginator->items())->take(10) as $thread) {
-            $threadUrl = route('comunity.show', $thread);
+            $threadUrl = route('community.show', $thread);
             $image     = $this->pickImage($thread->image ?? null, $thread->content ?? '') ?? $this->defaultImage;
             $items[] = [
                 '@type'         => 'ListItem',

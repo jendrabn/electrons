@@ -28,7 +28,7 @@
 
                     {{-- Jawaban Terbaik: only visible to the thread owner --}}
                     @if (auth()->check() && isset($thread) && auth()->id() === $thread->user_id)
-                        <form action="{{ route('comunity.comments.markBest', [$comment->thread->id, $comment->id]) }}"
+                        <form action="{{ route('community.comments.markBest', [$comment->thread->id, $comment->id]) }}"
                               class="m-0 p-0"
                               method="POST">
                             @csrf
@@ -44,7 +44,7 @@
                         <button aria-label="Edit komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none edit-btn comment-edit"
                                 data-id="{{ $comment->id }}"
-                                data-url="{{ route('comunity.comments.edit', [$comment->thread->id, $comment->id]) }}"
+                                data-url="{{ route('community.comments.edit', [$comment->thread->id, $comment->id]) }}"
                                 title="Edit komentar"
                                 type="button">
                             <i class="bi bi-pencil"></i>
@@ -52,7 +52,7 @@
                         <button aria-label="Hapus komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn comment-delete"
                                 data-id="{{ $comment->id }}"
-                                data-url="{{ route('comunity.comments.destroy', [$comment->thread->id, $comment->id]) }}"
+                                data-url="{{ route('community.comments.destroy', [$comment->thread->id, $comment->id]) }}"
                                 title="Hapus komentar"
                                 type="button">
                             <i class="bi bi-trash"></i>
@@ -84,7 +84,7 @@
                 <button aria-label="Suka komentar"
                         class="btn btn-link btn-sm p-0 text-decoration-none like-btn comment-like-btn"
                         data-id="{{ $comment->id }}"
-                        data-url="{{ route('comunity.comments.like', [$comment->thread->id, $comment->id]) }}"
+                        data-url="{{ route('community.comments.like', [$comment->thread->id, $comment->id]) }}"
                         title="Suka"
                         type="button">
                     <i
@@ -112,7 +112,7 @@
             <div class="collapse mt-3"
                  id="replyCollapse{{ $comment->id }}">
                 @auth
-                    <form action="{{ route('comunity.comments.store', [$comment->thread->id, $comment->id]) }}"
+                    <form action="{{ route('community.comments.store', [$comment->thread->id, $comment->id]) }}"
                           class="reply-form"
                           method="POST">
                         @csrf

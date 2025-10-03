@@ -22,7 +22,7 @@ class ThreadRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->routeIs('comunity.store')) {
+        if ($this->routeIs('community.store')) {
             return [
                 'title' => ['required', 'string', 'max:200'],
                 'user_id' => ['required', 'exists:users,id'],
@@ -31,7 +31,7 @@ class ThreadRequest extends FormRequest
                 'tag_ids' => ['required', 'array'],
                 'tag_ids.*' => ['required', 'numeric', 'exists:tags,id'],
             ];
-        } else if ($this->routeIs('comunity.update')) {
+        } else if ($this->routeIs('community.update')) {
             return [
                 'title' => ['required', 'string', 'max:200'],
                 'slug' => ['required', 'string', 'max:255', 'unique:threads,slug,' . $this->thread->id],
@@ -54,7 +54,7 @@ class ThreadRequest extends FormRequest
 
         $data['slug'] = $this->uniqueSlug($this->title);
 
-        if ($this->routeIs('comunity.store')) {
+        if ($this->routeIs('community.store')) {
             $data['user_id'] = auth()->id();
         }
 

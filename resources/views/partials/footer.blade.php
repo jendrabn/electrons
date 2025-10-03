@@ -1,4 +1,4 @@
-<footer class="bg-primary text-white py-3">
+<footer class="bg-primary text-white py-3 mt-5">
     <div class="container">
         <div class="d-flex flex-column flex-column-reverse flex-lg-row justify-content-lg-between align-items-center">
             <p class="opacity-75 small mb-0">

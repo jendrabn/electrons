@@ -30,7 +30,7 @@ class ThreadCommentController extends Controller
                 return response()->json(['success' => false, 'message' => $message], 429);
             }
 
-            return redirect()->route('comunity.show', $thread->id)->with('error', $message);
+            return redirect()->route('community.show', $thread->id)->with('error', $message);
         }
 
         // record the hit with 30s decay
@@ -71,7 +71,7 @@ class ThreadCommentController extends Controller
             return response()->json(['success' => true, 'message' => 'Komentar ditambahkan.', 'id' => $comment->id]);
         }
 
-        return redirect()->route('comunity.show', $thread->id)->with('status', 'Komentar ditambahkan.');
+        return redirect()->route('community.show', $thread->id)->with('status', 'Komentar ditambahkan.');
     }
 
     public function update(ThreadCommentRequest $request, Thread $thread, ThreadComment $comment)
@@ -86,7 +86,7 @@ class ThreadCommentController extends Controller
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Komentar tidak boleh kosong.'], 422);
             }
-            return redirect()->route('comunity.show', $thread->id)->with('error', 'Komentar tidak boleh kosong.');
+            return redirect()->route('community.show', $thread->id)->with('error', 'Komentar tidak boleh kosong.');
         }
 
         $comment->update(['body' => $body]);
@@ -99,7 +99,7 @@ class ThreadCommentController extends Controller
             ]);
         }
 
-        return redirect()->route('comunity.show', $thread->id)->with('status', 'Komentar diperbarui.');
+        return redirect()->route('community.show', $thread->id)->with('status', 'Komentar diperbarui.');
     }
 
     public function edit(Request $request, Thread $thread, ThreadComment $comment)
@@ -140,7 +140,7 @@ class ThreadCommentController extends Controller
             return response()->json(['success' => true, 'id' => $commentId, 'parent_id' => $parentId, 'count' => $count]);
         }
 
-        return redirect()->route('comunity.show', $thread->id)->with('status', 'Komentar dihapus.');
+        return redirect()->route('community.show', $thread->id)->with('status', 'Komentar dihapus.');
     }
 
     public function like(Request $request, Thread $thread, ThreadComment $comment)
@@ -189,6 +189,6 @@ class ThreadCommentController extends Controller
 
         $comment->update(['is_best_answer' => true]);
 
-        return redirect()->route('comunity.show', $thread->id)->with('status', 'Komentar ditandai sebagai jawaban terbaik.');
+        return redirect()->route('community.show', $thread->id)->with('status', 'Komentar ditandai sebagai jawaban terbaik.');
     }
 }
