@@ -29,6 +29,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
 
+            $table->string('cover')->nullable();
+
             $table->boolean('is_suspended')->default(false);
             $table->string('suspend_reason')->nullable();
             $table->timestamp('suspended_at')->nullable();
