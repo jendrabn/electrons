@@ -1,5 +1,132 @@
 @extends('layouts.app')
 
+@section('styles')
+    <style>
+        /* Category badge - uses dynamic category color */
+        .content .category-badge {
+            display: inline-block;
+            padding: .375rem .625rem;
+            border-radius: .375rem;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Title typography */
+        .content-title {
+            font-size: clamp(1.85rem, 2.5vw, 2.6rem);
+            line-height: 1.25;
+            letter-spacing: .2px;
+            color: #212529;
+        }
+
+        /* Author avatar */
+        .author-link .author-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Meta items */
+        .content-meta .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: .375rem;
+        }
+
+        /* Hero image */
+        .content-image figure {
+            margin: 0;
+        }
+
+        .content-image img {
+            object-fit: cover;
+        }
+
+        /* Content wrapping and responsive media */
+        .content-body {
+            --content-font-size: 1rem;
+            font-size: var(--content-font-size);
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            max-width: 100%;
+        }
+
+        .content-body img,
+        .content-body table {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .content-body pre,
+        .content-body code {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Font size slider (styled like screenshot) */
+        .font-size-control .control-box {
+            max-width: 560px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            border-radius: 1rem;
+            padding: .75rem 1rem;
+            border: 1px solid #eee;
+        }
+
+        .font-size-control input[type="range"] {
+            width: 100%;
+        }
+
+        .font-size-control .labels {
+            color: #6c757d;
+        }
+
+        /* Track & thumb colors */
+        .font-size-control .form-range::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 999px;
+            background: #f3d2d5;
+        }
+
+        .font-size-control .form-range::-webkit-slider-thumb {
+            height: 18px;
+            width: 18px;
+            margin-top: -6px;
+            background: #dc3545;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, .15);
+        }
+
+        .font-size-control .form-range::-moz-range-track {
+            height: 6px;
+            border-radius: 999px;
+            background: #f3d2d5;
+        }
+
+        .font-size-control .form-range::-moz-range-thumb {
+            height: 18px;
+            width: 18px;
+            background: #dc3545;
+            border: none;
+            border-radius: 50%;
+        }
+
+        @media (min-width: 992px) {
+            .font-size-control .control-box {
+                max-width: 640px;
+            }
+
+            .content-title {
+                letter-spacing: .1px;
+            }
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="container">
         {{-- Breadcrumb --}}
@@ -39,115 +166,38 @@
 
         <div class="row">
             <div class="col-lg-8">
-                <div class="content">
-                    {{-- Category --}}
+                <article class="content"
+                         itemscope
+                         itemtype="https://schema.org/Article">
+                    {{-- Category (gunakan warna kategori) --}}
                     <div class="content-category mb-2 mb-lg-3">
-                        <a class="badge text-bg-warning text-white fs-6 text-decoration-none rounded-0"
-                           href="{{ route('posts.category', $post->category->slug) }}">
+                        <a class="category-badge text-decoration-none"
+                           href="{{ route('posts.category', $post->category->slug) }}"
+                           style="background-color: {{ $post->category->color ?? '#6c757d' }};">
                             {{ $post->category->name }}
                         </a>
                     </div>
                     {{-- End Category --}}
 
-                    {{-- Title --}}
-                    <h1 class="content-title mb-3">
+                    {{-- Title (SEO-friendly H1) --}}
+                    <h1 class="content-title mb-3"
+                        itemprop="headline">
                         {{ $post->title }}
                     </h1>
                     {{-- End Title --}}
 
-                    {{-- Meta Mobile --}}
-                    <div class="content-meta-mobile d-lg-none mb-3">
-                        <div>
-                            <a class="text-decoration-none small fw-semibold text-muted"
+                    {{-- Author + Like & Share (dua kolom space-between) --}}
+                    <div class="post-header-actions d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <a class="d-flex align-items-center text-decoration-none text-dark fw-semibold author-link"
                                href="{{ route('posts.author', $post->user->id) }}">
-                                <i class="bi bi-person-fill me-1"></i> Oleh
-                                {{ $post->user->name }}
-                            </a>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between small text-muted">
-                            <div>
-                                <span class="me-2">
-                                    <i class="bi bi-clock me-1"></i>{{ $post->created_at->format('l, d F Y H:i') }}
-                                </span>
-                                <span class="me-2">
-                                    <i class="bi bi-heart me-1"></i><span
-                                          id="likes-count-mobile">{{ $post->likes_count }}</span>
-                                </span>
-                                <span>
-                                    <i class="bi bi-chat me-1"></i>{{ $post->comments_count }}
-                                </span>
-                            </div>
-                            <div class="d-flex gap-2">
-                                @auth
-                                    <button class="btn btn-outline-danger btn-sm shadow-sm rounded-circle"
-                                            data-liked="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
-                                            data-post-id="{{ $post->id }}"
-                                            id="like-btn-mobile"
-                                            type="button">
-                                        <i
-                                           class="bi {{ $post->isLikedBy(auth()->user()) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                    </button>
-                                @else
-                                    <a class="btn btn-outline-danger btn-sm shadow-sm rounded-circle"
-                                       href="{{ route('auth.show.login') }}">
-                                        <i class="bi bi-heart"></i>
-                                    </a>
-                                @endauth
-
-                                <button aria-label="Share"
-                                        class="btn btn-light btn-sm shadow-sm rounded-circle btn-share"
-                                        data-bs-target="#shareModal"
-                                        data-bs-toggle="modal"
-                                        type="button">
-                                    <i class="bi bi-share-fill fs-6"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- End Meta Mobile --}}
-
-                    {{-- Meta Desktop --}}
-                    <ul
-                        class="content-meta d-none d-lg-flex list-unstyled flex-wrap align-items-center small text-muted mb-3">
-                        <li>
-                            <a class="d-flex align-items-center text-decoration-none text-dark fw-semibold"
-                               href="{{ route('posts.author', $post->user->id) }}">
-                                <span class="me-2 d-inline-block rounded-circle overflow-hidden"
-                                      style="width: 36px; height: 36px">
-                                    <img alt="{{ $post->user->name }}"
-                                         class="w-100 h-100 object-fit-cover"
-                                         src="{{ $post->user->avatar_url }}" />
-                                </span>
+                                <img alt="{{ $post->user->name }}"
+                                     class="author-avatar me-2"
+                                     src="{{ $post->user->avatar_url }}" />
                                 <span>{{ $post->user->name }}</span>
                             </a>
-                        </li>
-
-                        <li>
-                            <i class="bi bi-clock me-1"></i>
-                            {{ $post->created_at->format('l, d F Y H:i') }}
-                        </li>
-
-                        <li>
-                            <i class="bi bi-stopwatch me-1"></i>
-                            {{ $post->min_read }} min read
-                        </li>
-
-                        <li>
-                            <i class="bi bi-heart me-1"></i>
-                            <span id="likes-count">{{ $post->likes_count }}</span> suka
-                        </li>
-
-                        <li>
-                            <i class="bi bi-chat me-1"></i>
-                            {{ $post->comments_count }} komentar
-                        </li>
-
-                        <li>
-                            <i class="bi bi-eye me-1"></i>
-                            {{ $post->views_count }}
-                        </li>
-
-                        <li class="ms-auto d-flex gap-2">
+                        </div>
+                        <div class="d-flex gap-2">
                             @auth
                                 <button class="btn btn-outline-danger btn-sm shadow-sm rounded-pill"
                                         data-liked="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
@@ -171,36 +221,100 @@
                                     type="button">
                                 <i class="bi bi-share-fill fs-6"></i>
                             </button>
-                        </li>
-                    </ul>
-                    {{-- End Meta Desktop --}}
+                        </div>
+                    </div>
 
-                    {{-- Image --}}
+                    {{-- Meta (timestamp kiri, lainnya kanan) --}}
+                    <div class="content-meta d-flex align-items-center justify-content-between small text-muted mb-3">
+                        <span class="meta-item me-3">
+                            <i class="bi bi-clock"></i>
+                            {{ $post->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
+                        </span>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <span class="meta-item">
+                                <i class="bi bi-heart"></i>
+                                <span id="likes-count">{{ $post->likes_count }}</span>
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-chat"></i>
+                                {{ $post->comments_count }}
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-eye"></i>
+                                {{ $post->views_count }}
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-stopwatch"></i>
+                                {{ $post->min_read }} min read
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Hero image (16:9 responsif dengan caption) --}}
                     <div class="content-image mb-3">
-                        <figure class="w-100">
-                            <div class="rounded-3 overflow-hidden bg-gray-200 ratio ratio-16x9">
+                        <figure class="w-100 m-0">
+                            <div class="rounded-3 overflow-hidden bg-light ratio ratio-16x9">
                                 <picture>
                                     <img alt="{{ $post->image_caption }}"
-                                         class="h-100 w-100 object-fit-fill"
+                                         class="h-100 w-100"
+                                         loading="lazy"
                                          src="{{ $post->image_url }}" />
                                 </picture>
                             </div>
-                            <figcaption class="text-muted text-center mt-2">
+                            <figcaption class="text-muted text-center mt-2 fst-italic small">
                                 {{ $post->image_caption }}
                             </figcaption>
                         </figure>
                     </div>
-                    {{-- End Image --}}
+                    {{-- End Hero image --}}
 
-                    {{-- Content --}}
+                    {{-- Pengaturan ukuran font konten (range slider) --}}
+                    <div aria-label="Pengaturan ukuran font"
+                         class="font-size-control mb-3">
+                        <div class="control-box">
+                            <div class="text-center small fw-semibold mb-2">Ukuran Font</div>
+                            <div class="d-flex align-items-center gap-3 labels">
+                                <span class="small">Kecil</span>
+                                <input aria-label="Ukuran font konten"
+                                       class="form-range flex-grow-1"
+                                       id="fontSizeRange"
+                                       max="22"
+                                       min="14"
+                                       step="1"
+                                       type="range"
+                                       value="16">
+                                <span class="small">Besar</span>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        // Inline: kontrol ukuran font konten
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const range = document.getElementById('fontSizeRange');
+                            const body = document.querySelector('.content-body');
+                            if (!range || !body) return;
+                            const KEY = 'post-content-font-size';
+                            const saved = localStorage.getItem(KEY);
+                            if (saved) {
+                                body.style.setProperty('--content-font-size', saved + 'px');
+                                range.value = saved;
+                            }
+                            range.addEventListener('input', function() {
+                                body.style.setProperty('--content-font-size', this.value + 'px');
+                                localStorage.setItem(KEY, this.value);
+                            });
+                        });
+                    </script>
+
+                    {{-- Content (dibatasi agar tidak overflow horizontal) --}}
                     <div class="content-body text-wrap mb-3">
                         {!! $post->content !!}
                     </div>
                     {{-- End Content --}}
 
-                    {{-- Tags --}}
-                    <div class="content-tags mb-3">
-                        <span class="fw-semibold me-2"> Tag: </span>
+                    {{-- Tags (reusable badges styled like sidebar) --}}
+                    <div class="content-tags mb-3 d-flex flex-wrap align-items-center gap-2">
+                        <span class="fw-semibold me-1">Tag:</span>
                         @foreach ($post->tags as $tag)
                             <x-badge-tag :tag="$tag" />
                         @endforeach
@@ -251,7 +365,7 @@
                     </div>
                     {{-- End Comments --}}
 
-                </div>
+                </article>
             </div>
             <div class="col-lg-4">@include('partials.sidebar')</div>
         </div>
