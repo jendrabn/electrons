@@ -3,26 +3,24 @@
 return [
     'words' => [
         // ====================
-        // Bahasa Indonesia
+        // Bahasa Indonesia (tanpa kata hewan asli)
         // ====================
-        'anjing',
-        'anjeng',
+
         'anjng',
         'anj1ng',
         'anj!ng',
         '4njing',
         '4nj1ng',
         'anj1nk',
-        'bangsat',
         'b4ngsat',
         'bangs4t',
         'bangzsat',
         'bangset',
+        'bangsat', // bukan hewan, tetap
         'bajingan',
         'b4jingan',
         'baj1ngan',
         'baji*gan',
-        'babi',
         'bab1',
         'b4bi',
         'b4b1',
@@ -65,7 +63,6 @@ return [
         'j3mbut',
         'jmbut',
         'jmbt',
-        'jemput',
         'sange',
         'sang3',
         's4nge',

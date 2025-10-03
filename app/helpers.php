@@ -16,10 +16,10 @@ if (! function_exists('linkify_mentions')) {
             if ($user) {
                 $url = route('authors.show', $user->username);
 
-                return '<a class="'.e($linkClass).'" href="'.e($url).'">@'.e($username).'</a>';
+                return '<a class="' . e($linkClass) . '" href="' . e($url) . '">@' . e($username) . '</a>';
             }
 
-            return '@'.$username;
+            return '@' . $username;
         }, $html);
     }
 }
@@ -37,12 +37,22 @@ if (! function_exists('mask_profanity')) {
             return $text;
         }
 
-        $escaped = array_map(static fn (string $w): string => preg_quote($w, '/'), $words);
-        $pattern = '/\b(?:'.implode('|', $escaped).')\b/iu';
+        $escaped = array_map(static fn(string $w): string => preg_quote($w, '/'), $words);
+        $pattern = '/\b(?:' . implode('|', $escaped) . ')\b/iu';
 
         $masked = preg_replace_callback(
             $pattern,
-            static fn (array $m): string => \Illuminate\Support\Str::mask($m[0], '*', 0),
+            static function (array $m): string {
+                $word = $m[0];
+                $len = mb_strlen($word);
+                if ($len <= 2) {
+                    return str_repeat('*', $len);
+                }
+                $first = mb_substr($word, 0, 1);
+                $last = mb_substr($word, -1);
+                $middle = str_repeat('*', $len - 2);
+                return $first . $middle . $last;
+            },
             $text
         );
 
