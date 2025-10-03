@@ -18,7 +18,7 @@ if (! function_exists('linkify_mentions')) {
             $username = $m[1];
             $user = \App\Models\User::where('username', $username)->first();
             if ($user) {
-                $url = route('users.show', $user->id);
+                $url = route('authors.show', $user->username);
                 return '<a class="' . e($linkClass) . '" href="' . e($url) . '">@' . e($username) . '</a>';
             }
             return '@' . $username;

@@ -1,5 +1,29 @@
 @extends('layouts.app')
 
+@section('styles')
+    <style>
+        /* Thread body: ensure no horizontal overflow and long words wrap */
+        .thread-body {
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            max-width: 100%;
+        }
+
+        .thread-body img,
+        .thread-body table {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .thread-body pre,
+        .thread-body code {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="container py-4">
         <div class="row justify-content-center">
@@ -7,81 +31,101 @@
                 {{-- Thread --}}
                 <div class="card mb-4 shadow-sm border-0">
                     <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <img alt="{{ $thread->user->name }}"
-                                 class="rounded-circle me-3"
-                                 src="{{ $thread->user->avatar_url }}"
-                                 style="width:48px;height:48px;object-fit:cover;">
-                            <div>
-                                <div class="fw-normal">
-                                    <a class="text-primary fw-semibold text-decoration-none"
-                                       href="{{ route('users.show', $thread->user->id) }}">{{ '@' . $thread->user->username }}</a>
-                                    <span class="mx-1 text-muted">&bull;</span>
-                                    <small class="text-muted"> {{ $thread->created_at->diffForHumans() }}</small>
+                        <article itemscope
+                                 itemtype="https://schema.org/DiscussionForumPosting">
+                            <meta content="{{ url()->current() }}"
+                                  itemprop="mainEntityOfPage">
+                            <div class="d-flex align-items-center mb-3">
+                                <img alt="{{ $thread->user->name }}"
+                                     class="rounded-circle me-3"
+                                     src="{{ $thread->user->avatar_url }}"
+                                     style="width:48px;height:48px;object-fit:cover;">
+                                <div>
+                                    <div class="fw-normal"
+                                         itemprop="author"
+                                         itemscope
+                                         itemtype="https://schema.org/Person">
+                                        <a class="text-primary fw-semibold text-decoration-none"
+                                           href="{{ route('authors.show', $thread->user->username) }}"
+                                           itemprop="url">{{ '@' . $thread->user->username }}</a>
+                                        <meta content="{{ $thread->user->name }}"
+                                              itemprop="name">
+                                        <span class="mx-1 text-muted">&bull;</span>
+                                        <time class="text-muted small"
+                                              datetime="{{ $thread->created_at->toIso8601String() }}"
+                                              itemprop="datePublished">
+                                            {{ $thread->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
+                                        </time>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="ms-auto d-flex align-items-stretch">
-                                @can('update', $thread)
-                                    <a aria-label="Edit thread"
-                                       class="btn btn-sm btn-outline-primary me-2 d-flex align-items-center justify-content-center"
-                                       href="{{ route('comunity.edit', $thread->id) }}"
-                                       id="threadEditBtn"
-                                       title="Edit thread">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                @endcan
+                                <div class="ms-auto d-flex align-items-stretch">
+                                    @can('update', $thread)
+                                        <a aria-label="Edit thread"
+                                           class="btn btn-sm btn-outline-primary me-2 d-flex align-items-center justify-content-center"
+                                           href="{{ route('comunity.edit', $thread->id) }}"
+                                           id="threadEditBtn"
+                                           title="Edit thread">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endcan
 
-                                @can('delete', $thread)
-                                    <button aria-label="Hapus thread"
-                                            class="btn btn-sm btn-outline-danger me-2 d-flex align-items-center justify-content-center"
-                                            data-bs-target="#threadDeleteModal"
-                                            data-bs-toggle="modal"
-                                            id="threadDeleteBtn"
-                                            title="Hapus thread"
-                                            type="button">
-                                        <i class="bi bi-trash"></i>
+                                    @can('delete', $thread)
+                                        <button aria-label="Hapus thread"
+                                                class="btn btn-sm btn-outline-danger me-2 d-flex align-items-center justify-content-center"
+                                                data-bs-target="#threadDeleteModal"
+                                                data-bs-toggle="modal"
+                                                id="threadDeleteBtn"
+                                                title="Hapus thread"
+                                                type="button">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    @endcan
+
+                                    @can('toggleDone', $thread)
+                                        <button class="btn btn-sm btn-outline-success me-2 d-flex align-items-center justify-content-center"
+                                                data-url="{{ route('comunity.toggleDone', $thread->id) }}"
+                                                id="threadToggleDoneBtn"
+                                                type="button">
+                                            {{ $thread->is_done ? 'Buka Kembali' : 'Tandai Sudah Terjawab' }}
+                                        </button>
+                                    @endcan
+
+                                    <button aria-label="Like thread"
+                                            class="btn btn-sm btn-outline-primary me-2 d-flex align-items-center justify-content-center thread-like-btn"
+                                            data-id="{{ $thread->id }}"
+                                            data-url="{{ route('comunity.like', $thread->id) }}"
+                                            id="threadLikeBtn"
+                                            title="Suka">
+                                        <i
+                                           class="bi {{ $thread->likes->where('user_id', auth()->id())->count() ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up' }}"></i>
+                                        <span class="thread-like-count ms-1">{{ $thread->likes->count() }}</span>
                                     </button>
-                                @endcan
 
-                                @can('toggleDone', $thread)
-                                    <button class="btn btn-sm btn-outline-success me-2 d-flex align-items-center justify-content-center"
-                                            data-url="{{ route('comunity.toggleDone', $thread->id) }}"
-                                            id="threadToggleDoneBtn"
-                                            type="button">
-                                        {{ $thread->is_done ? 'Buka Kembali' : 'Tandai Sudah Terjawab' }}
+                                    <button aria-label="Bookmark thread"
+                                            class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center thread-bookmark-btn"
+                                            data-id="{{ $thread->id }}"
+                                            data-url="{{ route('comunity.bookmark', $thread->id) }}"
+                                            id="threadBookmarkBtn"
+                                            title="Simpan">
+                                        <i
+                                           class="bi {{ $thread->bookmarks->where('user_id', auth()->id())->count() ? 'bi-bookmark-fill text-warning' : 'bi-bookmark' }}"></i>
                                     </button>
-                                @endcan
+                                </div>
 
-                                <button aria-label="Like thread"
-                                        class="btn btn-sm btn-outline-primary me-2 d-flex align-items-center justify-content-center thread-like-btn"
-                                        data-id="{{ $thread->id }}"
-                                        data-url="{{ route('comunity.like', $thread->id) }}"
-                                        id="threadLikeBtn"
-                                        title="Suka">
-                                    <i
-                                       class="bi {{ $thread->likes->where('user_id', auth()->id())->count() ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up' }}"></i>
-                                    <span class="thread-like-count ms-1">{{ $thread->likes->count() }}</span>
-                                </button>
-
-                                <button aria-label="Bookmark thread"
-                                        class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center thread-bookmark-btn"
-                                        data-id="{{ $thread->id }}"
-                                        data-url="{{ route('comunity.bookmark', $thread->id) }}"
-                                        id="threadBookmarkBtn"
-                                        title="Simpan">
-                                    <i
-                                       class="bi {{ $thread->bookmarks->where('user_id', auth()->id())->count() ? 'bi-bookmark-fill text-warning' : 'bi-bookmark' }}"></i>
-                                </button>
                             </div>
-
-                        </div>
-                        <h3 class="fw-bold mb-2">{{ $thread->title }}</h3>
-                        <div class="mb-3">{!! $thread->body !!}</div>
-                        <div class="mb-2">
-                            @foreach ($thread->tags as $tag)
-                                <span class="badge bg-primary">{{ $tag->name }}</span>
-                            @endforeach
-                        </div>
+                            <h1 class="fw-bold mb-2"
+                                itemprop="headline">{{ $thread->title }}</h1>
+                            <div class="mb-3 thread-body"
+                                 itemprop="articleBody">{!! $thread->body !!}</div>
+                            <div aria-label="Tag terkait"
+                                 class="mb-2">
+                                @foreach ($thread->tags as $tag)
+                                    <span class="badge bg-primary">{{ $tag->name }}</span>
+                                @endforeach
+                                <meta content="{{ implode(', ', $thread->tags->pluck('name')->all()) }}"
+                                      itemprop="keywords">
+                            </div>
+                        </article>
                     </div>
                 </div>
 

@@ -73,18 +73,17 @@ Route::post('/filament/author/logout', function (Request $request) {
     $request->session()->regenerateToken();
 
     return redirect()->route('auth.show.login');
-})->middleware('auth')->name('compat.filament.author.logout');
+})->middleware('auth')->name('compat.filament.author.logout');;
 
-Route::get('/users/{user}', function () {
-    return 'user profile page';
-})->name('users.show');
+// Author profile page: /author/{user:username}
+Route::get('/authors/{user:username}', [App\Http\Controllers\AuthorController::class, 'show'])->name('authors.show');
 
 // Thread image uploads (publicly addressable route used by the editor)
 Route::post('/threads/uploads', [App\Http\Controllers\ThreadController::class, 'uploadImage'])->name('threads.upload-image');
 
 // Static pages
-Route::get('/contact', fn () => view('contact'))->name('contact');
-Route::get('/about', fn () => view('about'))->name('about');
+Route::get('/contact', fn() => view('contact'))->name('contact');
+Route::get('/about', fn() => view('about'))->name('about');
 
 // Posts routes (index, show, filters)
 Route::get('/posts', [App\Http\Controllers\PostController::class, 'index'])->name('posts.index');

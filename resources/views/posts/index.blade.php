@@ -109,7 +109,7 @@
                                          itemscope
                                          itemtype="https://schema.org/Person">
                                         <a class="text-decoration-none"
-                                           href="{{ route('posts.author', $post->user->id) }}"
+                                           href="{{ route('authors.show', $post->user->username) }}"
                                            rel="author"
                                            title="Penulis: {{ $post->user->name }}">
                                             <img alt="{{ $post->user->name }}"
@@ -121,7 +121,7 @@
                                                  width="25">
                                         </a>
                                         <a class="text-decoration-none small text-muted fw-semibold"
-                                           href="{{ route('posts.author', $post->user->id) }}"
+                                           href="{{ route('authors.show', $post->user->username) }}"
                                            rel="author"
                                            title="Profil Penulis">
                                             <span itemprop="name">{{ str()->words($post->user->name, 2, '') }}</span>

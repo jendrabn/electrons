@@ -52,7 +52,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         'remember_token',
     ];
 
-    protected $appends = ['avatar_url'];
+    protected $appends = ['avatar_url', 'cover_url'];
 
     /**
      * Get the attributes that should be cast.
@@ -105,6 +105,15 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar_url;
+    }
+
+    public function coverUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->cover
+                ? (filter_var($this->cover, FILTER_VALIDATE_URL) ? $this->cover : asset('storage/' . $this->cover))
+                : null,
+        );
     }
 
     public function isAdmin(): bool

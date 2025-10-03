@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -38,14 +38,39 @@
     @vite('resources/scss/style.scss')
     @yield('styles')
     @stack('styles')
+    <style>
+        /* Skip to Content accessibility link */
+        .skip-link {
+            position: absolute;
+            top: -1000px;
+            left: -1000px;
+        }
+
+        .skip-link:focus {
+            top: 8px;
+            left: 8px;
+            background: #0d6efd;
+            /* Bootstrap primary */
+            color: #fff;
+            padding: .5rem .75rem;
+            border-radius: .5rem;
+            z-index: 1090;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+        }
+    </style>
 </head>
 
 <body>
+    <a class="skip-link"
+       href="#main-content">Lewati ke Konten</a>
     <header class="sticky-top">
         @include('partials.navbar')
     </header>
 
-    <main class="my-4 my-lg-5">
+    <main class="my-4 my-lg-5"
+          id="main-content"
+          role="main">
         @yield('content')
 
         @include('partials.ads.display-responsive', ['slot' => '8485643721'])

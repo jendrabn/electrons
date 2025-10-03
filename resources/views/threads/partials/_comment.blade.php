@@ -17,7 +17,7 @@
 
                     <div class="d-flex align-items-center gap-2">
                         <a class="text-primary text-decoration-none"
-                           href="{{ route('users.show', $comment->user->id) }}">{{ $comment->user->username }}</a>
+                           href="{{ route('authors.show', $comment->user->username) }}">{{ $comment->user->username }}</a>
                         <small class="text-muted">•</small>
                         <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                     </div>

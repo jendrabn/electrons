@@ -11,7 +11,7 @@
                  <div class="flex-grow-1">
                      <div class="d-flex align-items-center gap-2">
                          <a class="text-primary text-decoration-none"
-                            href="{{ route('users.show', $reply->user->id) }}">{{ $reply->user->username }}</a>
+                            href="{{ route('authors.show', $reply->user->username) }}">{{ $reply->user->username }}</a>
                          <small class="text-muted">•</small>
                          <small class="text-muted">{{ $reply->created_at->diffForHumans() }}</small>
                      </div>

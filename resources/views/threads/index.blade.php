@@ -22,7 +22,7 @@
                                              width="30">
                                         <div>
                                             <a class="fw-medium text-decoration-none small"
-                                               href="{{ route('users.show', $user->id) }}">{{ '@' . $user->username }}</a>
+                                               href="{{ route('authors.show', $user->username) }}">{{ '@' . $user->username }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -209,7 +209,7 @@
                                     {{-- User Info & Time --}}
                                     <div class="d-flex gap-2 align-items-center mb-2">
                                         <a class="text-primary fw-medium text-decoration-none"
-                                           href="{{ route('users.show', $thread->user->id) }}">{{ '@' . $thread->user->username }}</a>
+                                           href="{{ route('authors.show', $thread->user->username) }}">{{ '@' . $thread->user->username }}</a>
                                         <small class="text-muted">•</small>
                                         <small class="text-muted">
                                             {{ $thread->updated_at->diffForHumans() }}

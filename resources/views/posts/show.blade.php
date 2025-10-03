@@ -169,11 +169,22 @@
                 <article class="content"
                          itemscope
                          itemtype="https://schema.org/Article">
+                    <meta content="{{ url()->current() }}"
+                          itemprop="mainEntityOfPage">
                     {{-- Category (gunakan warna kategori) --}}
                     <div class="content-category mb-2 mb-lg-3">
+                        @php
+                            $bg = $post->category->color ?? '#6c757d';
+                            $hex = ltrim($bg, '#');
+                            $r = hexdec(substr($hex, 0, 2));
+                            $g = hexdec(substr($hex, 2, 2));
+                            $b = hexdec(substr($hex, 4, 2));
+                            $brightness = ($r * 299 + $g * 587 + $b * 114) / 1000;
+                            $textColor = $brightness > 160 ? '#212529' : '#ffffff';
+                        @endphp
                         <a class="category-badge text-decoration-none"
                            href="{{ route('posts.category', $post->category->slug) }}"
-                           style="background-color: {{ $post->category->color ?? '#6c757d' }};">
+                           style="background-color: {{ $bg }}; color: {{ $textColor }};">
                             {{ $post->category->name }}
                         </a>
                     </div>
@@ -188,13 +199,18 @@
 
                     {{-- Author + Like & Share (dua kolom space-between) --}}
                     <div class="post-header-actions d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center"
+                             itemprop="author"
+                             itemscope
+                             itemtype="https://schema.org/Person">
                             <a class="d-flex align-items-center text-decoration-none text-dark fw-semibold author-link"
-                               href="{{ route('posts.author', $post->user->id) }}">
+                               href="{{ route('authors.show', $post->user->username) }}"
+                               rel="author">
                                 <img alt="{{ $post->user->name }}"
                                      class="author-avatar me-2"
+                                     itemprop="image"
                                      src="{{ $post->user->avatar_url }}" />
-                                <span>{{ $post->user->name }}</span>
+                                <span itemprop="name">{{ $post->user->name }}</span>
                             </a>
                         </div>
                         <div class="d-flex gap-2">
@@ -224,30 +240,60 @@
                         </div>
                     </div>
 
-                    {{-- Meta (timestamp kiri, lainnya kanan) --}}
-                    <div class="content-meta d-flex align-items-center justify-content-between small text-muted mb-3">
-                        <span class="meta-item me-3">
+                    {{-- Meta (semua kiri: created_at + like + comment + views + min read) --}}
+                    <div class="content-meta d-flex align-items-center flex-wrap gap-3 small text-muted mb-3">
+                        <time class="meta-item"
+                              datetime="{{ $post->created_at->toIso8601String() }}"
+                              itemprop="datePublished">
                             <i class="bi bi-clock"></i>
                             {{ $post->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
+                        </time>
+                        <span aria-label="{{ number_format($post->likes_count ?? 0) }} suka"
+                              class="meta-item">
+                            <i class="bi bi-heart"></i>
+                            <span id="likes-count">{{ $post->likes_count }}</span>
+                            <span class="visually-hidden"
+                                  itemprop="interactionStatistic"
+                                  itemscope
+                                  itemtype="https://schema.org/InteractionCounter">
+                                <meta content="https://schema.org/LikeAction"
+                                      itemprop="interactionType" />
+                                <meta content="{{ (int) ($post->likes_count ?? 0) }}"
+                                      itemprop="userInteractionCount" />
+                            </span>
                         </span>
-                        <div class="d-flex flex-wrap align-items-center gap-3">
-                            <span class="meta-item">
-                                <i class="bi bi-heart"></i>
-                                <span id="likes-count">{{ $post->likes_count }}</span>
+                        <span aria-label="{{ number_format($post->comments_count ?? 0) }} komentar"
+                              class="meta-item">
+                            <i class="bi bi-chat"></i>
+                            {{ $post->comments_count }}
+                            <span class="visually-hidden"
+                                  itemprop="interactionStatistic"
+                                  itemscope
+                                  itemtype="https://schema.org/InteractionCounter">
+                                <meta content="https://schema.org/CommentAction"
+                                      itemprop="interactionType" />
+                                <meta content="{{ (int) ($post->comments_count ?? 0) }}"
+                                      itemprop="userInteractionCount" />
                             </span>
-                            <span class="meta-item">
-                                <i class="bi bi-chat"></i>
-                                {{ $post->comments_count }}
+                        </span>
+                        <span aria-label="{{ number_format($post->views_count ?? 0) }} views"
+                              class="meta-item">
+                            <i class="bi bi-eye"></i>
+                            {{ $post->views_count }}
+                            <span class="visually-hidden"
+                                  itemprop="interactionStatistic"
+                                  itemscope
+                                  itemtype="https://schema.org/InteractionCounter">
+                                <meta content="https://schema.org/ViewAction"
+                                      itemprop="interactionType" />
+                                <meta content="{{ (int) ($post->views_count ?? 0) }}"
+                                      itemprop="userInteractionCount" />
                             </span>
-                            <span class="meta-item">
-                                <i class="bi bi-eye"></i>
-                                {{ $post->views_count }}
-                            </span>
-                            <span class="meta-item">
-                                <i class="bi bi-stopwatch"></i>
-                                {{ $post->min_read }} min read
-                            </span>
-                        </div>
+                        </span>
+                        <span class="meta-item">
+                            <i class="bi bi-stopwatch"></i>
+                            {{ $post->min_read }} min read
+                        </span>
                     </div>
 
                     {{-- Hero image (16:9 responsif dengan caption) --}}
@@ -257,7 +303,9 @@
                                 <picture>
                                     <img alt="{{ $post->image_caption }}"
                                          class="h-100 w-100"
+                                         decoding="async"
                                          loading="lazy"
+                                         sizes="(min-width: 992px) 66vw, 100vw"
                                          src="{{ $post->image_url }}" />
                                 </picture>
                             </div>
