@@ -80,6 +80,13 @@ class Post extends Model
         );
     }
 
+    public function content(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): ?string => $value === null ? null : mask_profanity($value),
+        );
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(PostComment::class);

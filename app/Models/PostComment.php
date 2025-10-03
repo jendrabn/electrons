@@ -47,14 +47,21 @@ class PostComment extends Model
     public function createdAtHuman(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->created_at->diffForHumans(),
+            get: fn () => $this->created_at->diffForHumans(),
         );
     }
 
     public function liked(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->likes->where('user_id', auth()->id())->count() > 0,
+            get: fn () => $this->likes->where('user_id', auth()->id())->count() > 0,
+        );
+    }
+
+    public function body(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): ?string => $value === null ? null : mask_profanity($value),
         );
     }
 }
