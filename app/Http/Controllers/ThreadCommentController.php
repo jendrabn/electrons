@@ -62,7 +62,7 @@ class ThreadCommentController extends Controller
 
         // If AJAX request, render the reply partial HTML and return it with updated reply count
         if ($request->wantsJson() || $request->ajax()) {
-            $html = view('threads.partials._reply', ['reply' => $comment, 'thread' => $thread])->render();
+            $html = view('frontpages.threads.partials._reply', ['reply' => $comment, 'thread' => $thread])->render();
             $count = ThreadComment::where('thread_id', $thread->id)->where('parent_id', $parentId)->count();
             return response()->json(['success' => true, 'message' => 'Komentar ditambahkan.', 'id' => $comment->id, 'parent_id' => $parentId, 'html' => $html, 'count' => $count]);
         }
@@ -111,11 +111,11 @@ class ThreadCommentController extends Controller
 
             if ($comment->parent_id) {
                 // it's a reply, load the reply edit form
-                $html = view('threads.partials._reply_edit_form', compact('comment'))->render();
+                $html = view('frontpages.threads.partials._reply_edit_form', compact('comment'))->render();
                 return response()->json(['html' => $html]);
             } else {
                 // it's a top-level comment, load the comment edit form
-                $html = view('threads.partials._comment_edit_form', compact('comment'))->render();
+                $html = view('frontpages.threads.partials._comment_edit_form', compact('comment'))->render();
                 return response()->json(['html' => $html]);
             }
         }

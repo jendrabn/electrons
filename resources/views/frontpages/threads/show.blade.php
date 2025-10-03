@@ -164,7 +164,7 @@
 
                         <hr>
 
-                        @include('threads.partials._comments-list')
+                        @include('frontpages.threads.partials._comments-list')
                     </div>
                 </div>
             </div>
@@ -172,7 +172,7 @@
     </div>
 @endsection
 
-@include('threads.partials._modals')
+@include('frontpages.threads.partials._modals')
 
 @section('scripts')
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"

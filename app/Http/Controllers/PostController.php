@@ -28,11 +28,11 @@ class PostController extends Controller
             $keywords = explode(' ', $request->input('search'));
             foreach ($keywords as $keyword) {
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('title', 'like', '%'.$keyword.'%')
+                    $q->where('title', 'like', '%' . $keyword . '%')
                         ->orWhereHas('tags', function ($q) use ($keyword) {
-                            $q->where('name', 'like', '%'.$keyword.'%');
+                            $q->where('name', 'like', '%' . $keyword . '%');
                         })->orWhereHas('category', function ($q) use ($keyword) {
-                            $q->where('name', 'like', '%'.$keyword.'%');
+                            $q->where('name', 'like', '%' . $keyword . '%');
                         });
                 });
             }
@@ -46,7 +46,7 @@ class PostController extends Controller
             $title = "Hasil Pencarian: {$searchQuery}";
         }
 
-        return view('posts.index', compact('posts', 'title'));
+        return view('frontpages.posts.index', compact('posts', 'title'));
     }
 
     /**
@@ -61,11 +61,11 @@ class PostController extends Controller
             ->latest()
             ->paginate(10);
 
-        $title = 'Blog '.$category->name;
+        $title = 'Blog ' . $category->name;
 
         $this->seoService->setCategorySEO($category);
 
-        return view('posts.index', compact('posts', 'title'));
+        return view('frontpages.posts.index', compact('posts', 'title'));
     }
 
     /**
@@ -80,11 +80,11 @@ class PostController extends Controller
             ->latest()
             ->paginate(10);
 
-        $title = 'Blog '.$tag->name;
+        $title = 'Blog ' . $tag->name;
 
         $this->seoService->setTagSEO($tag);
 
-        return view('posts.index', compact('posts', 'title'));
+        return view('frontpages.posts.index', compact('posts', 'title'));
     }
 
     /**
@@ -99,11 +99,11 @@ class PostController extends Controller
             ->latest()
             ->paginate(10);
 
-        $title = 'Blog Oleh '.$user->name;
+        $title = 'Blog Oleh ' . $user->name;
 
         $this->seoService->setAuthorSEO($user);
 
-        return view('posts.index', compact('posts', 'title'));
+        return view('frontpages.posts.index', compact('posts', 'title'));
     }
 
     /**
@@ -131,7 +131,7 @@ class PostController extends Controller
 
         $this->seoService->setPostSEO($post);
 
-        return view('posts.show', compact(
+        return view('frontpages.posts.show', compact(
             'post',
             'relatedPosts',
         ));

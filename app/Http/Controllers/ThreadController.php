@@ -100,7 +100,7 @@ class ThreadController extends Controller
         // SEO (use centralized SEOService)
         $this->seoService->setThreadIndexSEO($search ?: null, $threads);
 
-        return view('threads.index', compact('threads', 'tags', 'topContributors', 'filter', 'currentTag'));
+        return view('frontpages.threads.index', compact('threads', 'tags', 'topContributors', 'filter', 'currentTag'));
     }
 
     public function create()
@@ -110,7 +110,7 @@ class ThreadController extends Controller
         // SEO for create thread page
         $this->seoService->setThreadCreateSEO(route('community.create'));
 
-        return view('threads.create', compact('tags'));
+        return view('frontpages.threads.create', compact('tags'));
     }
 
     public function store(\App\Http\Requests\ThreadRequest $request)
@@ -142,7 +142,7 @@ class ThreadController extends Controller
         // SEO for thread show (use centralized SEOService)
         $this->seoService->setThreadSEO($thread);
 
-        return view('threads.show', compact('thread'));
+        return view('frontpages.threads.show', compact('thread'));
     }
 
     public function edit(Thread $thread)
@@ -155,7 +155,7 @@ class ThreadController extends Controller
         // SEO for edit page
         $this->seoService->setThreadEditSEO($thread, route('community.edit', $thread->id));
 
-        return view('threads.edit', compact('thread', 'tags'));
+        return view('frontpages.threads.edit', compact('thread', 'tags'));
     }
 
     public function update(\App\Http\Requests\ThreadRequest $request, Thread $thread)

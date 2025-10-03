@@ -24,7 +24,7 @@ class AuthController extends Controller
         $description = 'Masuk menggunakan email atau username ke ' . config('app.name') . '.';
         $this->setSeo($title, $description);
 
-        return view('auth.login');
+        return view('frontpages.auth.login');
     }
 
     public function showRegister()
@@ -33,7 +33,7 @@ class AuthController extends Controller
         $description = 'Buat akun baru di ' . config('app.name') . ' sebagai author untuk mulai membuat posting.';
         $this->setSeo($title, $description);
 
-        return view('auth.register');
+        return view('frontpages.auth.register');
     }
 
     public function register(Request $request): RedirectResponse
@@ -110,7 +110,7 @@ class AuthController extends Controller
         $title = 'Lupa Password - ' . config('app.name');
         $description = 'Minta link reset password untuk akun Anda di ' . config('app.name') . '.';
         $this->setSeo($title, $description);
-        return view('auth.forgot');
+        return view('frontpages.auth.forgot');
     }
 
     public function sendResetLinkEmail(Request $request)
@@ -130,7 +130,7 @@ class AuthController extends Controller
         $title = 'Reset Password - ' . config('app.name');
         $description = 'Setel ulang password akun Anda di ' . config('app.name') . '.';
         $this->setSeo($title, $description);
-        return view('auth.reset', ['token' => $token]);
+        return view('frontpages.auth.reset', ['token' => $token]);
     }
 
     /**

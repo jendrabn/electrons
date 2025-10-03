@@ -60,7 +60,7 @@ class PostCommentController extends Controller
 
         // If AJAX request, render the reply partial HTML and return it with updated reply count
         if ($request->wantsJson() || $request->ajax()) {
-            $html = view('posts.partials._reply', ['reply' => $comment, 'post' => $post])->render();
+            $html = view('frontpages.posts.partials._reply', ['reply' => $comment, 'post' => $post])->render();
             $count = PostComment::where('post_id', $post->id)->where('parent_id', $parentId)->count();
 
             return response()->json([
@@ -106,12 +106,12 @@ class PostCommentController extends Controller
 
             if ($comment->parent_id) {
                 // it's a reply, load the reply edit form
-                $html = view('posts.partials._reply_edit_form', compact('comment', 'post'))->render();
+                $html = view('frontpages.posts.partials._reply_edit_form', compact('comment', 'post'))->render();
 
                 return response()->json(['html' => $html]);
             } else {
                 // it's a top-level comment, load the comment edit form
-                $html = view('posts.partials._comment_edit_form', compact('comment', 'post'))->render();
+                $html = view('frontpages.posts.partials._comment_edit_form', compact('comment', 'post'))->render();
 
                 return response()->json(['html' => $html]);
             }

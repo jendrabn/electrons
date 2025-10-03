@@ -34,12 +34,9 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         View::composer([
-            'layouts.app',
-            'home',
-            'front.home',
-            'about',
-            'contact',
-            'posts.*',
+            'layouts.*',
+            'frontpages.*',
+            'partials.*'
         ], function ($view) {
 
             $ttl = now()->addMinutes(30);

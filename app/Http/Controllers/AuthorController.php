@@ -39,7 +39,7 @@ class AuthorController extends Controller
 
         $this->seoService->setAuthorSEO($user);
 
-        return view('authors.show', compact(
+        return view('frontpages.authors.show', compact(
             'user',
             'articlesCount',
             'totalViews',

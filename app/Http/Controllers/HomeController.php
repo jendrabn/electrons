@@ -38,7 +38,7 @@ class HomeController extends Controller
 
         $this->seoService->setHomeSEO($newPosts, $sections);
 
-        return view('home', compact(
+        return view('frontpages.home', compact(
             'sections',
             'newPosts',
         ));

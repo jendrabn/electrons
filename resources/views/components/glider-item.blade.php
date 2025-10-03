@@ -20,9 +20,9 @@
                   </div>
 
                   <div class="position-absolute top-0 start-0 w-100 h-100 p-3 d-flex flex-column justify-content-end">
-                      <span class="badge bg-warning rounded-0 align-self-start fw-normal mb-2">
-                          {{ $post->category->name ?? '-' }}
-                      </span>
+
+                      <x-badge-category :color="$post->category->color"
+                                        :name="$post->category->name" />
 
                       <a class="text-decoration-none text-white"
                          href="{{ route('posts.show', $post->slug) }}">

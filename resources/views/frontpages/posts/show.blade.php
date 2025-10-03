@@ -409,7 +409,7 @@
                             </div>
                         </div>
 
-                        @include('posts.partials._comments-list')
+                        @include('frontpages.posts.partials._comments-list')
                     </div>
                     {{-- End Comments --}}
 
@@ -434,7 +434,7 @@
         @endif
     </div>
 
-    @include('posts.partials._modals')
+    @include('frontpages.posts.partials._modals')
 @endsection
 
 @section('scripts')

@@ -7,38 +7,14 @@
                 <ul class="list-unstyled mb-0 popular-post-list">
                     @forelse ($popularPosts as $post)
                         <li class="{{ !$loop->last ? 'mb-3' : '' }}">
-                            <article class="card border-0">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-3">
-                                        <a class="d-block ratio ratio-16x9 rounded-2 overflow-hidden"
-                                           href="{{ route('posts.show', $post->slug) }}">
-                                            <img alt="{{ $post->image_caption ?? $post->title }}"
-                                                 class="img-fluid object-fit-cover"
-                                                 loading="lazy"
-                                                 src="{{ $post->image_url }}">
-                                        </a>
-                                    </div>
-                                    <div class="col-9">
-                                        <div class="card-body py-0">
-                                            <a class="text-decoration-none text-dark d-block"
-                                               href="{{ route('posts.show', $post->slug) }}">
-                                                <h6 class="fw-semibold mb-1 line-clamp-2">{{ $post->title }}</h6>
-                                            </a>
-                                            <div class="small text-muted">
-                                                <span
-                                                      class="fw-semibold">{{ str()->words($post->user->name, 2, '') }}</span>
-                                                <span class="mx-1">•</span>
-                                                <time
-                                                      datetime="{{ $post->created_at->toIso8601String() }}">{{ $post->created_at->diffForHumans() }}</time>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+                            <x-post-item :post="$post"
+                                         type="sidebar" />
                         </li>
                     @empty
                         <li class="mb-0">
-                            <div class="rounded-3 p-4 bg-light text-muted text-center">Tidak Ada Blog Popular</div>
+                            <div class="rounded-3 p-4 bg-light text-muted text-center">
+                                Tidak Ada Blog Populer
+                            </div>
                         </li>
                     @endforelse
                 </ul>
@@ -53,38 +29,14 @@
                 <ul class="list-unstyled mb-0 latest-post-list">
                     @forelse ($recentPosts as $post)
                         <li class="{{ !$loop->last ? 'mb-3' : '' }}">
-                            <article class="card border-0">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-3">
-                                        <a class="d-block ratio ratio-16x9 rounded-2 overflow-hidden"
-                                           href="{{ route('posts.show', $post->slug) }}">
-                                            <img alt="{{ $post->image_caption ?? $post->title }}"
-                                                 class="img-fluid object-fit-cover"
-                                                 loading="lazy"
-                                                 src="{{ $post->image_url }}">
-                                        </a>
-                                    </div>
-                                    <div class="col-9">
-                                        <div class="card-body py-0">
-                                            <a class="text-decoration-none text-dark d-block"
-                                               href="{{ route('posts.show', $post->slug) }}">
-                                                <h6 class="fw-semibold mb-1 line-clamp-2">{{ $post->title }}</h6>
-                                            </a>
-                                            <div class="small text-muted">
-                                                <span
-                                                      class="fw-semibold">{{ str()->words($post->user->name, 2, '') }}</span>
-                                                <span class="mx-1">•</span>
-                                                <time
-                                                      datetime="{{ $post->created_at->toIso8601String() }}">{{ $post->created_at->diffForHumans() }}</time>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+                            <x-post-item :post="$post"
+                                         type="sidebar" />
                         </li>
                     @empty
                         <li class="mb-0">
-                            <div class="rounded-3 p-4 bg-light text-muted text-center">Tidak Ada Blog Popular</div>
+                            <div class="rounded-3 p-4 bg-light text-muted text-center">
+                                Tidak Ada Blog Terbaru
+                            </div>
                         </li>
                     @endforelse
                 </ul>
@@ -121,7 +73,9 @@
                         </li>
                     @empty
                         <li class="list-group-item px-0 py-2 bg-transparent">
-                            <div class="rounded-3 p-4 bg-light text-muted text-center">Tidak Ada Kategori</div>
+                            <div class="rounded-3 p-4 bg-light text-muted text-center">
+                                Tidak Ada Kategori
+                            </div>
                         </li>
                     @endforelse
                 </ul>
@@ -137,7 +91,9 @@
                     @forelse ($tags as $tag)
                         <x-badge-tag :tag="$tag" />
                     @empty
-                        <div class="rounded-3 p-4 bg-light text-muted text-center w-100">Tidak Ada Tag</div>
+                        <div class="rounded-3 p-4 bg-light text-muted text-center">
+                            Tidak Ada Tag
+                        </div>
                     @endforelse
                 </div>
             </div>
