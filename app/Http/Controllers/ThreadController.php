@@ -105,12 +105,10 @@ class ThreadController extends Controller
 
     public function create()
     {
-        $tags = Tag::all()->pluck('name', 'id');
-
         // SEO for create thread page
         $this->seoService->setThreadCreateSEO(route('community.create'));
 
-        return view('frontpages.threads.create', compact('tags'));
+        return view('frontpages.threads.create');
     }
 
     public function store(\App\Http\Requests\ThreadRequest $request)
@@ -150,12 +148,10 @@ class ThreadController extends Controller
         // only thread owner may edit
         $this->authorize('update', $thread);
 
-        $tags = Tag::all()->pluck('name', 'id');
-
         // SEO for edit page
         $this->seoService->setThreadEditSEO($thread, route('community.edit', $thread->id));
 
-        return view('frontpages.threads.edit', compact('thread', 'tags'));
+        return view('frontpages.threads.edit', compact('thread'));
     }
 
     public function update(\App\Http\Requests\ThreadRequest $request, Thread $thread)

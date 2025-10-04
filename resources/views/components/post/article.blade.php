@@ -1,7 +1,12 @@
-@props(['post', 'type' => 'vertical'])
+@props(['post', 'variant' => 'vertical', 'showExcerpt' => false])
 
-{{-- Vertical Type --}}
-@if ($type == 'vertical')
+@php
+    $variant = $variant ?? 'vertical';
+    $showExcerpt = filter_var($showExcerpt, FILTER_VALIDATE_BOOLEAN);
+@endphp
+
+{{-- Vertical Variant --}}
+@if ($variant === 'vertical')
     <article class="post-item card border-0 h-100 w-100"
              itemscope
              itemtype="https://schema.org/BlogPosting">
@@ -20,8 +25,8 @@
                             </picture>
                         </figure>
 
-                        <x-badge-category :color="$post->category->color"
-                                          :name="$post->category->name" />
+                        <x-post.badge-category :color="$post->category->color"
+                                               :name="$post->category->name" />
                     </a>
                 </div>
             </div>
@@ -34,6 +39,9 @@
                             {{ $post->title }}
                         </h3>
                     </a>
+                    @if ($showExcerpt && !empty($post->excerpt))
+                        <p class="text-muted mb-2 line-clamp-3">{!! $post->excerpt !!}</p>
+                    @endif
                     <div class="d-flex align-items-center gap-2 mt-2"
                          itemprop="author"
                          itemscope
@@ -61,8 +69,8 @@
     </article>
 @endif
 
-{{-- Horizontal Type --}}
-@if ($type == 'horizontal')
+{{-- Horizontal Variant --}}
+@if ($variant === 'horizontal')
     <article class="post-card bg-white rounded-4 p-2 p-md-3"
              itemscope
              itemtype="https://schema.org/BlogPosting"
@@ -70,7 +78,6 @@
         <meta content="{{ route('posts.show', $post->slug) }}"
               itemprop="mainEntityOfPage">
         <div class="row g-3 g-md-4 align-items-start">
-            {{-- Thumbnail artikel --}}
             <div class="col-12 col-md-4">
                 <a class="d-block overflow-hidden rounded-3"
                    href="{{ route('posts.show', $post->slug) }}"
@@ -90,9 +97,7 @@
                 </a>
             </div>
 
-            {{-- Konten artikel: kategori, judul, penulis, meta --}}
             <div class="col-12 col-md-8">
-                {{-- Kategori artikel --}}
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <a class="text-decoration-none"
                        href="{{ route('posts.category', $post->category->slug) }}"
@@ -105,7 +110,6 @@
                           itemprop="articleSection">
                 </div>
 
-                {{-- Judul artikel --}}
                 <h3 class="h4 fw-bold post-title mb-2"
                     itemprop="headline">
                     <a class="text-decoration-none text-dark"
@@ -115,7 +119,10 @@
                     </a>
                 </h3>
 
-                {{-- Penulis artikel --}}
+                @if ($showExcerpt && !empty($post->excerpt))
+                    <p class="text-muted mb-2">{!! $post->excerpt !!}</p>
+                @endif
+
                 <div class="d-flex align-items-center gap-2 mb-2"
                      itemprop="author"
                      itemscope
@@ -140,7 +147,6 @@
                     </a>
                 </div>
 
-                {{-- Informasi meta: waktu terbit & interaksi --}}
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-inline-flex align-items-center gap-2">
                         <time class="text-muted small"
@@ -153,35 +159,15 @@
                         @endif
                     </div>
                     <div class="d-flex align-items-center gap-3">
-                        {{-- Jumlah suka (LikeAction) --}}
                         <div aria-label="{{ number_format($post->likes_count ?? 0) }} suka"
                              class="text-muted small">
                             <i aria-hidden="true"
                                class="bi bi-heart me-1"></i>{{ number_format($post->likes_count ?? 0) }}
-                            <span class="visually-hidden"
-                                  itemprop="interactionStatistic"
-                                  itemscope
-                                  itemtype="https://schema.org/InteractionCounter">
-                                <meta content="https://schema.org/LikeAction"
-                                      itemprop="interactionType">
-                                <meta content="{{ (int) ($post->likes_count ?? 0) }}"
-                                      itemprop="userInteractionCount">
-                            </span>
                         </div>
-                        {{-- Jumlah komentar (CommentAction) --}}
                         <div aria-label="{{ number_format($post->comments_count ?? 0) }} komentar"
                              class="text-muted small">
                             <i aria-hidden="true"
                                class="bi bi-chat me-1"></i>{{ number_format($post->comments_count ?? 0) }}
-                            <span class="visually-hidden"
-                                  itemprop="interactionStatistic"
-                                  itemscope
-                                  itemtype="https://schema.org/InteractionCounter">
-                                <meta content="https://schema.org/CommentAction"
-                                      itemprop="interactionType">
-                                <meta content="{{ (int) ($post->comments_count ?? 0) }}"
-                                      itemprop="userInteractionCount">
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -190,8 +176,8 @@
     </article>
 @endif
 
-{{-- Sidebar Type --}}
-@if ($type == 'sidebar')
+{{-- Compact Variant (uses sidebar layout as compact) --}}
+@if ($variant === 'compact')
     <article class="card border-0">
         <div class="row g-2 align-items-center">
             <div class="col-3">
@@ -209,6 +195,9 @@
                        href="{{ route('posts.show', $post->slug) }}">
                         <h6 class="fw-semibold mb-1 line-clamp-2">{{ $post->title }}</h6>
                     </a>
+                    @if ($showExcerpt && !empty($post->excerpt))
+                        <p class="small text-muted mb-1 line-clamp-2">{!! $post->excerpt !!}</p>
+                    @endif
                     <div class="small text-muted">
                         <span class="fw-semibold">{{ str()->words($post->user->name, 2, '') }}</span>
                         <span class="mx-1">•</span>

@@ -51,8 +51,9 @@
                      role="list">
                     @forelse ($posts as $post)
                         {{-- Kartu artikel (schema.org BlogPosting) --}}
-                        <x-post-item :post="$post"
-                                     type="horizontal" />
+                        <x-post.article :post="$post"
+                                        role="listitem"
+                                        variant="horizontal" />
                     @empty
                         {{-- Keadaan kosong: tidak ada artikel --}}
                         <div class="text-center py-5">
@@ -76,7 +77,7 @@
             </div>
             {{-- Sidebar: konten tambahan, populer, terbaru, kategori, tag --}}
             <div class="col-lg-4">
-                @include('partials.sidebar')
+                @include('frontpages.posts.partials._sidebar')
             </div>
         </div>
     </section>

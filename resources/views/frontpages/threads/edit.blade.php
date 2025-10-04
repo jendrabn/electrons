@@ -51,9 +51,9 @@
                                     @php
                                         $selected = old('tag_ids', $thread->tags->pluck('id')->toArray());
                                     @endphp
-                                    @foreach ($tags as $id => $name)
-                                        <option @if (in_array($id, $selected)) selected @endif
-                                                value="{{ $id }}">{{ $name }}</option>
+                                    @foreach ($tags as $tag)
+                                        <option @if (in_array($tag->id, $selected)) selected @endif
+                                                value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
                                 <small class="text-muted">Pilih satu atau lebih tag</small>

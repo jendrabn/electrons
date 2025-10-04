@@ -47,8 +47,8 @@
                                         multiple
                                         name="tag_ids[]"
                                         required>
-                                    @foreach ($tags as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @foreach ($tags as $tag)
+                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
                                 <small class="text-muted">Pilih satu atau lebih tag</small>

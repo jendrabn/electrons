@@ -364,7 +364,8 @@
                     <div class="content-tags mb-3 d-flex flex-wrap align-items-center gap-2">
                         <span class="fw-semibold me-1">Tag:</span>
                         @foreach ($post->tags as $tag)
-                            <x-badge-tag :tag="$tag" />
+                            <x-post.badge-tag :tag="$tag" />
+                            {{-- @include('frontpages.posts.partials._tag_link', ['tag' => $tag]) --}}
                         @endforeach
                     </div>
                     {{-- End Tags --}}
@@ -415,7 +416,9 @@
 
                 </article>
             </div>
-            <div class="col-lg-4">@include('partials.sidebar')</div>
+            <div class="col-lg-4">
+                @include('frontpages.posts.partials._sidebar')
+            </div>
         </div>
 
         @if ($relatedPosts->count() > 0)
@@ -425,8 +428,9 @@
                 <div class="row gx-0 gy-2 g-lg-4">
                     @foreach ($relatedPosts as $post)
                         <div class="col-12 col-md-6 col-lg-4">
-                            <x-post-item :post="$post"
-                                         type="vertical" />
+                            <x-post.article :post="$post"
+                                            role="listitem"
+                                            variant="vertical" />
                         </div>
                     @endforeach
                 </div>

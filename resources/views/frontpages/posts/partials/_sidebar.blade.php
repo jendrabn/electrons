@@ -8,6 +8,7 @@
                     @forelse ($popularPosts as $post)
                         <li class="{{ !$loop->last ? 'mb-3' : '' }}">
                             <x-post.article :post="$post"
+                                            role="listitem"
                                             variant="compact" />
                         </li>
                     @empty
@@ -30,6 +31,7 @@
                     @forelse ($recentPosts as $post)
                         <li class="{{ !$loop->last ? 'mb-3' : '' }}">
                             <x-post.article :post="$post"
+                                            role="listitem"
                                             variant="compact" />
                         </li>
                     @empty
@@ -89,7 +91,7 @@
                 <h5 class="mb-3 fw-bold">Tag</h5>
                 <div class="d-flex flex-wrap gap-2 tag-list">
                     @forelse ($tags as $tag)
-                        <x-badge-tag :tag="$tag" />
+                        <x-post.badge-tag :tag="$tag" />
                     @empty
                         <div class="rounded-3 p-4 bg-light text-muted text-center">
                             Tidak Ada Tag
