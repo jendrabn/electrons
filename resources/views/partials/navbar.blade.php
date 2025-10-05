@@ -3,7 +3,7 @@
         <a class="navbar-brand d-flex align-items-center me-4 me-lg-5 py-0"
            href="{{ route('home') }}">
             <img alt="Logo"
-                 class="brand-logo"
+                 class="brand-logo w-100"
                  src="{{ asset('images/logo.png') }}">
         </a>
         <button aria-controls="navbarSupportedContent"
@@ -64,9 +64,12 @@
                            placeholder="Apa yang kamu cari?"
                            type="search"
                            value="{{ request('search') }}">
-                    <button class="btn btn-outline-secondary search-btn"
+                    <button aria-label="Cari"
+                            class="btn btn-outline-secondary search-btn"
                             type="submit">
-                        <i class="bi bi-search"></i>
+                        <i aria-hidden="true"
+                           class="bi bi-search"></i>
+                        <span class="visually-hidden">Cari</span>
                     </button>
                 </div>
             </form>
@@ -135,98 +138,4 @@
             </ul>
         </div>
     </div>
-
-    <style>
-        .navbar-elevated .brand-logo {
-            height: 40px;
-            width: auto;
-        }
-
-        .navbar-elevated .nav-link,
-        .navbar-elevated .dropdown-toggle-custom {
-            position: relative;
-            font-weight: 600;
-            font-size: 0.975rem;
-            color: #334155;
-        }
-
-        .navbar-elevated .nav-link:hover,
-        .navbar-elevated .dropdown-toggle-custom:hover,
-        .navbar-elevated .nav-link:focus {
-            color: #0d6efd;
-        }
-
-        /* Underline hover animation - center-out using background-size (constant height) */
-        .navbar-elevated .nav-link-animated {
-            background-image: linear-gradient(#0d6efd, #0d6efd);
-            background-position: 50% 100%;
-            background-repeat: no-repeat;
-            background-size: 0% 2px;
-            transition: background-size 260ms ease;
-        }
-
-        .navbar-elevated .nav-link-animated:hover,
-        .navbar-elevated .nav-link-animated.active {
-            background-size: 100% 2px;
-        }
-
-        /* Improve dropdown look */
-        .navbar-elevated .dropdown-menu {
-            padding: .5rem;
-        }
-
-        .navbar-elevated .dropdown-item {
-            border-radius: .5rem;
-            font-weight: 500;
-            color: #334155;
-        }
-
-        .navbar-elevated .dropdown-item:hover {
-            background-color: #f1f5f9;
-            color: #0d6efd;
-        }
-
-        /* Search form sizing: full width on mobile, wider on desktop */
-        .navbar-elevated .search-form {
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .navbar-elevated .search-form {
-                width: 360px;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .navbar-elevated .search-form {
-                width: 440px;
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .navbar-elevated .search-form {
-                width: 520px;
-            }
-        }
-
-        .navbar-elevated .search-input {
-            font-size: 0.95rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .navbar-elevated .search-input:focus {
-            border-color: #b6d4fe;
-            box-shadow: 0 0 0 .2rem rgba(13, 110, 253, 0.15);
-        }
-
-        .navbar-elevated .search-btn {
-            border-color: #e2e8f0;
-        }
-
-        .navbar-elevated .search-btn:hover {
-            color: #0d6efd;
-            border-color: #b6d4fe;
-            background-color: #fff;
-        }
-    </style>
 </nav>

@@ -16,13 +16,13 @@
         }
 
         /* .author-cover::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-                border-radius: .75rem;
-                background: rgba(0, 0, 0, .35);
-                pointer-events: none;
-            } */
+                                content: '';
+                                position: absolute;
+                                inset: 0;
+                                border-radius: .75rem;
+                                background: rgba(0, 0, 0, .35);
+                                pointer-events: none;
+                            } */
         .author-avatar {
             width: 110px;
             height: 110px;
@@ -128,14 +128,22 @@
             <div class="row gx-0 gy-2 g-lg-4">
                 @foreach ($posts as $post)
                     <div class="col-12 col-md-6 col-lg-4">
-                        <x-post-item :post="$post"
-                                     type="vertical" />
+                        <x-post.article :post="$post"
+                                        role="listitem"
+                                        variant="vertical" />
                     </div>
                 @endforeach
             </div>
 
-            <div class="mt-4">
-                {{ $posts->links() }}
+            <div class="mt-4 text-center">
+                @if ($posts->hasMorePages())
+                    <button class="btn btn-outline-primary"
+                            data-next-page="{{ $posts->currentPage() + 1 }}"
+                            data-url="{{ route('authors.posts', $user->username) }}"
+                            id="load-more-posts">Muat lebih banyak</button>
+                @else
+                    <div class="text-muted small">Tidak ada artikel lagi.</div>
+                @endif
             </div>
         @else
             <div class="alert alert-light border">
@@ -143,4 +151,54 @@
             </div>
         @endif
     </div>
+    @push('scripts')
+        <script>
+            (function() {
+                const btn = document.getElementById('load-more-posts');
+                if (!btn) return;
+
+                const grid = document.querySelector('.row.gx-0.gy-2.g-lg-4');
+
+                btn.addEventListener('click', async function() {
+                    const next = btn.getAttribute('data-next-page');
+                    const url = new URL(btn.getAttribute('data-url'), window.location.origin);
+                    url.searchParams.set('page', next);
+
+                    btn.disabled = true;
+                    btn.textContent = 'Memuat...';
+
+                    try {
+                        const res = await fetch(url.toString(), {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        const json = await res.json();
+                        const container = document.createElement('div');
+                        container.innerHTML = json.html;
+
+                        // Append each child (they are .col- items)
+                        Array.from(container.children).forEach(child => grid.appendChild(child));
+
+                        if (json.next_page_url) {
+                            // increment page stored on button
+                            const u = new URL(json.next_page_url);
+                            const page = u.searchParams.get('page') || (parseInt(next) + 1);
+                            btn.setAttribute('data-next-page', page);
+                            btn.disabled = false;
+                            btn.textContent = 'Muat lebih banyak';
+                        } else {
+                            btn.remove();
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        btn.disabled = false;
+                        btn.textContent = 'Muat lebih banyak';
+                        alert('Gagal memuat artikel. Silakan coba lagi.');
+                    }
+                });
+            })();
+        </script>
+    @endpush
 @endsection

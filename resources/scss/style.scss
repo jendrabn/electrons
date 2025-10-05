@@ -1,93 +1,66 @@
-// Include any default variable overrides here (though functions won’t be available)
+// --- Core Brand Colors ---
+$primary: #1a1a1a;
+// $secondary: #4f46e5;
+$success: #22c55e;
+// $info: #6366f1;
+$warning: #facc15;
+$danger: #ef4444;
+$light: #f5f5f5;
+$dark: #2e2e2e;
 
-// Custom Color Variables
-$blue: #3b82f6 !default; // Bright blue for accent
-$indigo: #6366f1 !default; // Softer indigo
-$purple: #8b5cf6 !default; // Vibrant purple
-$pink: #ec4899 !default; // Modern pink
-$red: #ef4444 !default; // Bright red
-$orange: #f97316 !default; // Vibrant orange
-$yellow: #eab308 !default; // Golden yellow
-$green: #22c55e !default; // Modern green
-$teal: #14b8a6 !default; // Teal
-$cyan: #06b6d4 !default; // Sky blue cyan
+// --- Text & Border ---
+$text-color: #f5f5f5;
+$text-muted: #a3a3a3;
+$border-color: #2e2e2e;
 
-// Dark Gray Scale (Rich blacks and charcoals)
-$charcoal: #1a1a1a !default; // Deep charcoal (primary candidate)
-$graphite: #2d2d2d !default; // Graphite gray
-$steel: #404040 !default; // Steel gray
-$slate: #64748b !default; // Slate gray
+// --- Custom Link Palette ---
+$el-link: #4f46e5;
+$el-link-hover: #4338ca;
+$el-link-active: #6366f1;
 
-// Standard Gray Scale
-$gray-50: #f9fafb !default;
-$gray-100: #f3f4f6 !default;
-$gray-200: #e5e7eb !default;
-$gray-300: #d1d5db !default;
-$gray-400: #9ca3af !default;
-$gray-500: #6b7280 !default;
-$gray-600: #4b5563 !default;
-$gray-700: #374151 !default;
-$gray-800: #1f2937 !default;
-$gray-900: #111827 !default;
-
-// Custom Theme Colors
-$primary: $charcoal !default; // Deep charcoal as primary
-$secondary: $gray-600 !default; // Balanced gray for secondary
-$success: $green !default; // Bright green for good contrast
-$info: $blue !default; // Use blue for info (good contrast with dark primary)
-$warning: $orange !default; // Orange for warning
-$danger: $red !default; // Bright red for danger
-$light: $gray-100 !default; // Light gray
-$dark: $gray-900 !default; // Very dark for contrast
-
-// Alternative Primary Options (uncomment one to use):
-// $primary: $gray-900 !default;      // Nearly black
-// $primary: $graphite !default;       // Lighter charcoal
-// $primary: $steel !default;          // Medium dark gray
-
-// Additional Custom Colors
-$accent: $blue !default; // Blue as accent since primary is now dark
-$highlight: $teal !default; // Teal for highlights
-$neutral: $gray-400 !default; // Neutral for borders
-
-// Dark Theme Variations (for dark mode)
-$primary-dark: $gray-800 !default; // Slightly lighter for dark backgrounds
-$surface-dark: $gray-800 !default; // Dark surface color
-$on-surface: $gray-100 !default; // Light text on dark surface
-
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-
+// =======================================================
+// Fonts (load sebelum Bootstrap agar variabel dipakai)
+// =======================================================
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
 $font-family-base: "Roboto", sans-serif;
 
-// Bootstrap
+// =======================================================
+// Bootstrap (import setelah override variabel di atas)
+// =======================================================
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
-// Generate class bg-{color}, text-{color}, border-{color}
-@for $i from 100 through 900 {
-    $color: gray-#{$i};
-    .bg-#{$color} {
-        background-color: var(--bs-#{$color}) !important;
+// =======================================================
+// Utilities & Helpers (custom, aman & opsional)
+// =======================================================
+
+// — Gray steps helper (memanfaatkan CSS vars Bootstrap 5.3+)
+$gray-steps: 100, 200, 300, 400, 500, 600, 700, 800, 900;
+
+@each $i in $gray-steps {
+    $token: gray-#{$i}; // e.g., gray-100
+    .bg-#{$token} {
+        background-color: var(--bs-#{$token}) !important;
     }
-    .text-#{$color} {
-        color: var(--bs-#{$color}) !important;
+    .text-#{$token} {
+        color: var(--bs-#{$token}) !important;
     }
-    .border-#{$color} {
-        border-color: var(--bs-#{$color}) !important;
+    .border-#{$token} {
+        border-color: var(--bs-#{$token}) !important;
     }
 }
 
-// generate class fs-{breakpoint}-{n}
-@each $bp, $value in $grid-breakpoints {
-    @media (min-width: #{$value}) {
-        @each $i, $size in $font-sizes {
-            .fs-#{$bp}-#{$i} {
+// — Responsive font-size utilities dari map Bootstrap
+@each $bp, $min in $grid-breakpoints {
+    @media (min-width: #{$min}) {
+        @each $n, $size in $font-sizes {
+            .fs-#{$bp}-#{$n} {
                 font-size: $size !important;
             }
         }
     }
 }
 
-// generate class line-clamp-{n}
+// — Line clamp helpers (1..5)
 @for $i from 1 through 5 {
     .line-clamp-#{$i} {
         display: -webkit-box;
@@ -99,118 +72,214 @@ $font-family-base: "Roboto", sans-serif;
     }
 }
 
+// — Text shadows
 .text-shadow {
     text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
-
 .text-shadow-sm {
     text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
-
 .text-shadow-lg {
     text-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
 }
 
-/* === RED FAMILY === */
+// — Gradients (opsional; tidak mengubah komponen Bootstrap)
 .bg-gradient-red {
     background: linear-gradient(to right, #ef4444, #b91c1c);
 }
-
 .bg-gradient-orange {
     background: linear-gradient(to right, #f97316, #c2410c);
 }
-
 .bg-gradient-amber {
     background: linear-gradient(to right, #f59e0b, #b45309);
 }
-
 .bg-gradient-yellow {
     background: linear-gradient(to right, #eab308, #a16207);
 }
-
 .bg-gradient-lime {
     background: linear-gradient(to right, #84cc16, #4d7c0f);
 }
-
 .bg-gradient-green {
     background: linear-gradient(to right, #22c55e, #15803d);
 }
-
 .bg-gradient-emerald {
     background: linear-gradient(to right, #10b981, #047857);
 }
-
 .bg-gradient-teal {
     background: linear-gradient(to right, #14b8a6, #0f766e);
 }
-
 .bg-gradient-cyan {
     background: linear-gradient(to right, #06b6d4, #0e7490);
 }
-
 .bg-gradient-sky {
     background: linear-gradient(to right, #0ea5e9, #0369a1);
 }
-
 .bg-gradient-blue {
     background: linear-gradient(to right, #3b82f6, #1d4ed8);
 }
-
 .bg-gradient-indigo {
     background: linear-gradient(to right, #6366f1, #4338ca);
 }
-
 .bg-gradient-violet {
     background: linear-gradient(to right, #8b5cf6, #6d28d9);
 }
-
 .bg-gradient-purple {
     background: linear-gradient(to right, #a855f7, #7e22ce);
 }
-
 .bg-gradient-fuchsia {
     background: linear-gradient(to right, #d946ef, #a21caf);
 }
-
 .bg-gradient-pink {
     background: linear-gradient(to right, #ec4899, #be185d);
 }
-
 .bg-gradient-rose {
     background: linear-gradient(to right, #f43f5e, #9f1239);
 }
 
-/* === NEUTRAL GRAY FAMILY === */
 .bg-gradient-slate {
     background: linear-gradient(to right, #64748b, #334155);
 }
-
 .bg-gradient-gray {
     background: linear-gradient(to right, #6b7280, #374151);
 }
-
 .bg-gradient-zinc {
     background: linear-gradient(to right, #71717a, #3f3f46);
 }
-
 .bg-gradient-neutral {
     background: linear-gradient(to right, #737373, #404040);
 }
-
 .bg-gradient-stone {
     background: linear-gradient(to right, #78716c, #44403c);
 }
 
-.text-mention {
-    color: #3ea6ff;
-    font-weight: 500;
+// =======================================================
+// Responsive button size utilities (opsional)
+// =======================================================
+$btn-sizes: (
+    sm: (
+        font-size: 0.875rem,
+        padding-y: 0.25rem,
+        padding-x: 0.5rem,
+    ),
+    md: (
+        font-size: 1rem,
+        padding-y: 0.375rem,
+        padding-x: 0.75rem,
+    ),
+    lg: (
+        font-size: 1.125rem,
+        padding-y: 0.5rem,
+        padding-x: 1rem,
+    ),
+);
+
+@function btn-size-get($size, $prop) {
+    @return map-get(map-get($btn-sizes, $size), $prop);
 }
 
+@each $size-name, $size-map in $btn-sizes {
+    .btn-size-#{$size-name} {
+        font-size: btn-size-get($size-name, font-size) !important;
+        padding: btn-size-get($size-name, padding-y)
+            btn-size-get($size-name, padding-x) !important;
+    }
+}
+
+@each $bp, $min in $grid-breakpoints {
+    @media (min-width: #{$min}) {
+        @each $size-name, $size-map in $btn-sizes {
+            .btn-size-#{$bp}-#{$size-name} {
+                font-size: btn-size-get($size-name, font-size) !important;
+                padding: btn-size-get($size-name, padding-y)
+                    btn-size-get($size-name, padding-x) !important;
+            }
+        }
+        .btn-sm-#{$bp} {
+            @extend .btn-size-#{$bp}-sm;
+        }
+        .btn-md-#{$bp} {
+            @extend .btn-size-#{$bp}-md;
+        }
+        .btn-lg-#{$bp} {
+            @extend .btn-size-#{$bp}-lg;
+        }
+    }
+}
+
+// =======================================================
+// (Opsional) Bootstrap Icons (CSS, setelah Bootstrap build)
+// =======================================================
+// Gunakan tilde untuk resolver Webpack/Vite jika perlu:
 @import "../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 
-@import "./custom";
-@import "./responsive.scss";
+// =======================================================
+// Custom overrides/extensions (punyamu sendiri)
+// =======================================================
+/* =======================================================
+   Hover utilities (text color, background, underline)
+   - Uses SCSS variables defined above so they compile to plain CSS
+   - Provides: .hover-<name>, .hover-bg-<name>, .hover-underline, .hover-underline-animated
+   ======================================================= */
+$hover-color-utilities: (
+    primary: $primary,
+    link: $el-link,
+    "link-hover": $el-link-hover,
+    success: $success,
+    warning: $warning,
+    danger: $danger,
+    dark: $dark,
+    muted: $text-muted,
+);
 
-.adsbygoogle[data-ad-status="unfilled"] {
-    display: none !important;
+@each $key, $color in $hover-color-utilities {
+    .hover-#{$key} {
+        transition: color 0.15s ease, background-color 0.15s ease,
+            transform 0.12s ease;
+        &:hover {
+            color: $color !important;
+        }
+    }
+
+    .hover-bg-#{$key} {
+        transition: background-color 0.15s ease;
+        &:hover {
+            background-color: $color !important;
+        }
+    }
+
+    /* animated underline variant per color */
+    .hover-underline-#{$key} {
+        background-image: linear-gradient(#{$color}, #{$color});
+        background-position: 50% 100%;
+        background-repeat: no-repeat;
+        background-size: 0% 2px;
+        transition: background-size 260ms ease;
+        &:hover,
+        &.active {
+            background-size: 100% 2px;
+        }
+    }
 }
+
+/* Simple underline on hover */
+.hover-underline {
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+/* Generic animated underline using link color as default */
+.hover-underline-animated {
+    background-image: linear-gradient($el-link, $el-link);
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 2px;
+    transition: background-size 260ms ease;
+    &:hover,
+    &.active {
+        background-size: 100% 2px;
+    }
+}
+
+@import "./custom";

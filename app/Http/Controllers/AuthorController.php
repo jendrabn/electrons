@@ -35,7 +35,7 @@ class AuthorController extends Controller
             ->with(['category', 'user', 'tags'])
             ->withCount(['likes', 'comments'])
             ->latest()
-            ->paginate(12);
+            ->paginate(6);
 
         $this->seoService->setAuthorSEO($user);
 
@@ -46,5 +46,33 @@ class AuthorController extends Controller
             'contributionsCount',
             'posts',
         ));
+    }
+
+    /**
+     * Return rendered posts for an author (used by AJAX "load more").
+     * Responds with HTML partial containing <x-post.article> items.
+     */
+    public function posts(User $user)
+    {
+        $postsQuery = Post::query()
+            ->published()
+            ->where('user_id', $user->id)
+            ->with(['category', 'user', 'tags'])
+            ->withCount(['likes', 'comments'])
+            ->latest();
+
+        $posts = $postsQuery->paginate(6);
+
+        // If requested via AJAX, return rendered items only
+        if (request()->ajax()) {
+            $html = view('frontpages.authors.partials._posts_list', compact('posts'))->render();
+            return response()->json([
+                'html' => $html,
+                'next_page_url' => $posts->nextPageUrl(),
+            ]);
+        }
+
+        // Fallback: redirect to show page
+        return redirect()->route('authors.show', $user->username);
     }
 }

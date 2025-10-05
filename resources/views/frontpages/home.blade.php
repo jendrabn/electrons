@@ -32,8 +32,7 @@
                                     <div
                                          class="position-absolute top-0 start-0 w-100 h-100 p-3 d-flex flex-column justify-content-end">
 
-                                        <x-post.badge-category :color="$post->category->color"
-                                                               :name="$post->category->name" />
+                                        <x-post.badge-category :category="$post->category" />
 
                                         <a class="text-decoration-none text-white"
                                            href="{{ route('posts.show', $post->slug) }}">

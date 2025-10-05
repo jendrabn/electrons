@@ -1,138 +1,11 @@
 @extends('layouts.app')
 
-@section('styles')
-    <style>
-        /* Category badge - uses dynamic category color */
-        .content .category-badge {
-            display: inline-block;
-            padding: .375rem .625rem;
-            border-radius: .375rem;
-            color: #fff;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Title typography */
-        .content-title {
-            font-size: clamp(1.85rem, 2.5vw, 2.6rem);
-            line-height: 1.25;
-            letter-spacing: .2px;
-            color: #212529;
-        }
-
-        /* Author avatar */
-        .author-link .author-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Meta items */
-        .content-meta .meta-item {
-            display: inline-flex;
-            align-items: center;
-            gap: .375rem;
-        }
-
-        /* Hero image */
-        .content-image figure {
-            margin: 0;
-        }
-
-        .content-image img {
-            object-fit: cover;
-        }
-
-        /* Content wrapping and responsive media */
-        .content-body {
-            --content-font-size: 1rem;
-            font-size: var(--content-font-size);
-            line-height: 1.8;
-            overflow-wrap: anywhere;
-            word-break: break-word;
-            max-width: 100%;
-        }
-
-        .content-body img,
-        .content-body table {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .content-body pre,
-        .content-body code {
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        /* Font size slider (styled like screenshot) */
-        .font-size-control .control-box {
-            max-width: 560px;
-            margin: 0 auto;
-            background: #f8f9fa;
-            border-radius: 1rem;
-            padding: .75rem 1rem;
-            border: 1px solid #eee;
-        }
-
-        .font-size-control input[type="range"] {
-            width: 100%;
-        }
-
-        .font-size-control .labels {
-            color: #6c757d;
-        }
-
-        /* Track & thumb colors */
-        .font-size-control .form-range::-webkit-slider-runnable-track {
-            height: 6px;
-            border-radius: 999px;
-            background: #f3d2d5;
-        }
-
-        .font-size-control .form-range::-webkit-slider-thumb {
-            height: 18px;
-            width: 18px;
-            margin-top: -6px;
-            background: #dc3545;
-            border: none;
-            border-radius: 50%;
-            box-shadow: 0 0 0 4px rgba(220, 53, 69, .15);
-        }
-
-        .font-size-control .form-range::-moz-range-track {
-            height: 6px;
-            border-radius: 999px;
-            background: #f3d2d5;
-        }
-
-        .font-size-control .form-range::-moz-range-thumb {
-            height: 18px;
-            width: 18px;
-            background: #dc3545;
-            border: none;
-            border-radius: 50%;
-        }
-
-        @media (min-width: 992px) {
-            .font-size-control .control-box {
-                max-width: 640px;
-            }
-
-            .content-title {
-                letter-spacing: .1px;
-            }
-        }
-    </style>
-@endsection
-
 @section('content')
     <div class="container">
         {{-- Breadcrumb --}}
         <div class="mb-3 mb-lg-5">
             <nav aria-label="breadcrumb">
-                <div class="breadcrumb-line d-flex align-items-center gap-2 small text-muted overflow-hidden"
+                <div class="breadcrumb-line d-flex align-items-center gap-2 text-muted overflow-hidden"
                      style="min-width: 0">
                     <a class="text-decoration-none flex-shrink-0"
                        href="{{ route('home') }}">
@@ -166,11 +39,7 @@
 
         <div class="row">
             <div class="col-lg-8">
-                <article class="content"
-                         itemscope
-                         itemtype="https://schema.org/Article">
-                    <meta content="{{ url()->current() }}"
-                          itemprop="mainEntityOfPage">
+                <article class="content">
                     {{-- Category (gunakan warna kategori) --}}
                     <div class="content-category mb-2 mb-lg-3">
                         @php
@@ -191,109 +60,84 @@
                     {{-- End Category --}}
 
                     {{-- Title (SEO-friendly H1) --}}
-                    <h1 class="content-title mb-3"
-                        itemprop="headline">
+                    <h1 class="content-title mb-3">
                         {{ $post->title }}
                     </h1>
                     {{-- End Title --}}
 
                     {{-- Author + Like & Share (dua kolom space-between) --}}
-                    <div class="post-header-actions d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center"
-                             itemprop="author"
-                             itemscope
-                             itemtype="https://schema.org/Person">
-                            <a class="d-flex align-items-center text-decoration-none text-dark fw-semibold author-link"
-                               href="{{ route('authors.show', $post->user->username) }}"
-                               rel="author">
+                    <div class="post-header-actions d-flex flex-column  flex-lg-row justify-content-between mb-3">
+                        <div class="d-flex align-items-center mb-3 mb-lg-0">
+                            <a class="text-decoration-none text-dark fw-semibold author-link d-inline-block me-3"
+                               href="{{ route('authors.show', $post->user->username) }}">
                                 <img alt="{{ $post->user->name }}"
-                                     class="author-avatar me-2"
-                                     itemprop="image"
+                                     class="author-avatar"
                                      src="{{ $post->user->avatar_url }}" />
-                                <span itemprop="name">{{ $post->user->name }}</span>
                             </a>
+                            <div class="d-flex flex-column">
+                                <a class="text-decoration-none text-dark fw-semibold author-link d-inline-flex align-items-center"
+                                   href="{{ route('authors.show', $post->user->username) }}"
+                                   rel="author">
+                                    {{ $post->user->name }}
+                                </a>
+                                <time class="small text-muted"
+                                      datetime="{{ $post->created_at->toIso8601String() }}">
+                                    <i class="bi bi-clock"></i>
+                                    {{ $post->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
+                                    WIB
+                                </time>
+                            </div>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex align-items-center gap-2 meta-info">
                             @auth
-                                <button class="btn btn-outline-danger btn-sm shadow-sm rounded-pill"
+                                <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center justify-content-center gap-2"
                                         data-liked="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
                                         data-post-id="{{ $post->id }}"
                                         id="like-btn"
+                                        title="{{ $post->isLikedBy(auth()->user()) ? 'Batalkan Suka' : 'Suka' }}"
                                         type="button">
                                     <i class="bi {{ $post->isLikedBy(auth()->user()) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                    <span class="like-text">{{ $post->isLikedBy(auth()->user()) ? 'Disukai' : 'Suka' }}</span>
+                                    <span id="likes-count-mobile">{{ $post->likes_count }}</span>
                                 </button>
                             @else
-                                <a class="btn btn-outline-danger btn-sm shadow-sm rounded-pill"
-                                   href="{{ route('auth.show.login') }}">
-                                    <i class="bi bi-heart"></i> Suka
+                                <a class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center justify-content-center gap-2"
+                                   href="{{ route('auth.show.login') }}"
+                                   title="Suka">
+                                    <i class="bi bi-heart"></i>
+                                    <span id="likes-count-mobile">{{ $post->likes_count }}</span>
                                 </a>
                             @endauth
 
-                            <button aria-label="Share"
-                                    class="btn btn-light btn-sm shadow-sm rounded-circle btn-share"
+                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                                    title="Jumlah komentar"
+                                    type="button">
+                                <i class="bi bi-chat"></i>
+                                {{ $post->comments_count }}
+                            </button>
+
+                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                                    title="Jumlah pembaca"
+                                    type="button">
+                                <i class="bi bi-eye"></i>
+                                {{ $post->views_count }}
+                            </button>
+
+                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                                    title="Perkiraan waktu membaca"
+                                    type="button">
+                                <i class="bi bi-stopwatch"></i>
+                                {{ $post->min_read }}
+                            </button>
+
+                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
                                     data-bs-target="#shareModal"
                                     data-bs-toggle="modal"
+                                    title="Bagikan artikel ini ke media sosial"
                                     type="button">
-                                <i class="bi bi-share-fill fs-6"></i>
+                                <i class="bi bi-share"></i>
+                                Share
                             </button>
                         </div>
-                    </div>
-
-                    {{-- Meta (semua kiri: created_at + like + comment + views + min read) --}}
-                    <div class="content-meta d-flex align-items-center flex-wrap gap-3 small text-muted mb-3">
-                        <time class="meta-item"
-                              datetime="{{ $post->created_at->toIso8601String() }}"
-                              itemprop="datePublished">
-                            <i class="bi bi-clock"></i>
-                            {{ $post->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
-                        </time>
-                        <span aria-label="{{ number_format($post->likes_count ?? 0) }} suka"
-                              class="meta-item">
-                            <i class="bi bi-heart"></i>
-                            <span id="likes-count">{{ $post->likes_count }}</span>
-                            <span class="visually-hidden"
-                                  itemprop="interactionStatistic"
-                                  itemscope
-                                  itemtype="https://schema.org/InteractionCounter">
-                                <meta content="https://schema.org/LikeAction"
-                                      itemprop="interactionType" />
-                                <meta content="{{ (int) ($post->likes_count ?? 0) }}"
-                                      itemprop="userInteractionCount" />
-                            </span>
-                        </span>
-                        <span aria-label="{{ number_format($post->comments_count ?? 0) }} komentar"
-                              class="meta-item">
-                            <i class="bi bi-chat"></i>
-                            {{ $post->comments_count }}
-                            <span class="visually-hidden"
-                                  itemprop="interactionStatistic"
-                                  itemscope
-                                  itemtype="https://schema.org/InteractionCounter">
-                                <meta content="https://schema.org/CommentAction"
-                                      itemprop="interactionType" />
-                                <meta content="{{ (int) ($post->comments_count ?? 0) }}"
-                                      itemprop="userInteractionCount" />
-                            </span>
-                        </span>
-                        <span aria-label="{{ number_format($post->views_count ?? 0) }} views"
-                              class="meta-item">
-                            <i class="bi bi-eye"></i>
-                            {{ $post->views_count }}
-                            <span class="visually-hidden"
-                                  itemprop="interactionStatistic"
-                                  itemscope
-                                  itemtype="https://schema.org/InteractionCounter">
-                                <meta content="https://schema.org/ViewAction"
-                                      itemprop="interactionType" />
-                                <meta content="{{ (int) ($post->views_count ?? 0) }}"
-                                      itemprop="userInteractionCount" />
-                            </span>
-                        </span>
-                        <span class="meta-item">
-                            <i class="bi bi-stopwatch"></i>
-                            {{ $post->min_read }} min read
-                        </span>
                     </div>
 
                     {{-- Hero image (16:9 responsif dengan caption) --}}

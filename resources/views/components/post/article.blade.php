@@ -7,26 +7,21 @@
 
 {{-- Vertical Variant --}}
 @if ($variant === 'vertical')
-    <article class="post-item card border-0 h-100 w-100"
-             itemscope
-             itemtype="https://schema.org/BlogPosting">
+    <article class="post-item card border-0 h-100 w-100">
         <div class="row g-0">
             <div class="col-3 col-lg-12">
                 <div class="position-relative">
-                    <a aria-label="Buka artikel: {{ $post->title }}"
-                       href="{{ route('posts.show', $post->slug) }}">
+                    <a href="{{ route('posts.show', $post->slug) }}">
                         <figure class="post-item-image bg-gray-200 rounded-3 overflow-hidden w-100 ratio ratio-16x9">
                             <picture>
                                 <img alt="{{ $post->image_caption }}"
                                      class="h-100 w-100 object-fit-cover"
-                                     itemprop="image"
                                      loading="lazy"
                                      src="{{ $post->image_url }}" />
                             </picture>
                         </figure>
 
-                        <x-post.badge-category :color="$post->category->color"
-                                               :name="$post->category->name" />
+                        <x-post.badge-category :category="$post->category" />
                     </a>
                 </div>
             </div>
@@ -34,32 +29,26 @@
                 <div class="card-body py-0 pe-0 px-lg-0">
                     <a class="text-decoration-none text-dark"
                        href="{{ route('posts.show', $post->slug) }}">
-                        <h3 class="card-title fs-6 fs-lg-5 fw-bold lh-sm mb-0 mb-lg-2 line-clamp-2"
-                            itemprop="headline">
+                        <h3 class="card-title fs-6 fs-lg-5 fw-bold lh-sm mb-0 mb-lg-2 line-clamp-2 hover-link">
                             {{ $post->title }}
                         </h3>
                     </a>
                     @if ($showExcerpt && !empty($post->excerpt))
                         <p class="text-muted mb-2 line-clamp-3">{!! $post->excerpt !!}</p>
                     @endif
-                    <div class="d-flex align-items-center gap-2 mt-2"
-                         itemprop="author"
-                         itemscope
-                         itemtype="https://schema.org/Person">
+                    <div class="d-flex align-items-center gap-2 mt-2">
                         <img alt="{{ $post->user->name }}"
                              class="rounded-circle object-fit-cover"
                              src="{{ $post->user->avatar_url }}"
                              style="width: 28px; height: 28px;" />
                         <a class="text-decoration-none text-muted fw-semibold"
                            href="{{ route('posts.author', $post->user->id) }}"
-                           itemprop="name"
                            rel="author">
                             {{ str()->words($post->user->name, 2, '') }}
                         </a>
                         <span class="mx-1">•</span>
                         <time class="text-muted small"
-                              datetime="{{ $post->created_at->toIso8601String() }}"
-                              itemprop="datePublished">
+                              datetime="{{ $post->created_at->toIso8601String() }}">
                             {{ $post->created_at->format('d M Y') }}
                         </time>
                     </div>
@@ -71,12 +60,8 @@
 
 {{-- Horizontal Variant --}}
 @if ($variant === 'horizontal')
-    <article class="post-card bg-white rounded-4 p-2 p-md-3"
-             itemscope
-             itemtype="https://schema.org/BlogPosting"
-             role="listitem">
-        <meta content="{{ route('posts.show', $post->slug) }}"
-              itemprop="mainEntityOfPage">
+    <article class="post-card bg-white rounded-4 p-2 p-md-3">
+        <meta content="{{ route('posts.show', $post->slug) }}">
         <div class="row g-3 g-md-4 align-items-start">
             <div class="col-12 col-md-4">
                 <a class="d-block overflow-hidden rounded-3"
@@ -86,7 +71,6 @@
                         <img alt="{{ $post->image_caption ?? $post->title }}"
                              class="post-thumb"
                              decoding="async"
-                             itemprop="image"
                              loading="lazy"
                              sizes="(min-width: 768px) 33vw, 100vw"
                              src="{{ $post->image_url }}">
@@ -99,20 +83,13 @@
 
             <div class="col-12 col-md-8">
                 <div class="d-flex align-items-center gap-2 mb-2">
-                    <a class="text-decoration-none"
-                       href="{{ route('posts.category', $post->category->slug) }}"
-                       rel="tag"
-                       title="Kategori: {{ $post->category->name }}">
-                        <span class="text-uppercase category"
-                              style="color: {{ $post->category->color ?? '#3B82F6' }}">{{ $post->category->name }}</span>
-                    </a>
-                    <meta content="{{ $post->category->name }}"
-                          itemprop="articleSection">
+                    <x-post.badge-category :category="$post->category"
+                                           :inline="true" />
+                    <meta content="{{ $post->category->name }}">
                 </div>
 
-                <h3 class="h4 fw-bold post-title mb-2"
-                    itemprop="headline">
-                    <a class="text-decoration-none text-dark"
+                <h3 class="h4 fw-bold post-title mb-2">
+                    <a class="text-decoration-none text-dark hover-link"
                        href="{{ route('posts.show', $post->slug) }}"
                        title="{{ $post->title }}">
                         {{ $post->title }}
@@ -123,10 +100,7 @@
                     <p class="text-muted mb-2">{!! $post->excerpt !!}</p>
                 @endif
 
-                <div class="d-flex align-items-center gap-2 mb-2"
-                     itemprop="author"
-                     itemscope
-                     itemtype="https://schema.org/Person">
+                <div class="d-flex align-items-center gap-2 mb-2">
                     <a class="text-decoration-none"
                        href="{{ route('authors.show', $post->user->username) }}"
                        rel="author"
@@ -143,15 +117,14 @@
                        href="{{ route('authors.show', $post->user->username) }}"
                        rel="author"
                        title="Profil Penulis">
-                        <span itemprop="name">{{ str()->words($post->user->name, 2, '') }}</span>
+                        <span>{{ str()->words($post->user->name, 2, '') }}</span>
                     </a>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-inline-flex align-items-center gap-2">
                         <time class="text-muted small"
-                              datetime="{{ $post->created_at->toIso8601String() }}"
-                              itemprop="datePublished">{{ $post->created_at->diffForHumans() }}</time>
+                              datetime="{{ $post->created_at->toIso8601String() }}">{{ $post->created_at->diffForHumans() }}</time>
                         @if ($post->updated_at && $post->updated_at->gt($post->created_at))
                             <time class="visually-hidden"
                                   datetime="{{ $post->updated_at->toIso8601String() }}"
@@ -159,13 +132,11 @@
                         @endif
                     </div>
                     <div class="d-flex align-items-center gap-3">
-                        <div aria-label="{{ number_format($post->likes_count ?? 0) }} suka"
-                             class="text-muted small">
+                        <div class="text-muted small">
                             <i aria-hidden="true"
                                class="bi bi-heart me-1"></i>{{ number_format($post->likes_count ?? 0) }}
                         </div>
-                        <div aria-label="{{ number_format($post->comments_count ?? 0) }} komentar"
-                             class="text-muted small">
+                        <div class="text-muted small">
                             <i aria-hidden="true"
                                class="bi bi-chat me-1"></i>{{ number_format($post->comments_count ?? 0) }}
                         </div>

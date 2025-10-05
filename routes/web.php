@@ -77,6 +77,8 @@ Route::post('/filament/author/logout', function (Request $request) {
 
 // Author profile page: /author/{user:username}
 Route::get('/authors/{user:username}', [App\Http\Controllers\AuthorController::class, 'show'])->name('authors.show');
+// AJAX endpoint to load more posts for an author (returns rendered HTML)
+Route::get('/authors/{user:username}/posts', [App\Http\Controllers\AuthorController::class, 'posts'])->name('authors.posts');
 
 // Thread image uploads (publicly addressable route used by the editor)
 Route::post('/threads/uploads', [App\Http\Controllers\ThreadController::class, 'uploadImage'])->name('threads.upload-image');
