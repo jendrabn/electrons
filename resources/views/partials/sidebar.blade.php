@@ -87,15 +87,15 @@
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <h5 class="mb-3 fw-bold">Tag</h5>
-                <div class="d-flex flex-wrap gap-2 tag-list">
-                    @forelse ($tags as $tag)
+                @forelse ($tags as $tag)
+                    <div class="d-flex flex-wrap gap-2 tag-list">
                         <x-post.badge-tag :tag="$tag" />
-                    @empty
-                        <div class="rounded-3 p-4 bg-light text-muted text-center">
-                            Tidak Ada Tag
-                        </div>
-                    @endforelse
-                </div>
+                    </div>
+                @empty
+                    <div class="rounded-3 p-4 bg-light text-muted text-center">
+                        Tidak Ada Tag
+                    </div>
+                @endforelse
             </div>
         </div>
 

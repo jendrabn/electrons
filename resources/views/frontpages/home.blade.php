@@ -117,13 +117,9 @@
                         Lihat Semua
                     </a>
                 </div>
-                <div class="row gx-0 gy-2 gx-lg-4 gy-lg-0 post-section-list">
+                <div class="row gx-0 gy-2 g-md-4 post-section-list">
                     @foreach ($section->posts as $post)
-                        <div class="col-md-4">
-                            {{-- @include('frontpages.posts.partials._post', [
-                                'post' => $post,
-                                'type' => 'vertical',
-                            ]) --}}
+                        <div class="col-12 col-md-6 col-lg-4">
                             <x-post.article :post="$post"
                                             variant="vertical" />
                         </div>

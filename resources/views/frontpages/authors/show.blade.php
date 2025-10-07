@@ -16,13 +16,13 @@
         }
 
         /* .author-cover::after {
-                                content: '';
-                                position: absolute;
-                                inset: 0;
-                                border-radius: .75rem;
-                                background: rgba(0, 0, 0, .35);
-                                pointer-events: none;
-                            } */
+                                                content: '';
+                                                position: absolute;
+                                                inset: 0;
+                                                border-radius: .75rem;
+                                                background: rgba(0, 0, 0, .35);
+                                                pointer-events: none;
+                                            } */
         .author-avatar {
             width: 110px;
             height: 110px;
@@ -125,7 +125,8 @@
         </div>
 
         @if ($posts->count() > 0)
-            <div class="row gx-0 gy-2 g-lg-4">
+            <div class="row gx-0 gy-2 g-md-4"
+                 id="author-posts-grid">
                 @foreach ($posts as $post)
                     <div class="col-12 col-md-6 col-lg-4">
                         <x-post.article :post="$post"
@@ -157,7 +158,12 @@
                 const btn = document.getElementById('load-more-posts');
                 if (!btn) return;
 
-                const grid = document.querySelector('.row.gx-0.gy-2.g-lg-4');
+                const grid = document.getElementById('author-posts-grid');
+                if (!grid) {
+                    console.error('Author posts grid container not found');
+                    btn.disabled = false;
+                    return;
+                }
 
                 btn.addEventListener('click', async function() {
                     const next = btn.getAttribute('data-next-page');

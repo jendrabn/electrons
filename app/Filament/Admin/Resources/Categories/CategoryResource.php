@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class CategoryResource extends Resource
 {
@@ -21,9 +22,15 @@ class CategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Category';
+    protected static ?string $modelLabel = 'Kategori';
 
-    protected static ?int $navigationSort = 30;
+    protected static ?string $pluralModelLabel = 'Kategori';
+
+    protected static ?int $navigationSort = 10;
+
+    protected static ?string $navigationLabel = 'Kategori';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -61,9 +68,26 @@ class CategoryResource extends Resource
                     ->sortable(),
                 TextColumn::make('color')
                     ->label('WARNA')
-                    ->badge()
-                    ->color(fn ($record) => $record->color)
-                    ->formatStateUsing(fn ($state) => strtoupper($state))
+                    ->html()
+                    ->formatStateUsing(function (?string $state): HtmlString {
+                        if (blank($state)) {
+                            return new HtmlString('—');
+                        }
+
+                        $hex = strtoupper($state);
+                        $safeHex = e($hex);
+
+                        $markup = sprintf(
+                            '<span style="display:inline-flex;align-items:center;gap:0.5rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#1f2937">'
+                            .'<span style="width:1.25rem;height:1.25rem;border-radius:999px;border:1px solid rgba(15,23,42,0.15);box-shadow:0 1px 4px rgba(15,23,42,0.18);background-color:%1$s"></span>'
+                            .'<span>%2$s</span>'
+                            .'</span>',
+                            $safeHex,
+                            $safeHex
+                        );
+
+                        return new HtmlString($markup);
+                    })
                     ->sortable(),
                 TextColumn::make('posts_count')
                     ->label('JUMLAH BLOG POST')

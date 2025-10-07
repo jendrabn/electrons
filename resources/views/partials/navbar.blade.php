@@ -3,8 +3,8 @@
         <a class="navbar-brand d-flex align-items-center me-4 me-lg-5 py-0"
            href="{{ route('home') }}">
             <img alt="Logo"
-                 class="brand-logo w-100"
-                 src="{{ asset('images/logo.png') }}">
+                 class="brand-logo"
+                 src="{{ asset('images/logo.svg') }}">
         </a>
         <button aria-controls="navbarSupportedContent"
                 aria-expanded="false"

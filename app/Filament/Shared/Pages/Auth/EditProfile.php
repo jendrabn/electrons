@@ -45,10 +45,10 @@ class EditProfile extends BaseEditProfile
                         if ($component->shouldPreserveFilenames()) {
                             $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-                            return Str::slug($name) . '.webp';
+                            return Str::slug($name).'.webp';
                         }
 
-                        return Str::ulid() . '.webp';
+                        return Str::ulid().'.webp';
                     })
                     ->saveUploadedFileUsing(function (FileUpload $component, TemporaryUploadedFile $file): ?string {
                         try {
@@ -104,8 +104,7 @@ class EditProfile extends BaseEditProfile
 
                             return null;
                         }
-                    })
-                    ->helperText('Cover disimpan sebagai WebP maksimal 250KB. Disarankan rasio sekitar 3:1 (contoh 1200×400 atau 1920×640) agar tampilan maksimal.'),
+                    }),
 
                 $this->getNameFormComponent()
                     ->label('Nama Lengkap')

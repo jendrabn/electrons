@@ -43,7 +43,7 @@ class AuthorPanelProvider extends PanelProvider
                     ->sort(90),
             ])
             ->resourceCreatePageRedirect('index')
-            ->profile(EditProfile::class)
+            ->profile(EditProfile::class, false)
             ->emailVerification(isRequired: env('FILAMENT_EMAIL_VERIFICATION', false))
             ->discoverResources(in: app_path('Filament/Author/Resources'), for: 'App\Filament\Author\Resources')
             ->discoverPages(in: app_path('Filament/Author/Pages'), for: 'App\Filament\Author\Pages')

@@ -9,47 +9,48 @@
 @if ($variant === 'vertical')
     <article class="post-item card border-0 h-100 w-100">
         <div class="row g-0">
-            <div class="col-3 col-lg-12">
+            <div class="col-3 col-md-12 mb-md-3">
                 <div class="position-relative">
                     <a href="{{ route('posts.show', $post->slug) }}">
-                        <figure class="post-item-image bg-gray-200 rounded-3 overflow-hidden w-100 ratio ratio-16x9">
-                            <picture>
-                                <img alt="{{ $post->image_caption }}"
-                                     class="h-100 w-100 object-fit-cover"
-                                     loading="lazy"
-                                     src="{{ $post->image_url }}" />
-                            </picture>
-                        </figure>
+                        <div class="bg-gray-300 rounded-3 overflow-hidden w-100 ratio ratio-16x9">
+                            <img alt="{{ $post->image_caption }}"
+                                 class="post-thumb"
+                                 loading="lazy"
+                                 src="{{ $post->image_url }}" />
+                        </div>
 
-                        <x-post.badge-category :category="$post->category" />
+                        <x-post.badge-category :category="$post->category"
+                                               class="d-none d-md-block" />
                     </a>
                 </div>
             </div>
-            <div class="col-9 col-lg-12">
-                <div class="card-body py-0 pe-0 px-lg-0">
+            <div class="col-9 col-md-12">
+                <div class="card-body py-0 pe-0 px-md-0">
                     <a class="text-decoration-none text-dark"
                        href="{{ route('posts.show', $post->slug) }}">
-                        <h3 class="card-title fs-6 fs-lg-5 fw-bold lh-sm mb-0 mb-lg-2 line-clamp-2 hover-link">
+                        <h3
+                            class="card-title fs-6 fs-lg-5 fw-bold lh-sm mb-0 mb-lg-2 line-clamp-2 hover-link text-break text-wrap">
                             {{ $post->title }}
                         </h3>
                     </a>
                     @if ($showExcerpt && !empty($post->excerpt))
-                        <p class="text-muted mb-2 line-clamp-3">{!! $post->excerpt !!}</p>
+                        <p class="text-muted mb-2 line-clamp-3 text-break text-wrap">{!! $post->excerpt !!}</p>
                     @endif
                     <div class="d-flex align-items-center gap-2 mt-2">
                         <img alt="{{ $post->user->name }}"
-                             class="rounded-circle object-fit-cover"
+                             class="rounded-circle object-fit-cover d-none d-md-block"
+                             height="25"
                              src="{{ $post->user->avatar_url }}"
-                             style="width: 28px; height: 28px;" />
+                             width="25" />
                         <a class="text-decoration-none text-muted fw-semibold"
-                           href="{{ route('posts.author', $post->user->id) }}"
+                           href="{{ route('authors.show', $post->user->username) }}"
                            rel="author">
                             {{ str()->words($post->user->name, 2, '') }}
                         </a>
                         <span class="mx-1">•</span>
                         <time class="text-muted small"
                               datetime="{{ $post->created_at->toIso8601String() }}">
-                            {{ $post->created_at->format('d M Y') }}
+                            {{ $post->created_at->diffForHumans() }}
                         </time>
                     </div>
                 </div>
@@ -61,35 +62,28 @@
 {{-- Horizontal Variant --}}
 @if ($variant === 'horizontal')
     <article class="post-card bg-white rounded-4 p-2 p-md-3">
-        <meta content="{{ route('posts.show', $post->slug) }}">
-        <div class="row g-3 g-md-4 align-items-start">
-            <div class="col-12 col-md-4">
-                <a class="d-block overflow-hidden rounded-3"
-                   href="{{ route('posts.show', $post->slug) }}"
+        <div class="row g-3 g-md-4 align-items-center">
+            <div class="col-4">
+                <a href="{{ route('posts.show', $post->slug) }}"
                    title="{{ $post->title }}">
-                    <figure class="m-0">
-                        <img alt="{{ $post->image_caption ?? $post->title }}"
+                    <div class="m-0 bg-gray-300 rounded-3 overflow-hidden w-100 ratio ratio-16x9">
+                        <img alt="{{ $post->image_caption }}"
                              class="post-thumb"
-                             decoding="async"
                              loading="lazy"
-                             sizes="(min-width: 768px) 33vw, 100vw"
                              src="{{ $post->image_url }}">
-                        @if (!empty($post->image_caption))
-                            <figcaption class="visually-hidden">{{ $post->image_caption }}</figcaption>
-                        @endif
-                    </figure>
+                    </div>
                 </a>
             </div>
 
-            <div class="col-12 col-md-8">
+            <div class="col-8">
+                {{-- Category Badge --}}
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <x-post.badge-category :category="$post->category"
                                            :inline="true" />
-                    <meta content="{{ $post->category->name }}">
                 </div>
 
                 <h3 class="h4 fw-bold post-title mb-2">
-                    <a class="text-decoration-none text-dark hover-link"
+                    <a class="text-decoration-none text-dark hover-link text-break text-wrap"
                        href="{{ route('posts.show', $post->slug) }}"
                        title="{{ $post->title }}">
                         {{ $post->title }}
@@ -97,7 +91,7 @@
                 </h3>
 
                 @if ($showExcerpt && !empty($post->excerpt))
-                    <p class="text-muted mb-2">{!! $post->excerpt !!}</p>
+                    <p class="text-muted mb-2 text-break text-wrap">{!! $post->excerpt !!}</p>
                 @endif
 
                 <div class="d-flex align-items-center gap-2 mb-2">
@@ -106,8 +100,7 @@
                        rel="author"
                        title="Penulis: {{ $post->user->name }}">
                         <img alt="{{ $post->user->name }}"
-                             class="rounded-circle"
-                             decoding="async"
+                             class="rounded-circle object-fit-cover"
                              height="25"
                              loading="lazy"
                              src="{{ $post->user->avatar_url }}"
@@ -154,7 +147,7 @@
             <div class="col-3">
                 <a class="d-block ratio ratio-16x9 rounded-2 overflow-hidden"
                    href="{{ route('posts.show', $post->slug) }}">
-                    <img alt="{{ $post->image_caption ?? $post->title }}"
+                    <img alt="{{ $post->image_caption }}"
                          class="img-fluid object-fit-cover"
                          loading="lazy"
                          src="{{ $post->image_url }}">
@@ -164,10 +157,10 @@
                 <div class="card-body py-0">
                     <a class="text-decoration-none text-dark d-block"
                        href="{{ route('posts.show', $post->slug) }}">
-                        <h6 class="fw-semibold mb-1 line-clamp-2">{{ $post->title }}</h6>
+                        <h6 class="fw-semibold mb-1 line-clamp-2 text-break text-wrap">{{ $post->title }}</h6>
                     </a>
                     @if ($showExcerpt && !empty($post->excerpt))
-                        <p class="small text-muted mb-1 line-clamp-2">{!! $post->excerpt !!}</p>
+                        <p class="small text-muted mb-1 line-clamp-2 text-break text-wrap">{!! $post->excerpt !!}</p>
                     @endif
                     <div class="small text-muted">
                         <span class="fw-semibold">{{ str()->words($post->user->name, 2, '') }}</span>

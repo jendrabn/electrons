@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         {{-- Breadcrumb --}}
-        <div class="mb-3 mb-lg-5">
+        <div class="mb-4 mb-md-5">
             <nav aria-label="breadcrumb">
                 <div class="breadcrumb-line d-flex align-items-center gap-2 text-muted overflow-hidden"
                      style="min-width: 0">
@@ -34,13 +34,12 @@
                 </div>
             </nav>
         </div>
-
         {{-- End Breadcrumb --}}
 
         <div class="row">
             <div class="col-lg-8">
                 <article class="content">
-                    {{-- Category (gunakan warna kategori) --}}
+                    {{-- Category --}}
                     <div class="content-category mb-2 mb-lg-3">
                         @php
                             $bg = $post->category->color ?? '#6c757d';
@@ -59,14 +58,14 @@
                     </div>
                     {{-- End Category --}}
 
-                    {{-- Title (SEO-friendly H1) --}}
-                    <h1 class="content-title mb-3">
+                    {{-- Title --}}
+                    <h1 class="content-title text-break text-wrap mb-3">
                         {{ $post->title }}
                     </h1>
                     {{-- End Title --}}
 
-                    {{-- Author + Like & Share (dua kolom space-between) --}}
-                    <div class="post-header-actions d-flex flex-column  flex-lg-row justify-content-between mb-3">
+                    {{-- Author + Like & Share --}}
+                    <div class="post-header-actions d-flex flex-column flex-lg-row justify-content-between mb-3">
                         <div class="d-flex align-items-center mb-3 mb-lg-0">
                             <a class="text-decoration-none text-dark fw-semibold author-link d-inline-block me-3"
                                href="{{ route('authors.show', $post->user->username) }}">
@@ -84,7 +83,6 @@
                                       datetime="{{ $post->created_at->toIso8601String() }}">
                                     <i class="bi bi-clock"></i>
                                     {{ $post->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
-                                    WIB
                                 </time>
                             </div>
                         </div>
@@ -139,36 +137,31 @@
                             </button>
                         </div>
                     </div>
+                    {{-- End Author + Like & Share --}}
 
-                    {{-- Hero image (16:9 responsif dengan caption) --}}
+                    {{-- Cover Image --}}
                     <div class="content-image mb-3">
                         <figure class="w-100 m-0">
-                            <div class="rounded-3 overflow-hidden bg-light ratio ratio-16x9">
-                                <picture>
-                                    <img alt="{{ $post->image_caption }}"
-                                         class="h-100 w-100"
-                                         decoding="async"
-                                         loading="lazy"
-                                         sizes="(min-width: 992px) 66vw, 100vw"
-                                         src="{{ $post->image_url }}" />
-                                </picture>
+                            <div class="rounded-3 overflow-hidden bg-gray-300 ratio ratio-16x9">
+                                <img alt="{{ $post->image_caption }}"
+                                     class="h-100 w-100 object-fit-cover"
+                                     loading="lazy"
+                                     src="{{ $post->image_url }}" />
                             </div>
-                            <figcaption class="text-muted text-center mt-2 fst-italic small">
+                            <figcaption class="text-muted text-center mt-2">
                                 {{ $post->image_caption }}
                             </figcaption>
                         </figure>
                     </div>
-                    {{-- End Hero image --}}
+                    {{-- End Cover Image --}}
 
-                    {{-- Pengaturan ukuran font konten (range slider) --}}
-                    <div aria-label="Pengaturan ukuran font"
-                         class="font-size-control mb-3">
+                    {{-- Font Size Control --}}
+                    <div class="font-size-control my-3 my-lg-4">
                         <div class="control-box">
                             <div class="text-center small fw-semibold mb-2">Ukuran Font</div>
                             <div class="d-flex align-items-center gap-3 labels">
                                 <span class="small">Kecil</span>
-                                <input aria-label="Ukuran font konten"
-                                       class="form-range flex-grow-1"
+                                <input class="form-range flex-grow-1"
                                        id="fontSizeRange"
                                        max="22"
                                        min="14"
@@ -179,43 +172,25 @@
                             </div>
                         </div>
                     </div>
-                    <script>
-                        // Inline: kontrol ukuran font konten
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const range = document.getElementById('fontSizeRange');
-                            const body = document.querySelector('.content-body');
-                            if (!range || !body) return;
-                            const KEY = 'post-content-font-size';
-                            const saved = localStorage.getItem(KEY);
-                            if (saved) {
-                                body.style.setProperty('--content-font-size', saved + 'px');
-                                range.value = saved;
-                            }
-                            range.addEventListener('input', function() {
-                                body.style.setProperty('--content-font-size', this.value + 'px');
-                                localStorage.setItem(KEY, this.value);
-                            });
-                        });
-                    </script>
+                    {{-- End Font Size Control --}}
 
-                    {{-- Content (dibatasi agar tidak overflow horizontal) --}}
-                    <div class="content-body text-wrap mb-3">
+                    {{-- Content --}}
+                    <div class="content-body text-break text-wrap mb-5">
                         {!! $post->content !!}
                     </div>
                     {{-- End Content --}}
 
-                    {{-- Tags (reusable badges styled like sidebar) --}}
-                    <div class="content-tags mb-3 d-flex flex-wrap align-items-center gap-2">
+                    {{-- Tags --}}
+                    <div class="content-tags mb-5 d-flex flex-wrap align-items-center gap-2">
                         <span class="fw-semibold me-1">Tag:</span>
                         @foreach ($post->tags as $tag)
                             <x-post.badge-tag :tag="$tag" />
-                            {{-- @include('frontpages.posts.partials._tag_link', ['tag' => $tag]) --}}
                         @endforeach
                     </div>
                     {{-- End Tags --}}
 
                     {{-- Comments --}}
-                    <div class="comments mt-5">
+                    <div class="comments">
                         <h3 class="fw-bold mb-4">Komentar</h3>
 
                         {{-- Form Komentar --}}
@@ -224,12 +199,12 @@
                                 @if (auth()->check())
                                     <img alt="{{ auth()->user()->name }}"
                                          class="rounded-circle me-3"
+                                         height="40"
                                          src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}"
                                          style="
-                                    width: 40px;
-                                    height: 40px;
                                     object-fit: cover;
-                                " />
+                                "
+                                         width="40" />
                                 @endif
                                 <form action="{{ route('posts.comments.store', $post->id) }}"
                                       class="flex-grow-1"
@@ -287,6 +262,40 @@
 
 @section('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const range = document.getElementById('fontSizeRange');
+            const body = document.querySelector('.content-body');
+            if (!range || !body) return;
+
+            const KEY = 'post-content-font-size';
+
+            // Update CSS var used by the track gradient to fill from left up to the thumb
+            function updateProgress() {
+                const min = Number(range.min) || 0;
+                const max = Number(range.max) || 100;
+                const val = Number(range.value);
+                const pct = max > min ? ((val - min) * 100) / (max - min) : 0;
+                range.style.setProperty('--progress', pct + '%');
+            }
+
+            const saved = localStorage.getItem(KEY);
+            if (saved) {
+                body.style.setProperty('--content-font-size', saved + 'px');
+                range.value = saved;
+            }
+
+            // initialize track fill on load
+            updateProgress();
+
+            range.addEventListener('input', function() {
+                body.style.setProperty('--content-font-size', this.value + 'px');
+                localStorage.setItem(KEY, this.value);
+                updateProgress();
+            });
+
+            range.addEventListener('change', updateProgress);
+        });
+
         // Like functionality
         document.addEventListener('click', function(e) {
             const likeBtn = e.target.closest('#like-btn, #like-btn-mobile');

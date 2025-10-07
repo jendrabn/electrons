@@ -1,29 +1,5 @@
 @extends('layouts.app')
 
-@section('styles')
-    <style>
-        /* Thread body: ensure no horizontal overflow and long words wrap */
-        .thread-body {
-            line-height: 1.8;
-            overflow-wrap: anywhere;
-            word-break: break-word;
-            max-width: 100%;
-        }
-
-        .thread-body img,
-        .thread-body table {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .thread-body pre,
-        .thread-body code {
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-    </style>
-@endsection
-
 @section('content')
     <div class="container py-4">
         <div class="row justify-content-center">
@@ -31,29 +7,19 @@
                 {{-- Thread --}}
                 <div class="card mb-4 shadow-sm border-0">
                     <div class="card-body">
-                        <article itemscope
-                                 itemtype="https://schema.org/DiscussionForumPosting">
-                            <meta content="{{ url()->current() }}"
-                                  itemprop="mainEntityOfPage">
+                        <article>
                             <div class="d-flex align-items-center mb-3">
                                 <img alt="{{ $thread->user->name }}"
                                      class="rounded-circle me-3"
                                      src="{{ $thread->user->avatar_url }}"
-                                     style="width:48px;height:48px;object-fit:cover;">
+                                     style="width:40px;height:40px;object-fit:cover;">
                                 <div>
-                                    <div class="fw-normal"
-                                         itemprop="author"
-                                         itemscope
-                                         itemtype="https://schema.org/Person">
+                                    <div class="fw-normal">
                                         <a class="text-primary fw-semibold text-decoration-none"
-                                           href="{{ route('authors.show', $thread->user->username) }}"
-                                           itemprop="url">{{ '@' . $thread->user->username }}</a>
-                                        <meta content="{{ $thread->user->name }}"
-                                              itemprop="name">
+                                           href="{{ route('authors.show', $thread->user->username) }}">{{ $thread->user->username }}</a>
                                         <span class="mx-1 text-muted">&bull;</span>
                                         <time class="text-muted small"
-                                              datetime="{{ $thread->created_at->toIso8601String() }}"
-                                              itemprop="datePublished">
+                                              datetime="{{ $thread->created_at->toIso8601String() }}">
                                             {{ $thread->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
                                         </time>
                                     </div>
@@ -113,17 +79,13 @@
                                 </div>
 
                             </div>
-                            <h1 class="fw-bold mb-2"
-                                itemprop="headline">{{ $thread->title }}</h1>
-                            <div class="mb-3 thread-body"
-                                 itemprop="articleBody">{!! $thread->body !!}</div>
+                            <h1 class="fw-bold mb-2">{{ $thread->title }}</h1>
+                            <div class="mb-3 thread-body">{!! $thread->body !!}</div>
                             <div aria-label="Tag terkait"
                                  class="mb-2">
                                 @foreach ($thread->tags as $tag)
-                                    <span class="badge bg-primary">{{ $tag->name }}</span>
+                                    <x-thread.badge-tag :tag="$tag" />
                                 @endforeach
-                                <meta content="{{ implode(', ', $thread->tags->pluck('name')->all()) }}"
-                                      itemprop="keywords">
                             </div>
                         </article>
                     </div>
