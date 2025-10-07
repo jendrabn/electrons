@@ -1,6 +1,6 @@
 <aside class="d-flex flex-column gap-3">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-bottom-0">
+        <div class="card-header border-bottom-0">
             <h5 class="card-title mb-0 fw-bold">Terpopuler</h5>
         </div>
         <div class="card-body pb-2">
@@ -25,7 +25,7 @@
     @include('partials.ads.display-responsive', ['slot' => '8485643721'])
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-bottom-0">
+        <div class="card-header border-bottom-0">
             <h5 class="card-title mb-0 fw-bold">Terbaru</h5>
         </div>
         <div class="card-body pb-2">
@@ -50,7 +50,7 @@
     @include('partials.ads.display-responsive', ['slot' => '8485643721'])
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-bottom-0">
+        <div class="card-header border-bottom-0">
             <h5 class="card-title mb-0 fw-bold">Kategori</h5>
         </div>
         <div class="card-body pb-2">
@@ -89,7 +89,7 @@
     @include('partials.ads.display-responsive', ['slot' => '8485643721'])
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-bottom-0">
+        <div class="card-header border-bottom-0">
             <h5 class="card-title mb-0 fw-bold">Tag</h5>
         </div>
         <div class="card-body">

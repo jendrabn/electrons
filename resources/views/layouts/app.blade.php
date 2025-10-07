@@ -143,6 +143,23 @@
 
         });
     </script>
+    <script>
+        (function () {
+            var allowedHosts = ['localhost', '127.0.0.1', '0.0.0.0'];
+            if (
+                'serviceWorker' in navigator &&
+                (window.location.protocol === 'https:' || allowedHosts.includes(window.location.hostname))
+            ) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker
+                        .register('{{ asset('service-worker.js') }}')
+                        .catch(function (error) {
+                            console.error('Service worker registration failed:', error);
+                        });
+                });
+            }
+        })();
+    </script>
     @yield('scripts')
     @stack('scripts')
 </body>

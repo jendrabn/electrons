@@ -1,7 +1,7 @@
 <aside class="d-flex flex-column gap-3">
     {{-- Top Contributors --}}
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white">
+        <div class="card-header border-bottom-0">
             <h5 class="card-title mb-0 fw-bold">Top Kontributor</h5>
         </div>
         <div class="card-body">
@@ -29,7 +29,7 @@
 
     {{-- Categories --}}
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white">
+        <div class="card-header border-bottom-0">
             <h5 class="card-title mb-0 fw-bold">Tag</h5>
         </div>
         <div class="card-body">
