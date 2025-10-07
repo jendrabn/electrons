@@ -13,17 +13,8 @@ export default defineConfig(({ command, mode }) => ({
 
     // Production-oriented build tweaks to produce slimmer/minified bundles
     build: {
-        // Use terser for smaller output and configure aggressive compression
-        minify: 'terser',
-        terserOptions: {
-            compress: {
-                drop_console: true,
-                drop_debugger: true,
-            },
-            format: {
-                comments: false,
-            },
-        },
+        // Use default esbuild minifier (no extra dependency required)
+        minify: 'esbuild',
 
         // Minify CSS and allow code-splitting for CSS
         cssCodeSplit: true,
@@ -31,6 +22,10 @@ export default defineConfig(({ command, mode }) => ({
 
         // Do not produce source maps in production builds
         sourcemap: false,
+
+        esbuild: {
+            drop: ['console', 'debugger'],
+        },
 
         // Faster builds, no need to calculate brotli sizes
         brotliSize: false,
