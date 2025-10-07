@@ -14,41 +14,38 @@
 
 @php
     /** Reusable Tag Badge (matches sidebar style) */
-    $smallAttribute = ! is_null($small)
-        ? filter_var($small, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE)
-        : null;
+    $smallAttribute = !is_null($small) ? filter_var($small, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) : null;
 
-    if ($smallAttribute === null && ! is_null($small)) {
+    if ($smallAttribute === null && !is_null($small)) {
         $smallAttribute = (bool) $small;
     }
 
     $normalizedSize = strtolower((string) $size);
     $isSmall = $smallAttribute ?? in_array($normalizedSize, ['sm', 'small'], true);
 
-    $baseClasses = implode(' ', array_filter([
-        'badge',
-        'bg-light',
-        'text-dark',
-        'border',
-        'rounded-pill',
-        'shadow-sm',
-        'd-inline-flex',
-        'align-items-center',
-        'gap-1',
-        'text-decoration-none',
-        $isSmall ? 'px-2 py-1' : 'px-3 py-2',
-        $isSmall ? 'small' : null,
-    ]));
+    $baseClasses = implode(
+        ' ',
+        array_filter([
+            'badge',
+            'bg-light',
+            'text-dark',
+            'border',
+            'rounded-pill',
+            'shadow-sm',
+            'd-inline-flex',
+            'align-items-center',
+            'gap-1',
+            'text-decoration-none',
+            $isSmall ? 'px-2 py-1' : 'px-3 py-2',
+            $isSmall ? 'small' : null,
+        ]),
+    );
 
-    $iconClasses = implode(' ', array_filter([
-        'bi',
-        'bi-tag',
-        $isSmall ? 'fs-6' : null,
-    ]));
+    $iconClasses = implode(' ', array_filter(['bi', 'bi-tag', $isSmall ? 'fs-6' : null]));
 @endphp
 
 <a {{ $attributes->merge(['class' => $baseClasses]) }}
-   href="{{ route('posts.tag', $tag->slug) }}"
+   href="{{ route('community.index', ['tag' => $tag->slug]) }}"
    rel="tag"
    title="Tag: {{ $tag->name }}">
     @if ($withIcon)
