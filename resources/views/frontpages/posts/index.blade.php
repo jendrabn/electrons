@@ -12,9 +12,6 @@
                             ? $catParam
                             : \App\Models\Category::query()->where('slug', $catParam)->first();
                     }
-                    $latestPost = $posts->first();
-                    $latestTimestamp = $latestPost?->published_at ?? $latestPost?->created_at;
-                    $latestUpdatedAtHuman = $latestTimestamp?->diffForHumans();
                     $blogHeroTitle =
                         request()->has('search') && trim(request('search')) !== ''
                             ? 'Blog'
