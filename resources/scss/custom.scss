@@ -84,14 +84,23 @@ body {
 .brand-logo-symbol::after {
     content: "";
     position: absolute;
-    top: 18%;
-    right: 18%;
+    top: 50%;
+    left: 50%;
     width: 8px;
     height: 8px;
     border-radius: 999px;
     background: #fbbf24;
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2),
         0 0 16px rgba(251, 191, 36, 0.75);
+    transform: translate(-50%, -50%) rotate(0deg) translateX(18px);
+    transform-origin: center;
+    animation: brand-logo-spark-orbit 2.75s linear infinite;
+    will-change: transform;
+}
+
+.brand-logo:hover .brand-logo-symbol::after,
+.brand-logo-symbol:hover::after {
+    animation-play-state: paused;
 }
 
 .brand-logo-letter {
@@ -151,6 +160,23 @@ body {
 
 [data-bs-theme="dark"] .brand-logo-symbol::after {
     background: #facc15;
+}
+
+@keyframes brand-logo-spark-orbit {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) translateX(18px);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg) translateX(18px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brand-logo-symbol::after {
+        animation: none;
+        transform: translate(-50%, -50%) translateX(18px);
+    }
 }
 /* =======================================================
    End Brand Logo
