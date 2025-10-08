@@ -26,7 +26,7 @@
                                   class="thread-toolbar__search"
                                   method="GET">
                                 <div class="thread-search-group">
-                                    <input class="thread-search-input"
+                                    <input class="thread-search-input text-dark"
                                            id="thread-search"
                                            name="search"
                                            placeholder="Cari thread..."

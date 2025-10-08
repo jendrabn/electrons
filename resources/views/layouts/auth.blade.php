@@ -8,7 +8,7 @@
                 <div class="col-lg-6 d-none d-lg-block bg-auth-image"
                      style="background-image: url('{{ asset('images/auth_wallpaper.webp') }}'); background-size: cover; background-position:center;">
                 </div>
-                <div class="col-lg-6 bg-white p-4">
+                <div class="col-lg-6 p-4">
                     @yield('auth-form')
                 </div>
             </div>
