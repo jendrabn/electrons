@@ -1,114 +1,126 @@
 <div class="comment mb-4"
      id="comment-{{ $comment->id }}">
-    <div class="d-flex align-items-start">
+    <div class="d-flex align-items-start gap-3">
         <img alt="{{ $comment->user->name }}"
-             class="rounded-circle me-3"
+             class="rounded-circle border flex-shrink-0"
+             height="40"
              src="{{ $comment->user->avatar_url }}"
-             style="width:40px;height:40px;object-fit:cover;">
+             style="object-fit:cover"
+             width="40">
 
         <div class="flex-grow-1">
             <div class="d-flex align-items-center mb-1">
                 <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-2">
                         @if ($comment->is_best_answer)
-                            <span class="badge bg-gradient-green text-white">Best Answer</span>
+                            <span
+                                  class="badge d-inline-flex align-items-center gap-1 text-success-emphasis bg-success-subtle border border-success-subtle">
+                                <i aria-hidden="true"
+                                   class="bi bi-check-circle-fill"></i>
+                                Best Answer
+                            </span>
                         @endif
                     </div>
 
                     <div class="d-flex align-items-center gap-2">
-                        <a class="text-primary text-decoration-none"
-                           href="{{ route('authors.show', $comment->user->username) }}">{{ $comment->user->username }}</a>
-                        <small class="text-muted">•</small>
-                        <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                        <a class="fw-semibold text-decoration-none link-body-emphasis"
+                           href="{{ route('authors.show', $comment->user->username) }}">
+                            {{ $comment->user->username }}
+                        </a>
+                        <small class="text-body-secondary">•</small>
+                        <small class="text-body-secondary">
+                            {{ $comment->created_at->diffForHumans() }}
+                        </small>
                     </div>
                 </div>
 
                 @php $threadDone = isset($thread) ? (bool) $thread->is_done : false; @endphp
                 <div class="ms-3 d-flex gap-2">
-
-                    {{-- Jawaban Terbaik: only visible to the thread owner --}}
+                    {{-- Jawaban Terbaik: hanya untuk pemilik thread --}}
                     @if (auth()->check() && isset($thread) && auth()->id() === $thread->user_id)
                         <form action="{{ route('community.comments.markBest', [$comment->thread->id, $comment->id]) }}"
                               class="m-0 p-0"
                               method="POST">
                             @csrf
                             <button aria-label="Jawaban Terbaik"
-                                    class="btn btn-link btn-sm p-0 text-decoration-none text-success"
+                                    class="btn btn-link btn-sm p-0 text-decoration-none link-success"
                                     title="Tandai sebagai jawaban terbaik"
                                     type="submit">
-                                <i class="bi bi-award"></i>
+                                <i aria-hidden="true"
+                                   class="bi bi-award"></i>
                             </button>
                         </form>
                     @endif
+
                     @if (auth()->check() && auth()->id() === $comment->user_id && !$threadDone)
                         <button aria-label="Edit komentar"
-                                class="btn btn-link btn-sm p-0 text-decoration-none edit-btn comment-edit"
+                                class="btn btn-link btn-sm p-0 text-decoration-none link-body-emphasis edit-btn comment-edit"
                                 data-id="{{ $comment->id }}"
                                 data-url="{{ route('community.comments.edit', [$comment->thread->id, $comment->id]) }}"
                                 title="Edit komentar"
                                 type="button">
-                            <i class="bi bi-pencil"></i>
+                            <i aria-hidden="true"
+                               class="bi bi-pencil"></i>
                         </button>
                         <button aria-label="Hapus komentar"
-                                class="btn btn-link btn-sm p-0 text-decoration-none text-danger delete-btn comment-delete"
+                                class="btn btn-link btn-sm p-0 text-decoration-none link-danger delete-btn comment-delete"
                                 data-id="{{ $comment->id }}"
                                 data-url="{{ route('community.comments.destroy', [$comment->thread->id, $comment->id]) }}"
                                 title="Hapus komentar"
                                 type="button">
-                            <i class="bi bi-trash"></i>
+                            <i aria-hidden="true"
+                               class="bi bi-trash"></i>
                         </button>
                     @endif
                 </div>
             </div>
 
-            {{-- linkify_mentions is provided globally via app/helpers.php --}}
-
-            <div
-                 class="mb-2 comment-body {{ $comment->is_best_answer ? 'bg-warning bg-opacity-10 p-2 rounded' : '' }}">
-                {!! linkify_mentions($comment->body) !!}</div>
+            {{-- body komentar (highlight jika Best Answer) --}}
+            <div @class([
+                'mb-2 text-body text-break text-wrap comment-body',
+                'bg-warning-subtle border border-warning-subtle rounded p-2' =>
+                    $comment->is_best_answer,
+            ])>
+                {!! linkify_mentions($comment->body) !!}
+            </div>
 
             <div class="d-flex align-items-center gap-3">
                 @if (auth()->check() && !$threadDone)
                     <button aria-label="Balas komentar"
-                            class="btn btn-link btn-sm p-0 text-decoration-none reply-btn"
+                            class="btn btn-link btn-sm p-0 text-decoration-none link-body-secondary reply-btn"
                             data-bs-target="#replyCollapse{{ $comment->id }}"
                             data-bs-toggle="collapse"
                             data-id="{{ $comment->id }}"
                             data-username="{{ $comment->user->username }}"
                             title="Balas komentar"
                             type="button">
-                        <i class="bi bi-reply"></i> Balas
+                        <i aria-hidden="true"
+                           class="bi bi-reply me-1"></i>Balas
                     </button>
                 @endif
 
                 <button aria-label="Suka komentar"
-                        class="btn btn-link btn-sm p-0 text-decoration-none like-btn comment-like-btn"
+                        class="btn btn-link btn-sm p-0 text-decoration-none link-body-secondary like-btn comment-like-btn"
                         data-id="{{ $comment->id }}"
                         data-url="{{ route('community.comments.like', [$comment->thread->id, $comment->id]) }}"
                         title="Suka"
                         type="button">
-                    <i
-                       class="bi {{ $comment->likes->where('user_id', auth()->id())->count() ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up' }}"></i>
+                    <i aria-hidden="true"
+                       class="bi {{ $comment->likes->where('user_id', auth()->id())->count() ? 'bi-hand-thumbs-up-fill text-primary' : 'bi-hand-thumbs-up' }} me-1"></i>
                     <span class="like-count">{{ $comment->likes->count() }}</span>
                 </button>
 
-                {{-- @if ($comment->replies->count())
-                    <button class="btn btn-link btn-sm p-0 text-decoration-none"
-                            data-bs-target="#repliesCollapse{{ $comment->id }}"
-                            data-bs-toggle="collapse"
-                            type="button">
-                        <i class="bi bi-chat-left-text"></i> Lihat {{ $comment->replies->count() }} Balasan
-                    </button>
-                @endif --}}
-                <button class="btn btn-link btn-sm p-0 text-decoration-none"
+                <button class="btn btn-link btn-sm p-0 text-decoration-none link-body-secondary"
                         data-bs-target="#repliesCollapse{{ $comment->id }}"
                         data-bs-toggle="collapse"
                         type="button">
-                    <i class="bi bi-chat-left-text"></i> Lihat {{ $comment->replies->count() }} Balasan
+                    <i aria-hidden="true"
+                       class="bi bi-chat-left-text me-1"></i>
+                    Lihat {{ $comment->replies->count() }} Balasan
                 </button>
             </div>
 
-            {{-- optional inline reply form wrapped in collapse (hidden by default) --}}
+            {{-- reply form (collapse) --}}
             <div class="collapse mt-3"
                  id="replyCollapse{{ $comment->id }}">
                 @auth
@@ -126,28 +138,26 @@
                                   rows="3"></textarea>
                         <div class="text-end">
                             <button class="btn btn-primary btn-sm"
-                                    type="submit"><i class="bi bi-send"></i> Kirim Balasan</button>
+                                    type="submit">
+                                <i aria-hidden="true"
+                                   class="bi bi-send me-1"></i>Kirim Balasan
+                            </button>
                         </div>
                     </form>
                 @endauth
             </div>
 
-            @if ($comment->replies->count())
-                <div class="collapse mt-2"
-                     id="repliesCollapse{{ $comment->id }}">
-                    @foreach ($comment->replies as $reply)
-                        @include('frontpages.threads.partials._reply', [
-                            'reply' => $reply,
-                            'comment' => $comment,
-                            'thread' => $thread,
-                        ])
-                    @endforeach
-                </div>
-            @else
-                <div class="collapse mt-2"
-                     id="repliesCollapse{{ $comment->id }}">
-                </div>
-            @endif
+            {{-- replies list (collapse) --}}
+            <div class="collapse mt-2"
+                 id="repliesCollapse{{ $comment->id }}">
+                @foreach ($comment->replies as $reply)
+                    @include('frontpages.threads.partials._reply', [
+                        'reply' => $reply,
+                        'comment' => $comment,
+                        'thread' => $thread,
+                    ])
+                @endforeach
+            </div>
         </div>
     </div>
 </div>

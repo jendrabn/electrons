@@ -59,36 +59,52 @@
                     {{-- End Category --}}
 
                     {{-- Title --}}
-                    <h1 class="content-title text-break text-wrap mb-3">
+                    <h1 class="content-title fw-bold text-body-emphasis lh-sm text-break text-wrap mb-3">
                         {{ $post->title }}
                     </h1>
+
                     {{-- End Title --}}
 
                     {{-- Author + Like & Share --}}
                     <div class="post-header-actions d-flex flex-column flex-lg-row justify-content-between mb-3">
-                        <div class="d-flex align-items-center mb-3 mb-lg-0">
-                            <a class="text-decoration-none text-dark fw-semibold author-link d-inline-block me-3"
+                        <div class="d-flex align-items-center gap-3 mb-3 mb-lg-0">
+                            <!-- Avatar (klik ke profil) -->
+                            <a aria-label="Profil {{ $post->user->name }}"
+                               class="d-inline-block flex-shrink-0"
                                href="{{ route('authors.show', $post->user->username) }}">
                                 <img alt="{{ $post->user->name }}"
-                                     class="author-avatar"
-                                     src="{{ $post->user->avatar_url }}" />
+                                     class="rounded-circle object-fit-cover border"
+                                     height="40"
+                                     loading="lazy"
+                                     src="{{ $post->user->avatar_url }}"
+                                     width="40">
                             </a>
+
+                            <!-- Nama & waktu -->
                             <div class="d-flex flex-column">
-                                <a class="text-decoration-none text-dark fw-semibold author-link d-inline-flex align-items-center"
+                                <a class="text-decoration-none fw-semibold d-inline-flex align-items-center link-body-emphasis"
                                    href="{{ route('authors.show', $post->user->username) }}"
-                                   rel="author">
+                                   rel="author"
+                                   title="Lihat profil penulis">
                                     {{ $post->user->name }}
                                 </a>
-                                <time class="small text-muted"
-                                      datetime="{{ $post->created_at->toIso8601String() }}">
-                                    <i class="bi bi-clock"></i>
+
+                                <time class="small text-body-secondary d-inline-flex align-items-center"
+                                      datetime="{{ $post->created_at->toIso8601String() }}"
+                                      title="{{ $post->created_at->setTimezone(config('app.timezone'))->toIso8601String() }}">
+                                    <i aria-hidden="true"
+                                       class="bi bi-clock me-1"></i>
                                     {{ $post->created_at->setTimezone(config('app.timezone'))->translatedFormat('l, j F Y - H:i') }}
                                 </time>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2 meta-info">
+
+                        <div aria-label="Post meta actions"
+                             class="d-flex align-items-center gap-2 meta-info"
+                             role="group">
                             @auth
-                                <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center justify-content-center gap-2"
+                                <button aria-pressed="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
+                                        class="btn btn-sm rounded-0 shadow-sm d-inline-flex align-items-center justify-content-center gap-2 btn-meta"
                                         data-liked="{{ $post->isLikedBy(auth()->user()) ? 'true' : 'false' }}"
                                         data-post-id="{{ $post->id }}"
                                         id="like-btn"
@@ -98,44 +114,42 @@
                                     <span id="likes-count-mobile">{{ $post->likes_count }}</span>
                                 </button>
                             @else
-                                <a class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center justify-content-center gap-2"
+                                <a class="btn btn-sm rounded-0 shadow-sm d-inline-flex align-items-center justify-content-center gap-2 btn-meta"
                                    href="{{ route('auth.show.login') }}"
+                                   role="button"
                                    title="Suka">
                                     <i class="bi bi-heart"></i>
                                     <span id="likes-count-mobile">{{ $post->likes_count }}</span>
                                 </a>
                             @endauth
 
-                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                            <button class="btn btn-sm rounded-0 shadow-sm d-inline-flex align-items-center gap-2 btn-meta"
                                     title="Jumlah komentar"
                                     type="button">
-                                <i class="bi bi-chat"></i>
-                                {{ $post->comments_count }}
+                                <i class="bi bi-chat"></i>{{ $post->comments_count }}
                             </button>
 
-                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                            <button class="btn btn-sm rounded-0 shadow-sm d-inline-flex align-items-center gap-2 btn-meta"
                                     title="Jumlah pembaca"
                                     type="button">
-                                <i class="bi bi-eye"></i>
-                                {{ $post->views_count }}
+                                <i class="bi bi-eye"></i>{{ $post->views_count }}
                             </button>
 
-                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                            <button class="btn btn-sm rounded-0 shadow-sm d-inline-flex align-items-center gap-2 btn-meta"
                                     title="Perkiraan waktu membaca"
                                     type="button">
-                                <i class="bi bi-stopwatch"></i>
-                                {{ $post->min_read }}
+                                <i class="bi bi-stopwatch"></i>{{ $post->min_read }}
                             </button>
 
-                            <button class="btn btn-light btn-sm btn-md-md shadow-sm rounded-0 d-inline-flex align-items-center gap-2"
+                            <button class="btn btn-sm rounded-0 shadow-sm d-inline-flex align-items-center gap-2 btn-meta"
                                     data-bs-target="#shareModal"
                                     data-bs-toggle="modal"
                                     title="Bagikan artikel ini ke media sosial"
                                     type="button">
-                                <i class="bi bi-share"></i>
-                                Share
+                                <i class="bi bi-share"></i>Share
                             </button>
                         </div>
+
                     </div>
                     {{-- End Author + Like & Share --}}
 
@@ -259,6 +273,39 @@
 
     @include('frontpages.posts.partials._modals')
 @endsection
+
+@push('styles')
+    <style>
+        /* Tombol "soft" adaptif: latar mengikuti body, terlihat netral di 2 mode */
+        .btn-meta {
+            --bs-btn-font-weight: 600;
+            --bs-btn-color: var(--bs-body-color);
+            --bs-btn-bg: var(--bs-body-tertiary-bg);
+            --bs-btn-border-color: var(--bs-border-color);
+            --bs-btn-hover-color: var(--bs-body-emphasis-color);
+            --bs-btn-hover-bg: var(--bs-body-secondary-bg);
+            --bs-btn-hover-border-color: var(--bs-border-color);
+            --bs-btn-active-bg: var(--bs-body-secondary-bg);
+            --bs-btn-active-border-color: var(--bs-border-color);
+            --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+            --bs-btn-padding-x: .6rem;
+            --bs-btn-padding-y: .35rem;
+            --bs-btn-border-radius: 0;
+            /* match rounded-0 */
+        }
+
+        /* Ikon rapi & tidak bergeser */
+        .btn-meta .bi {
+            line-height: 1;
+        }
+
+        /* Focus ring adaptif untuk aksesibilitas */
+        .meta-info .btn:focus-visible {
+            outline: 0;
+            box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .25);
+        }
+    </style>
+@endpush
 
 @section('scripts')
     <script>

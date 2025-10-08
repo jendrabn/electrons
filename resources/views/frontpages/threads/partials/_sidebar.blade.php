@@ -5,23 +5,37 @@
             <h5 class="card-title mb-0 fw-bold">Top Kontributor</h5>
         </div>
         <div class="card-body">
-            <div class="list-group list-group-flush">
-                @foreach ($topContributors as $user)
-                    <div class="list-group-item border-0 px-0">
-                        <div class="d-flex align-items-center gap-2">
-                            <img alt="{{ $user->name }}"
-                                 class="rounded-circle"
-                                 height="30"
-                                 src="{{ $user->avatar_url }}"
-                                 width="30">
-                            <div>
-                                <a class="fw-medium text-decoration-none small"
-                                   href="{{ route('authors.show', $user->username) }}">{{ '@' . $user->username }}</a>
+            @if ($topContributors->isEmpty())
+                <div class="rounded-3 p-4 bg-body-tertiary text-body-secondary text-center">
+                    -- No Top Contributors --
+                </div>
+            @else
+                <div class="list-group list-group-flush">
+                    @foreach ($topContributors as $user)
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex align-items-center gap-2">
+                                <a aria-label="Profil {{ $user->name }}"
+                                   class="flex-shrink-0"
+                                   href="{{ route('authors.show', $user->username) }}">
+                                    <img alt="{{ $user->name }}"
+                                         class="rounded-circle border"
+                                         height="30"
+                                         loading="lazy"
+                                         src="{{ $user->avatar_url }}"
+                                         style="object-fit:cover"
+                                         width="30">
+                                </a>
+
+                                <a class="fw-medium text-decoration-none small link-body-emphasis"
+                                   href="{{ route('authors.show', $user->username) }}">
+                                    {{ '@' . $user->username }}
+                                </a>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
+                    @endforeach
+
+                </div>
+            @endif
         </div>
     </div>
 
@@ -33,15 +47,21 @@
             <h5 class="card-title mb-0 fw-bold">Tag</h5>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-wrap gap-2">
-                @foreach ($tags as $tag)
-                    @php
-                        $isActiveCat = request('tag') == $tag->slug || request('tag') == $tag->id;
-                        $query = array_merge(request()->query(), ['tag' => $tag->slug]);
-                    @endphp
-                    <x-thread.badge-tag :tag="$tag" />
-                @endforeach
-            </div>
+            @if ($tags->isEmpty())
+                <div class="rounded-3 p-4 bg-body-tertiary text-body-secondary text-center">
+                    -- No Tags --
+                </div>
+            @else
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach ($tags as $tag)
+                        @php
+                            $isActiveCat = request('tag') == $tag->slug || request('tag') == $tag->id;
+                            $query = array_merge(request()->query(), ['tag' => $tag->slug]);
+                        @endphp
+                        <x-thread.badge-tag :tag="$tag" />
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 

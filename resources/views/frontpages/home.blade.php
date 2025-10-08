@@ -110,8 +110,7 @@
                         id="section-{{ $section->slug }}">
                         {{ $section->name }}
                     </h2>
-                    <a aria-label="Lihat semua artikel dalam {{ $section->name }}"
-                       class="group d-inline-flex align-items-center gap-1 fw-semibold text-primary fs-6 text-decoration-none rounded-pill px-3 py-1 transition-all duration-200 hover:bg-black/5 link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                    <a class="text-decoration-none fw-semibold text-body-emphasis link-primary"
                        href="{{ route('posts.tag', $section->slug) }}"
                        title="Lihat semua artikel dalam {{ $section->name }}">
                         Lihat Semua

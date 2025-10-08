@@ -230,14 +230,6 @@ body {
    End Navbar
    ======================================================= */
 
-.content {
-    .content-title {
-        font-size: 36px;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        line-height: 54px;
-    }
-}
 .overlay-gradient-bottom {
     position: absolute;
     inset: 0; /* top:0 right:0 bottom:0 left:0 */
@@ -846,14 +838,6 @@ body {
     text-decoration: none;
 }
 
-/* Title typography */
-.content-title {
-    font-size: clamp(1.85rem, 2.5vw, 2.6rem);
-    line-height: 1.25;
-    letter-spacing: 0.2px;
-    color: #212529;
-}
-
 /* Author avatar */
 .author-link .author-avatar {
     width: 45px;
@@ -1006,55 +990,6 @@ footer {
 }
 
 /* ===== Kartu Artikel ===== */
-.post-card {
-    transition: box-shadow 0.2s ease, transform 0.25s ease;
-    transform: translateY(0);
-    will-change: transform, box-shadow;
-    border: 1px solid #eef1f4;
-}
-
-.post-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .post-card:hover {
-        animation: postCardHoverBob 0.8s ease-in-out infinite alternate;
-    }
-}
-
-@keyframes postCardHoverBob {
-    0% {
-        transform: translateY(-2px);
-    }
-
-    50% {
-        transform: translateY(-4px);
-    }
-
-    100% {
-        transform: translateY(-2px);
-    }
-}
-
-/* ===== Thumbnail Artikel ===== */
-.post-thumb {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    transition: transform 0.2s ease;
-}
-
-.post-thumb:hover {
-    transform: scale(1.25);
-}
-
-@media (min-width: 768px) {
-    .post-thumb {
-        height: 160px;
-    }
-}
 
 /* ===== Badge Kategori ===== */
 .category {

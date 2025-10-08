@@ -7,15 +7,13 @@
                 {{-- Header --}}
                 <div class="mb-4 thread-header">
                     <div class="thread-hero-main d-flex flex-column align-items-start gap-3 flex-grow-1">
-                        <div>
-                            <span class="thread-hero-badge">
-                                <i class="bi bi-activity"></i>
-                                <span>Komunitas Teknologi</span>
-                            </span>
-                            <h2 class="fw-bold mb-1 thread-hero-title">Diskusi Komunitas</h2>
-                            <p class="text-muted mb-0 thread-hero-sub">Temukan jawaban, bagikan pengetahuan, dan terlibat
-                                dalam diskusi dengan anggota komunitas lainnya.</p>
-                        </div>
+                        <span class="thread-hero-badge">
+                            <i class="bi bi-activity"></i>
+                            <span>Komunitas Teknologi</span>
+                        </span>
+                        <h2 class="fw-bold mb-1 thread-hero-title">Diskusi Komunitas</h2>
+                        <p class="text-muted mb-0 thread-hero-sub">Temukan jawaban, bagikan pengetahuan, dan terlibat
+                            dalam diskusi dengan anggota komunitas lainnya.</p>
                     </div>
                 </div>
 
@@ -113,36 +111,43 @@
                         <div class="card-body">
                             <div class="d-flex gap-3">
                                 {{-- User Avatar --}}
-                                <div>
+                                <a aria-label="Profil {{ $thread->user->name }}"
+                                   class="flex-shrink-0"
+                                   href="{{ route('authors.show', $thread->user->username) }}">
                                     <img alt="{{ $thread->user->name }}"
-                                         class="rounded-circle"
+                                         class="rounded-circle border"
                                          height="40"
+                                         loading="lazy"
                                          src="{{ $thread->user->avatar_url }}"
+                                         style="object-fit:cover"
                                          width="40">
-                                </div>
+                                </a>
 
                                 {{-- Thread Content --}}
                                 <div class="flex-grow-1">
                                     {{-- User Info & Time --}}
                                     <div class="d-flex gap-2 align-items-center mb-2">
-                                        <a class="text-primary fw-medium text-decoration-none"
-                                           href="{{ route('authors.show', $thread->user->username) }}">{{ $thread->user->username }}</a>
-                                        <small class="text-muted">•</small>
-                                        <small class="text-muted">
+                                        <a class="fw-medium text-decoration-none link-body-emphasis"
+                                           href="{{ route('authors.show', $thread->user->username) }}">
+                                            {{ $thread->user->username }}
+                                        </a>
+                                        <small class="text-body-secondary">•</small>
+                                        <small class="text-body-secondary">
                                             {{ $thread->updated_at->diffForHumans() }}
                                         </small>
                                     </div>
 
                                     {{-- Title --}}
-                                    <h5 class="card-title mb-2">
-                                        <a class="text-decoration-none text-break text-wrap"
+                                    <h5 class="card-title mb-2 text-body-emphasis">
+                                        <a class="text-decoration-none link-body-emphasis text-break text-wrap"
                                            href="{{ route('community.show', $thread->id) }}">
                                             {{ $thread->title }}
                                         </a>
                                         @if (!empty($thread->is_done))
-                                            <span class="badge bg-success ms-2 align-middle"
+                                            <span class="badge align-middle ms-2 text-success-emphasis bg-success-subtle border border-success-subtle"
                                                   title="Thread sudah terjawab">
-                                                <i class="bi bi-check2-circle me-1"></i>Terjawab
+                                                <i aria-hidden="true"
+                                                   class="bi bi-check2-circle me-1"></i>Terjawab
                                             </span>
                                         @endif
                                     </h5>
@@ -158,19 +163,20 @@
 
                                     {{-- Stats --}}
                                     <div class="d-flex gap-3">
-                                        <small class="text-muted">
-                                            <i class="bi bi-chat me-1"></i>
-                                            {{ $thread->comments_count }}
+                                        <small class="text-body-secondary">
+                                            <i aria-hidden="true"
+                                               class="bi bi-chat me-1"></i>{{ $thread->comments_count }}
                                         </small>
-                                        <small class="text-muted">
-                                            <i class="bi bi-heart me-1"></i>
-                                            {{ $thread->likes_count }}
+                                        <small class="text-body-secondary">
+                                            <i aria-hidden="true"
+                                               class="bi bi-heart me-1"></i>{{ $thread->likes_count }}
                                         </small>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 @empty
                     <div class="text-center py-5">
                         <div class="mb-3">
