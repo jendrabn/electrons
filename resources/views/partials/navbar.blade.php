@@ -79,7 +79,7 @@
 
             <div class="d-flex align-items-center ms-2 order-3 order-lg-2">
                 <button aria-label="Ubah tema"
-                        class="btn btn-light rounded-2 px-2 py-1 theme-toggle-btn"
+                        class="btn rounded-2 px-2 py-1 theme-toggle-btn"
                         title="Ubah tema"
                         type="button">
                     <i aria-hidden="true"
