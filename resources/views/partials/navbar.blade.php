@@ -62,19 +62,17 @@
                   class="d-flex mb-3 mb-lg-0 search-form order-3 order-lg-2 mx-lg-2"
                   method="GET"
                   role="search">
-                <div class="input-group search-input-group">
-                    <input aria-label="Search"
-                           class="form-control border-end-0 search-input"
+
+                <div class="input-group">
+                    <input class="form-control"
                            name="search"
                            placeholder="Apa yang kamu cari?"
-                           type="search"
+                           type="text"
                            value="{{ request('search') }}">
-                    <button aria-label="Cari"
-                            class="btn border border-start-0 search-btn"
+                    <button class="btn"
                             type="submit">
                         <i aria-hidden="true"
                            class="bi bi-search"></i>
-                        <span class="visually-hidden">Cari</span>
                     </button>
                 </div>
             </form>
