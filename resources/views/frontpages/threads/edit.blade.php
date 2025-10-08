@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white">
+                    <div class="card-header">
                         <h4 class="mb-0 fw-bold">Edit Thread</h4>
                     </div>
                     <div class="card-body">

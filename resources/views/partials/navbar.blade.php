@@ -1,10 +1,14 @@
-<nav class="navbar navbar-expand-lg bg-light navbar-light sticky-top navbar-elevated shadow-sm py-2">
+<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm py-2">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center me-4 me-lg-5 py-0"
            href="{{ route('home') }}">
-            <img alt="Logo"
-                 class="brand-logo"
-                 src="{{ asset('images/logo.svg') }}">
+            <span class="brand-logo">
+                <span aria-hidden="true"
+                      class="brand-logo-symbol">
+                    <span class="brand-logo-letter">E</span>
+                </span>
+                <span class="brand-logo-text">ELECTRONS</span>
+            </span>
         </a>
 
         <button aria-controls="navbarSupportedContent"
@@ -58,15 +62,15 @@
                   class="d-flex mb-3 mb-lg-0 search-form order-3 order-lg-2 mx-lg-2"
                   method="GET"
                   role="search">
-                <div class="input-group">
+                <div class="input-group search-input-group">
                     <input aria-label="Search"
-                           class="form-control search-input"
+                           class="form-control border-end-0 search-input"
                            name="search"
                            placeholder="Apa yang kamu cari?"
                            type="search"
                            value="{{ request('search') }}">
                     <button aria-label="Cari"
-                            class="btn btn-outline-secondary search-btn"
+                            class="btn border border-start-0 search-btn"
                             type="submit">
                         <i aria-hidden="true"
                            class="bi bi-search"></i>

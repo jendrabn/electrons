@@ -42,124 +42,142 @@ body {
    ======================================================= */
 
 /* =======================================================
-   Navbar Elevated
+   Brand Logo
    ======================================================= */
 .brand-logo {
-    max-height: 60px;
-}
-
-.navbar-elevated .nav-link,
-.navbar-elevated .dropdown-toggle-custom {
     position: relative;
-    font-weight: 600;
-    font-size: 0.975rem;
-    color: $gray-900;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: "Poppins", "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1rem, 1.9vw, 1.3rem);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: #1f2937;
+    transition: color 200ms ease;
 }
 
-.navbar-elevated .nav-link:hover,
-.navbar-elevated .dropdown-toggle-custom:hover {
-    color: $el-link-hover;
-}
-.navbar-elevated .nav-link:focus {
-    color: $el-link-active;
-}
-
-/* Underline hover animation - center-out using background-size (constant height) */
-.navbar-elevated .nav-link-animated {
-    background-image: linear-gradient($el-link-hover, $el-link-hover);
-    background-position: 50% 100%;
-    background-repeat: no-repeat;
-    background-size: 0% 2px;
-    transition: background-size 260ms ease;
+.brand-logo-symbol {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(42px, 3.6vw, 48px);
+    height: clamp(42px, 3.6vw, 48px);
+    border-radius: 1rem;
+    background: linear-gradient(145deg, #4338ca 0%, #6366f1 50%, #0ea5e9 100%);
+    box-shadow: 0 12px 28px rgba($indigo, 0.35);
+    overflow: hidden;
 }
 
-.navbar-elevated .nav-link-animated:hover,
-.navbar-elevated .nav-link-animated.active {
-    background-size: 100% 2px;
+.brand-logo-symbol::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    transform: rotate(-18deg);
+    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.35);
 }
 
-/* Improve dropdown look */
-.navbar-elevated .dropdown-menu {
-    padding: 0.5rem;
+.brand-logo-symbol::after {
+    content: "";
+    position: absolute;
+    top: 18%;
+    right: 18%;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #fbbf24;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2),
+        0 0 16px rgba(251, 191, 36, 0.75);
 }
 
-.navbar-elevated .dropdown-item {
-    border-radius: 0.5rem;
-    font-weight: 500;
-    color: $gray-900;
+.brand-logo-letter {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    color: #fff;
+    text-shadow: 0 3px 12px rgba(15, 23, 42, 0.25);
 }
 
-.navbar-elevated .dropdown-item:hover {
-    background-color: #f1f5f9;
-    color: $el-link-hover;
+.brand-logo-text {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: clamp(0.95rem, 1.75vw, 1.15rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: #111827;
 }
 
-/* Search form sizing: full width on mobile, wider on desktop */
-.navbar-elevated .search-form {
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+    .brand-logo-text {
+        background-image: linear-gradient(
+            120deg,
+            #1e1b4b,
+            #4338ca 45%,
+            #0ea5e9 100%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+[data-bs-theme="dark"] .brand-logo {
+    color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] .brand-logo-text {
+    color: #e2e8f0;
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+    [data-bs-theme="dark"] .brand-logo-text {
+        background-image: linear-gradient(
+            120deg,
+            #f8fafc,
+            #60a5fa 40%,
+            #c084fc 100%
+        );
+    }
+}
+
+[data-bs-theme="dark"] .brand-logo-symbol::after {
+    background: #facc15;
+}
+/* =======================================================
+   End Brand Logo
+   ======================================================= */
+
+/** =======================================================
+   Navbar
+   ======================================================= */
+
+.search-form {
     width: 100%;
 }
 
 @media (min-width: 768px) {
-    .navbar-elevated .search-form {
-        width: 360px;
+    .search-form {
+        max-width: 360px;
     }
 }
 
 @media (min-width: 992px) {
-    .navbar-elevated .search-form {
-        width: 440px;
+    .search-form {
+        max-width: 440px;
     }
-}
-
-@media (min-width: 1200px) {
-    .navbar-elevated .search-form {
-        width: 520px;
-    }
-}
-
-.search-form .input-group {
-    border: 1px solid rgba($dark, 0.08);
-    border-radius: 0.375rem; /* matches Bootstrap rounded */
-    overflow: hidden;
-    background: $light;
-}
-
-.search-form .search-input {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    padding-left: 0.75rem;
-    padding-right: 0.5rem;
-    color: $dark;
-}
-
-.search-form .search-btn {
-    border: none !important;
-    background: transparent !important;
-    color: $primary;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-}
-
-/* Remove focus outlines on inner controls; rely on focus-within on wrapper */
-.search-form .input-group .form-control:focus,
-.search-form .input-group .btn:focus {
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-.search-form .input-group:focus-within {
-    border-color: $primary;
-    /* subtle ring derived from link color */
-    box-shadow: 0 0 0 0.125rem rgba($primary, 0.12);
-}
-
-.search-form .form-control {
-    height: auto;
 }
 
 /* =======================================================
-   End Navbar Elevated
+   End Navbar
    ======================================================= */
 
 .content {
