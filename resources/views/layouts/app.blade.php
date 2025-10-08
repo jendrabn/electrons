@@ -30,6 +30,31 @@
           rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.7.9/glider.min.css"
           rel="stylesheet">
+    <script>
+        // Synchronous theme bootstrap to avoid FOUC (flash of wrong theme).
+        // Read the Filament-compatible `theme` key and set data-bs-theme before CSS loads.
+        (function() {
+            try {
+                var t = localStorage.getItem('theme');
+            } catch (e) {
+                var t = null;
+            }
+
+            if (t === 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else if (t === 'light') {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            } else {
+                // system or unset — respect prefers-color-scheme
+                try {
+                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+                } catch (e) {
+                    document.documentElement.setAttribute('data-bs-theme', 'light');
+                }
+            }
+        })();
+    </script>
 
     <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9750508834370473"
@@ -144,20 +169,107 @@
         });
     </script>
     <script>
-        (function () {
+        (function() {
             var allowedHosts = ['localhost', '127.0.0.1', '0.0.0.0'];
             if (
                 'serviceWorker' in navigator &&
                 (window.location.protocol === 'https:' || allowedHosts.includes(window.location.hostname))
             ) {
-                window.addEventListener('load', function () {
+                window.addEventListener('load', function() {
                     navigator.serviceWorker
                         .register('{{ asset('service-worker.js') }}')
-                        .catch(function (error) {
+                        .catch(function(error) {
                             console.error('Service worker registration failed:', error);
                         });
                 });
             }
+        })();
+    </script>
+
+    <script>
+        (function() {
+            const KEY = 'theme'; // Filament-compatible key
+
+            function applyTheme(mode) {
+                // mode: 'system' | 'light' | 'dark'
+                if (mode === 'system') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', mode === 'dark' ? 'dark' : 'light');
+                }
+
+                // Notify other scripts (Filament) if they listen
+                window.dispatchEvent(new CustomEvent('theme:change', {
+                    detail: {
+                        theme: mode
+                    }
+                }));
+            }
+
+            function readStoredTheme() {
+                try {
+                    return localStorage.getItem(KEY) || 'system';
+                } catch (e) {
+                    return 'system';
+                }
+            }
+
+            function storeTheme(value) {
+                try {
+                    localStorage.setItem(KEY, value);
+                } catch (e) {
+                    /* ignore */
+                }
+            }
+
+            function getNext(mode) {
+                return mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system';
+            }
+
+            const buttons = document.querySelectorAll('.theme-toggle-btn');
+
+            // Initialize
+            let current = readStoredTheme();
+            applyTheme(current);
+
+            // Update icon based on mode for all buttons
+            function updateAllButtons(mode) {
+                buttons.forEach(btn => {
+                    const icon = btn.querySelector('i');
+                    if (!icon) return;
+                    if (mode === 'system') icon.className = 'bi bi-display';
+                    else if (mode === 'light') icon.className = 'bi bi-sun';
+                    else icon.className = 'bi bi-moon-stars';
+                });
+            }
+
+            updateAllButtons(current);
+
+            // React to system changes when in 'system' mode
+            const mq = window.matchMedia('(prefers-color-scheme: dark)');
+            mq.addEventListener && mq.addEventListener('change', () => {
+                if (readStoredTheme() === 'system') {
+                    applyTheme('system');
+                    updateAllButtons('system');
+                }
+            });
+
+            // Attach click handlers to all theme buttons
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    current = getNext(readStoredTheme());
+                    storeTheme(current);
+                    applyTheme(current);
+                    updateAllButtons(current);
+                });
+            });
+
+            // Keep icons in sync if some other script changes the theme
+            window.addEventListener('theme:change', (e) => {
+                const mode = e?.detail?.theme || readStoredTheme();
+                updateAllButtons(mode);
+            });
         })();
     </script>
     @yield('scripts')

@@ -6,6 +6,7 @@
                  class="brand-logo"
                  src="{{ asset('images/logo.svg') }}">
         </a>
+
         <button aria-controls="navbarSupportedContent"
                 aria-expanded="false"
                 aria-label="Toggle navigation"
@@ -54,7 +55,7 @@
             </ul>
 
             <form action="{{ route('posts.index') }}"
-                  class="d-flex mb-3 mb-lg-0 search-form order-3 order-lg-2 mx-lg-4"
+                  class="d-flex mb-3 mb-lg-0 search-form order-3 order-lg-2 mx-lg-2"
                   method="GET"
                   role="search">
                 <div class="input-group">
@@ -73,6 +74,17 @@
                     </button>
                 </div>
             </form>
+
+            <div class="d-flex align-items-center ms-2 order-3 order-lg-2">
+                <button aria-label="Ubah tema"
+                        class="btn btn-light rounded-2 px-2 py-1 theme-toggle-btn"
+                        title="Ubah tema"
+                        type="button">
+                    <i aria-hidden="true"
+                       class="bi bi-circle-half"></i>
+                    <span class="visually-hidden">Ubah tema</span>
+                </button>
+            </div>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 order-2 order-lg-3">
                 @if (auth()->check())
