@@ -24,14 +24,14 @@ class PostCommentRequest extends FormRequest
     {
         if ($this->method() === 'POST') {
             return [
-                'body' => ['required', 'string'],
+                'body' => ['required', 'string', 'min:3', 'max:500'],
                 'parent_id' => ['nullable', 'exists:post_comments,id'],
             ];
         }
 
         if ($this->method() === 'PUT' || $this->method() === 'PATCH') {
             return [
-                'body' => ['required', 'string'],
+                'body' => ['required', 'string', 'min:3', 'max:500'],
             ];
         }
 

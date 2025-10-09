@@ -10,16 +10,14 @@
                 <span class="brand-logo-text">ELECTRONS</span>
             </span>
         </a>
-
         <button aria-controls="navbarSupportedContent"
                 aria-expanded="false"
                 aria-label="Toggle navigation"
-                class="navbar-toggler border-0"
+                class="navbar-toggler"
                 data-bs-target="#navbarSupportedContent"
                 data-bs-toggle="collapse"
                 type="button">
-            <img alt="Toggle icon"
-                 src="{{ asset('images/navbar-toggler-icon.svg') }}">
+            <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse"

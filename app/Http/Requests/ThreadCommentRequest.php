@@ -23,18 +23,30 @@ class ThreadCommentRequest extends FormRequest
      */
     public function rules(): array
     {
-        // store: community comments.store
+        // Determine whether this is a reply (has a parent_id) or a top-level comment.
+        // If parent_id is provided (and not empty), treat as reply and use a smaller max.
+        $parentId = $this->input('parent_id');
+        $isReply = ! empty($parentId);
+
+        // Minimum length for any comment body. (Assumption: 3 characters)
+        $min = 3;
+
+        // Max length differs depending on whether it's a reply or a top-level comment.
+        $max = $isReply ? 500 : 5000;
+
+        $bodyRules = ['required', 'string', "min:$min", "max:$max"];
+
         if ($this->method() === 'POST') {
             return [
-                'body' => ['required', 'string'],
+                'body' => $bodyRules,
                 'parent_id' => ['nullable', 'exists:thread_comments,id'],
             ];
-        } else if ($this->method() === 'PUT') {
+        } elseif ($this->method() === 'PUT') {
             return [
-                'body' => ['required', 'string'],
+                'body' => $bodyRules,
             ];
-        } else {
-            return [];
         }
+
+        return [];
     }
 }
