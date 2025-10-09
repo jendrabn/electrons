@@ -33,7 +33,7 @@
                     {{-- Edit: only comment owner can edit (admin cannot edit others) --}}
                     @if (auth()->check() && auth()->id() === $comment->user_id)
                         <button aria-label="Edit komentar"
-                                class="btn btn-link btn-sm p-0 text-decoration-none link-body-emphasis"
+                                class="btn btn-link btn-sm p-0 text-decoration-none link-body-emphasis edit-btn comment-edit"
                                 data-id="{{ $comment->id }}"
                                 data-url="{{ route('posts.comments.edit', [$post->id, $comment->id]) }}"
                                 title="Edit komentar"
@@ -45,7 +45,7 @@
                     {{-- Delete: comment owner OR admin can delete --}}
                     @if (auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->isAdmin()))
                         <button aria-label="Hapus komentar"
-                                class="btn btn-link btn-sm p-0 text-decoration-none link-danger"
+                                class="btn btn-link btn-sm p-0 text-decoration-none link-danger delete-btn comment-delete"
                                 data-id="{{ $comment->id }}"
                                 data-url="{{ route('posts.comments.destroy', [$post->id, $comment->id]) }}"
                                 title="Hapus komentar"

@@ -33,7 +33,16 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
 
-            $table->fullText(['title', 'slug']);
+            // Add FULLTEXT index when supported (MySQL/MariaDB). SQLite used in tests
+            // does not support fulltext via Schema builder, so guard to avoid runtime
+            // errors during test migrations.
+            try {
+                if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                    $table->fullText(['title', 'slug']);
+                }
+            } catch (\Throwable $e) {
+                // be defensive in case the driver lacks fulltext support
+            }
             $table->timestamps();
         });
     }
