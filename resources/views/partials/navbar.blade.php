@@ -75,15 +75,45 @@
                 </div>
             </form>
 
-            <div class="d-flex align-items-center ms-2 order-3 order-lg-2">
-                <button aria-label="Ubah tema"
-                        class="btn rounded-2 px-2 py-1 theme-toggle-btn"
-                        title="Ubah tema"
-                        type="button">
-                    <i aria-hidden="true"
-                       class="bi bi-circle-half"></i>
-                    <span class="visually-hidden">Ubah tema</span>
-                </button>
+            <div class="d-flex align-items-center mb-2 mb-lg-0 ms-2 order-3 order-lg-2">
+                <div class="dropdown theme-toggle-dropdown">
+                    <button aria-expanded="false"
+                            aria-label="Ubah tema"
+                            class="btn rounded-2 px-2 py-1 theme-toggle-btn"
+                            data-bs-toggle="dropdown"
+                            title="Ubah tema"
+                            type="button">
+                        <i aria-hidden="true"
+                           class="bi bi-circle-half"></i>
+                        <span class="visually-hidden">Ubah tema</span>
+                    </button>
+                    <ul class="dropdown-menu border-primary shadow-sm rounded-3">
+                        <li>
+                            <a class="dropdown-item"
+                               data-theme="system"
+                               href="#">
+                                <i aria-hidden="true"
+                                   class="bi bi-display me-2"></i> Sistem
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               data-theme="light"
+                               href="#">
+                                <i aria-hidden="true"
+                                   class="bi bi-sun me-2"></i> Terang
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               data-theme="dark"
+                               href="#">
+                                <i aria-hidden="true"
+                                   class="bi bi-moon-stars me-2"></i> Gelap
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 order-2 order-lg-3">

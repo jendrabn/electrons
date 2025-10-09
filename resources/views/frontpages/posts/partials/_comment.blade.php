@@ -30,6 +30,7 @@
                 </div>
 
                 <div class="d-flex gap-2 ms-3">
+                    {{-- Edit: only comment owner can edit (admin cannot edit others) --}}
                     @if (auth()->check() && auth()->id() === $comment->user_id)
                         <button aria-label="Edit komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none link-body-emphasis"
@@ -39,6 +40,10 @@
                                 type="button">
                             <i class="bi bi-pencil"></i>
                         </button>
+                    @endif
+
+                    {{-- Delete: comment owner OR admin can delete --}}
+                    @if (auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->isAdmin()))
                         <button aria-label="Hapus komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none link-danger"
                                 data-id="{{ $comment->id }}"

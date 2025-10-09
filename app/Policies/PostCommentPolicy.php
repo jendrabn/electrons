@@ -17,7 +17,8 @@ class PostCommentPolicy
 
     public function delete(User $user, PostComment $comment): bool
     {
-        return $user->id === $comment->user_id;
+        // allow comment owner or admin users to delete
+        return $user->id === $comment->user_id || $user->isAdmin();
     }
 
     public function create(User $user): bool

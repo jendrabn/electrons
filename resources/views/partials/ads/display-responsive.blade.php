@@ -3,7 +3,7 @@
     $adTest = app()->environment('production') ? null : 'on';
 @endphp
 
-<div class="d-flex justify-content-center">
+<div class="d-flex justify-content-center w-100 text-center my-4">
     <ins @if ($adTest) data-adtest="on" @endif
          class="adsbygoogle"
          data-ad-client="ca-pub-9750508834370473"

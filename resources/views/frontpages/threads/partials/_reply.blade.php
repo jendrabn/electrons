@@ -55,6 +55,7 @@
                         <span class="like-count">{{ $reply->likes->count() }}</span>
                     </button>
 
+                    {{-- Edit: only reply owner can edit (admin cannot edit others) --}}
                     @if (auth()->check() && auth()->id() === $reply->user_id && !$threadDone)
                         <button aria-label="Edit komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none link-body-emphasis edit-btn reply-edit"
@@ -64,6 +65,10 @@
                                 type="button">
                             <i class="bi bi-pencil"></i>
                         </button>
+                    @endif
+
+                    {{-- Delete: reply owner OR admin can delete --}}
+                    @if (auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->isAdmin()) && !$threadDone)
                         <button aria-label="Hapus komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none link-danger delete-btn reply-delete"
                                 data-id="{{ $reply->id }}"

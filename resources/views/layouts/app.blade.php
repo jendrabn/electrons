@@ -191,7 +191,6 @@
             const KEY = 'theme'; // Filament-compatible key
 
             function applyTheme(mode) {
-                // mode: 'system' | 'light' | 'dark'
                 if (mode === 'system') {
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                     document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
@@ -199,7 +198,6 @@
                     document.documentElement.setAttribute('data-bs-theme', mode === 'dark' ? 'dark' : 'light');
                 }
 
-                // Notify other scripts (Filament) if they listen
                 window.dispatchEvent(new CustomEvent('theme:change', {
                     detail: {
                         theme: mode
@@ -219,56 +217,51 @@
                 try {
                     localStorage.setItem(KEY, value);
                 } catch (e) {
-                    /* ignore */
-                }
+                    /* ignore */ }
             }
 
-            function getNext(mode) {
-                return mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system';
-            }
-
-            const buttons = document.querySelectorAll('.theme-toggle-btn');
-
-            // Initialize
-            let current = readStoredTheme();
-            applyTheme(current);
-
-            // Update icon based on mode for all buttons
-            function updateAllButtons(mode) {
-                buttons.forEach(btn => {
+            function updateToggleIcons(mode) {
+                document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
                     const icon = btn.querySelector('i');
                     if (!icon) return;
-                    if (mode === 'system') icon.className = 'bi bi-display';
-                    else if (mode === 'light') icon.className = 'bi bi-sun';
-                    else icon.className = 'bi bi-moon-stars';
+                    icon.className = mode === 'system' ? 'bi bi-display' : mode === 'light' ? 'bi bi-sun' :
+                        'bi bi-moon-stars';
                 });
             }
 
-            updateAllButtons(current);
+            // Wire dropdown items
+            document.querySelectorAll('.theme-toggle-dropdown .dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const mode = item.getAttribute('data-theme') || 'system';
+                    storeTheme(mode);
+                    applyTheme(mode);
+                    updateToggleIcons(mode);
+                    // close dropdown (Bootstrap will handle naturally but ensure focus)
+                    const dropdown = item.closest('.dropdown');
+                    const toggle = dropdown && dropdown.querySelector('[data-bs-toggle="dropdown"]');
+                    if (toggle) toggle.dispatchEvent(new Event('blur'));
+                });
+            });
+
+            // Initialize
+            const initial = readStoredTheme();
+            applyTheme(initial);
+            updateToggleIcons(initial);
 
             // React to system changes when in 'system' mode
             const mq = window.matchMedia('(prefers-color-scheme: dark)');
             mq.addEventListener && mq.addEventListener('change', () => {
                 if (readStoredTheme() === 'system') {
                     applyTheme('system');
-                    updateAllButtons('system');
+                    updateToggleIcons('system');
                 }
-            });
-
-            // Attach click handlers to all theme buttons
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    current = getNext(readStoredTheme());
-                    storeTheme(current);
-                    applyTheme(current);
-                    updateAllButtons(current);
-                });
             });
 
             // Keep icons in sync if some other script changes the theme
             window.addEventListener('theme:change', (e) => {
                 const mode = e?.detail?.theme || readStoredTheme();
-                updateAllButtons(mode);
+                updateToggleIcons(mode);
             });
         })();
     </script>

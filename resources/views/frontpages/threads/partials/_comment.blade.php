@@ -52,6 +52,7 @@
                         </form>
                     @endif
 
+                    {{-- Edit: only comment owner can edit (admin cannot edit others) --}}
                     @if (auth()->check() && auth()->id() === $comment->user_id && !$threadDone)
                         <button aria-label="Edit komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none link-body-emphasis edit-btn comment-edit"
@@ -62,6 +63,10 @@
                             <i aria-hidden="true"
                                class="bi bi-pencil"></i>
                         </button>
+                    @endif
+
+                    {{-- Delete: comment owner OR admin can delete --}}
+                    @if (auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->isAdmin()) && !$threadDone)
                         <button aria-label="Hapus komentar"
                                 class="btn btn-link btn-sm p-0 text-decoration-none link-danger delete-btn comment-delete"
                                 data-id="{{ $comment->id }}"
